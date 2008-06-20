@@ -1,0 +1,19 @@
+pycddlib is a Python wrapper for Komei Fukuda's cddlib, and is available
+under a GPL license (see COPYING for more details).
+
+Installation
+============
+
+The easiest option is to install a precompiled binary.
+
+To compile and install pycddlib from the source code, make sure you have the
+Pyrex module. If you don't have it, get it from
+
+http://www.cosc.canterbury.ac.nz/greg.ewing/python/Pyrex/
+
+Then simply run
+
+python setup.py install
+
+and the code should compile and install.
+
