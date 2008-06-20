@@ -32,10 +32,11 @@ Linear Programming
 ==================
 
 >>> import cddlib
->>> lp = cddlib.Matrix([[1,-1,-1,-1,-1],[-1,1,1,1,1],[-0.2,1,0,0,0],[-0.3,1,1,0,0]])
+>>> lp = cddlib.Matrix([[1,-1,-1,-1,-1],[-1,1,1,1,1],[0,1,0,0,0],[0,0,1,0,0],[0,0,0,1,0],[0,0,0,0,1],[-0.2,1,0,0,0],[-0.3,1,1,0,0]])
 >>> lp.setRepType(REP_INEQUALITY)
 >>> lp.setLPObjType(LPOBJ_MIN)
->>> lp.setLPObjFunc([1,1,1,1,1])
+>>> lp.setLPObjFunc([12,13,10,7,2])
+>>> print lp
 >>> status, optvalue = lp.solveLP()
 >>> status == LPSTATUS_OPTIMAL
 True
@@ -58,6 +59,11 @@ True
 # You should have received a copy of the GNU General Public License along
 # with this program; if not, write to the Free Software Foundation, Inc.,
 # 51 Franklin Street, Fifth Floor, Boston, MA 02110-1301 USA.
+
+# this is only used for quick hacking and debugging
+cdef extern from "stdio.h":
+    ctypedef struct FILE
+    cdef FILE *stdout
 
 # include setoper.h to avoid compiler errors
 cdef extern from "setoper.h":
@@ -282,10 +288,13 @@ cdef extern from "cdd.h":
     cdef dd_MatrixPtr dd_CopyMatrix(dd_MatrixPtr)
     cdef int dd_MatrixAppendTo(dd_MatrixPtr*, dd_MatrixPtr)
     cdef int dd_MatrixRowRemove(dd_MatrixPtr *M, dd_rowrange r)
+    cdef void dd_WriteMatrix(FILE *, dd_MatrixPtr)
 
     cdef dd_LPPtr dd_Matrix2LP(dd_MatrixPtr, dd_ErrorType *)
     cdef dd_boolean dd_LPSolve(dd_LPPtr, dd_LPSolverType, dd_ErrorType *)
     cdef void dd_FreeLPData(dd_LPPtr)
+    cdef void dd_WriteLP(FILE *f, dd_LPPtr lp)
+    cdef void dd_WriteLPResult(FILE *f, dd_LPPtr lp, dd_ErrorType err)
 
 # matrix class
 cdef class Matrix:
@@ -407,16 +416,21 @@ cdef class Matrix:
         constants) and optimal value."""
         cdef dd_LPPtr linprog
         cdef dd_ErrorType error
+        # debug
         #dd_WriteMatrix(stdout, self.thisptr)
         error = dd_NoError
         linprog = dd_Matrix2LP(self.thisptr, &error)
+        # debug
+        #dd_WriteLP(stdout, linprog)
         if linprog == NULL or error != dd_NoError:
             if linprog != NULL:
                 dd_FreeLPData(linprog)
             raise ValueError(
                 "failed to load linear program (error code %i)" % error)
         error = ERR_NO_ERROR
-        dd_LPSolve(linprog, dd_DualSimplex, &error)
+        dd_LPSolve(linprog, dd_CrissCross, &error)
+        # debug
+        #dd_WriteLPResult(stdout, linprog, error)
         if error != dd_NoError:
             raise RuntimeError(
                 "failed to solve linear program (error code %i)" % error)
