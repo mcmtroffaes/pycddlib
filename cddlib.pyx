@@ -8,14 +8,11 @@ Matrix functions
 >>> print mat1
 [  1.000  2.000 ]
 [  3.000  4.000 ]
-objective: None
 <BLANKLINE>
 >>> mat1.rowsize
 2
 >>> mat1.colsize
 2
->>> mat1.objective
-0
 >>> mat2 = cddlib.Matrix([[5,6]])
 >>> mat1.appendRows(mat2)
 >>> mat1.rowsize
@@ -24,7 +21,6 @@ objective: None
 [  1.000  2.000 ]
 [  3.000  4.000 ]
 [  5.000  6.000 ]
-objective: None
 <BLANKLINE>
 """
 
