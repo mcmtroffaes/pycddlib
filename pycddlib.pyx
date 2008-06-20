@@ -34,13 +34,10 @@ Linear Programming
 >>> import pycddlib
 >>> lp = pycddlib.Matrix([[1,-1,-1,-1,-1],[-1,1,1,1,1],[0,1,0,0,0],[0,0,1,0,0],[0,0,0,1,0],[0,0,0,0,1],[-0.2,1,0,0,0],[-0.3,1,1,0,0]])
 >>> lp.setRepType(REP_INEQUALITY)
->>> lp.setLPObjType(LPOBJ_MIN)
+>>> lp.setLPObjType(LPOBJ_MAX)
 >>> lp.setLPObjFunc([12,13,10,7,2])
 >>> print lp
->>> status, optvalue = lp.solveLP()
->>> status == LPSTATUS_OPTIMAL
-True
->>> optvalue
+>>> print lp.solveLP()
 """
 
 # pycddlib is a Python wrapper for Komei Fukuda's cddlib
@@ -411,7 +408,7 @@ cdef class Matrix:
         for colindex, value in enumerate(objfunc):
             dd_set_d(self.thisptr.rowvec[colindex], value)
 
-    def solveLP(self):
+    def solveLP(self, solver = LPSOLVER_DUALSIMPLEX):
         """Solve linear program. Returns status (one of the LPSTATUS_*
         constants) and optimal value."""
         cdef dd_LPPtr linprog
@@ -428,7 +425,7 @@ cdef class Matrix:
             raise ValueError(
                 "failed to load linear program (error code %i)" % error)
         error = ERR_NO_ERROR
-        dd_LPSolve(linprog, dd_CrissCross, &error)
+        dd_LPSolve(linprog, solver, &error)
         # debug
         #dd_WriteLPResult(stdout, linprog, error)
         if error != dd_NoError:
