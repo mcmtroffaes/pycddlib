@@ -13,6 +13,7 @@ Matrix functions
 2
 >>> mat1.colsize
 2
+>>> mat3 = mat1.copy()
 >>> mat2 = cddlib.Matrix([[5,6]])
 >>> mat1.appendRows(mat2)
 >>> mat1.rowsize
@@ -22,6 +23,23 @@ Matrix functions
 [  3.000  4.000 ]
 [  5.000  6.000 ]
 <BLANKLINE>
+>>> print mat3
+[  1.000  2.000 ]
+[  3.000  4.000 ]
+<BLANKLINE>
+
+Linear Programming
+==================
+
+>>> import cddlib
+>>> lp = cddlib.Matrix([[1,-1,-1,-1,-1],[-1,1,1,1,1],[-0.2,1,0,0,0],[-0.3,1,1,0,0]])
+>>> lp.setRepType(REP_INEQUALITY)
+>>> lp.setLPObjType(LPOBJ_MIN)
+>>> lp.setLPObjFunc([1,1,1,1,1])
+>>> status, optvalue = lp.solveLP()
+>>> status == LPSTATUS_OPTIMAL
+True
+>>> optvalue
 """
 
 # pycddlib is a Python wrapper for Komei Fukuda's cddlib
@@ -335,8 +353,8 @@ cdef class Matrix:
         # thisptr; we must "cdef Matrix mat" because otherwise pyrex will not
         # recognize mat.thisptr as a C pointer
         cdef Matrix mat
-        mat = Matrix(1, 1)
-        mat.__dealloc__()
+        mat = Matrix([[0]])
+        dd_FreeMatrix(mat.thisptr)
         # now assign to a copy
         mat.thisptr = dd_CopyMatrix(self.thisptr)
         # return the copy
@@ -368,32 +386,40 @@ cdef class Matrix:
             raise ValueError(
                 "cannot remove row %i" % rownum)
 
-    def setObjType(self, objtype):
-        """Set linear programming objective type."""
+    def setRepType(self, reptype):
+        """Set type of representation (use the REP_* constants)."""
+        self.thisptr.representation = reptype
+
+    def setLPObjType(self, objtype):
+        """Set linear programming objective type (use the LPOBJ_* constants)."""
         self.thisptr.objective = objtype
 
-    def setObjFunc(self, objfunc):
+    def setLPObjFunc(self, objfunc):
         """Set objective function."""
         if len(objfunc) != self.colsize:
-            raise ValueError("objective function does not match matrix column size")
+            raise ValueError(
+                "objective function does not match matrix column size")
         for colindex, value in enumerate(objfunc):
             dd_set_d(self.thisptr.rowvec[colindex], value)
 
-    def solveLinProg(self):
+    def solveLP(self):
         """Solve linear program. Returns status (one of the LPSTATUS_*
         constants) and optimal value."""
         cdef dd_LPPtr linprog
         cdef dd_ErrorType error
+        #dd_WriteMatrix(stdout, self.thisptr)
         error = dd_NoError
         linprog = dd_Matrix2LP(self.thisptr, &error)
         if linprog == NULL or error != dd_NoError:
             if linprog != NULL:
                 dd_FreeLPData(linprog)
-            raise ValueError("failed to load linear program (error code %i)" % error)
+            raise ValueError(
+                "failed to load linear program (error code %i)" % error)
         error = ERR_NO_ERROR
         dd_LPSolve(linprog, dd_DualSimplex, &error)
         if error != dd_NoError:
-            raise RuntimeError("failed to solve linear program (error code %i)" % error)
+            raise RuntimeError(
+                "failed to solve linear program (error code %i)" % error)
         solution = (linprog.LPS, dd_get_d(linprog.optvalue))
         dd_FreeLPData(linprog)
         return solution
