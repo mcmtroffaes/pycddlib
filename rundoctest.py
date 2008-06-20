@@ -1,10 +1,10 @@
 # run all doctests in the Python cddlib module
 
 import doctest, unittest
-import cddlib
+import pycddlib
 
 suite = unittest.TestSuite()
-for mod in [ cddlib ]:
+for mod in [ pycddlib ]:
     try:
         suite.addTest(doctest.DocTestSuite(mod))
     except ValueError: # no tests

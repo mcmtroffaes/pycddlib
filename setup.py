@@ -72,7 +72,7 @@ setup(
     name = "pycddlib",
     version = "0.0.0",
     ext_modules= [
-        Extension("cddlib",
+        Extension("pycddlib",
                   ["pycddlib.pyx"] + [os.path.join(cdd_dir, srcfile)
                                       for srcfile in cdd_sources],
                   include_dirs = [cdd_dir])],

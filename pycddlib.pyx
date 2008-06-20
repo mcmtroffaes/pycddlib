@@ -1,10 +1,10 @@
-"""The cddlib module wraps the cdd.h header file from Komei Fukuda's cddlib.
+"""The pycddlib module wraps the cdd.h header file from Komei Fukuda's cddlib.
 
 Matrix functions
 ================
 
->>> import cddlib
->>> mat1 = cddlib.Matrix([[1,2],[3,4]])
+>>> import pycddlib
+>>> mat1 = pycddlib.Matrix([[1,2],[3,4]])
 >>> print mat1
 [  1.000  2.000 ]
 [  3.000  4.000 ]
@@ -14,7 +14,7 @@ Matrix functions
 >>> mat1.colsize
 2
 >>> mat3 = mat1.copy()
->>> mat2 = cddlib.Matrix([[5,6]])
+>>> mat2 = pycddlib.Matrix([[5,6]])
 >>> mat1.appendRows(mat2)
 >>> mat1.rowsize
 3
@@ -31,8 +31,8 @@ Matrix functions
 Linear Programming
 ==================
 
->>> import cddlib
->>> lp = cddlib.Matrix([[1,-1,-1,-1,-1],[-1,1,1,1,1],[0,1,0,0,0],[0,0,1,0,0],[0,0,0,1,0],[0,0,0,0,1],[-0.2,1,0,0,0],[-0.3,1,1,0,0]])
+>>> import pycddlib
+>>> lp = pycddlib.Matrix([[1,-1,-1,-1,-1],[-1,1,1,1,1],[0,1,0,0,0],[0,0,1,0,0],[0,0,0,1,0],[0,0,0,0,1],[-0.2,1,0,0,0],[-0.3,1,1,0,0]])
 >>> lp.setRepType(REP_INEQUALITY)
 >>> lp.setLPObjType(LPOBJ_MIN)
 >>> lp.setLPObjFunc([12,13,10,7,2])
