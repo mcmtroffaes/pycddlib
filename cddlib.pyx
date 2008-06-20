@@ -52,6 +52,7 @@ cdef extern from "setoper.h":
 # now include cdd.h
 cdef extern from "cdd.h":
 
+    ctypedef int dd_boolean
     ctypedef double mytype[1]
     ctypedef long dd_rowrange
     ctypedef long dd_colrange
@@ -64,6 +65,8 @@ cdef extern from "cdd.h":
     ctypedef mytype **dd_Amatrix
     ctypedef mytype *dd_Arow
     ctypedef set_type *dd_SetVector
+    ctypedef mytype **dd_Bmatrix
+    ctypedef set_type *dd_Aincidence
 
 # enums
 
@@ -220,12 +223,36 @@ cdef extern from "cdd.h":
         dd_LPObjectiveType objective
         dd_Arow rowvec
 
-    ctypedef struct dd_SetFamily
-    ctypedef struct dd_LPSolution
+    #ctypedef struct dd_SetFamily:
+    #    # not used so far
+    #    pass
+
+    #ctypedef struct dd_LPSolution:
+    #    dd_LPStatusType LPS
+    #    mytype optvalue
+    #    # there are more fields but so far they are not used
+
+    ctypedef struct dd_lpdata:
+        dd_LPObjectiveType objective
+        dd_LPSolverType solver
+        dd_boolean Homogeneous
+        dd_rowrange m
+        dd_colrange d
+        dd_Amatrix A
+        dd_Bmatrix B
+        dd_rowrange objrow
+        dd_colrange rhscol
+        dd_NumberType numbtype
+        dd_rowrange eqnumber # number of equalities
+        dd_rowset equalityset
+        dd_LPStatusType LPS
+        mytype optvalue
+        dd_Arow sol
 
     ctypedef matrixdata *dd_MatrixPtr
-    ctypedef dd_SetFamily *dd_SetFamilyPtr
-    ctypedef dd_LPSolution *dd_SetLPSolutionPtr
+    ctypedef dd_lpdata *dd_LPPtr
+    #ctypedef dd_SetFamily *dd_SetFamilyPtr
+    #ctypedef dd_LPSolution *dd_SetLPSolutionPtr
 
     # functions
     # not everything is defined here, just most common operations
@@ -242,6 +269,10 @@ cdef extern from "cdd.h":
     cdef int dd_MatrixAppendTo(dd_MatrixPtr*, dd_MatrixPtr)
     cdef int dd_MatrixRowRemove(dd_MatrixPtr *M, dd_rowrange r)
 
+    cdef dd_LPPtr dd_Matrix2LP(dd_MatrixPtr, dd_ErrorType *)
+    cdef dd_boolean dd_LPSolve(dd_LPPtr, dd_LPSolverType, dd_ErrorType *)
+    cdef void dd_FreeLPData(dd_LPPtr)
+
 # matrix class
 cdef class Matrix:
     # pointer cointaining the matrix data
@@ -255,15 +286,15 @@ cdef class Matrix:
         def __get__(self):
             return self.thisptr.colsize
 
-    property representation:
-        def __get__(self):
-            return self.thisptr.representation
+    #property representation:
+    #    def __get__(self):
+    #        return self.thisptr.representation
 
-    property objective:
-        def __get__(self):
-            return self.thisptr.objective
-        def __set__(self, dd_LPObjectiveType obj):
-            self.thisptr.objective = obj
+    #property objType:
+    #    def __get__(self):
+    #        return self.thisptr.objective
+    #    def __set__(self, dd_LPObjectiveType obj):
+    #        self.thisptr.objective = obj
 
     def __str__(self):
         """Print the matrix data."""
@@ -273,30 +304,28 @@ cdef class Matrix:
             for colindex in xrange(self.colsize):
                 s += "%6.3f " % dd_get_d(self.thisptr.matrix[rowindex][colindex])
             s += "]\n"
-        s += "objective: %s\n" % ({LPOBJ_NONE : "None", LPOBJ_MIN : "Minimize", LPOBJ_MAX : "Maximize"}[self.objective])
+        if self.thisptr.objective != dd_LPnone:
+            s += "%s\n" % ({dd_LPmin: "minimize", dd_LPmax: "maximize"}[self.thisptr.objective])
+            s += "[ "
+            for colindex in xrange(self.colsize):
+                s += "%6.3f " % dd_get_d(self.thisptr.rowvec[colindex])
+            s += "]\n"
         return s
 
-    def __cinit__(self, rows = None, numrows = None, numcols = None):
-        """If matrixlist is None then create a numrows times numcols matrix
-        with all elements zero. Otherwise load matrixlist (which is a Python
-        list of Python lists) into the matrix."""
+    def __cinit__(self, rows):
+        """Load matrix data from the rows (which is a list of lists)."""
         # determine dimension
-        if not rows is None:
-            numrows = len(rows)
-            if numrows > 0:
-                numcols = len(rows[0])
-            else:
-                numcols = 0
-        elif numrows is None or numcols is None:
-            numrows = 0
+        numrows = len(rows)
+        if numrows > 0:
+            numcols = len(rows[0])
+        else:
             numcols = 0
         # create new matrix
         self.thisptr = dd_CreateMatrix(numrows, numcols)
         # load data
-        if not rows is None:
-            for rowindex, row in enumerate(rows):
-                for colindex, value in enumerate(row):
-                    dd_set_d(self.thisptr.matrix[rowindex][colindex], value)
+        for rowindex, row in enumerate(rows):
+            for colindex, value in enumerate(row):
+                dd_set_d(self.thisptr.matrix[rowindex][colindex], value)
 
     def __dealloc__(self):
         """Deallocate matrix."""
@@ -342,6 +371,36 @@ cdef class Matrix:
         if success != 1:
             raise ValueError(
                 "cannot remove row %i" % rownum)
+
+    def setObjType(self, objtype):
+        """Set linear programming objective type."""
+        self.thisptr.objective = objtype
+
+    def setObjFunc(self, objfunc):
+        """Set objective function."""
+        if len(objfunc) != self.colsize:
+            raise ValueError("objective function does not match matrix column size")
+        for colindex, value in enumerate(objfunc):
+            dd_set_d(self.thisptr.rowvec[colindex], value)
+
+    def solveLinProg(self):
+        """Solve linear program. Returns status (one of the LPSTATUS_*
+        constants) and optimal value."""
+        cdef dd_LPPtr linprog
+        cdef dd_ErrorType error
+        error = dd_NoError
+        linprog = dd_Matrix2LP(self.thisptr, &error)
+        if linprog == NULL or error != dd_NoError:
+            if linprog != NULL:
+                dd_FreeLPData(linprog)
+            raise ValueError("failed to load linear program (error code %i)" % error)
+        error = ERR_NO_ERROR
+        dd_LPSolve(linprog, dd_DualSimplex, &error)
+        if error != dd_NoError:
+            raise RuntimeError("failed to solve linear program (error code %i)" % error)
+        solution = (linprog.LPS, dd_get_d(linprog.optvalue))
+        dd_FreeLPData(linprog)
+        return solution
 
 def setGlobalConstants():
     """Call this before using cdd."""
