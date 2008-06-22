@@ -293,6 +293,9 @@ cdef extern from "cdd.h":
     cdef void dd_set_si2(mytype, signed long, unsigned long)
     cdef double dd_get_d(mytype)
 
+    cdef void dd_set_global_constants()
+    cdef void dd_free_global_constants()
+
     cdef dd_MatrixPtr dd_CreateMatrix(dd_rowrange, dd_colrange)
     cdef void dd_FreeMatrix(dd_MatrixPtr)
     cdef dd_MatrixPtr dd_CopyMatrix(dd_MatrixPtr)
@@ -448,11 +451,11 @@ cdef class Matrix:
         dd_FreeLPData(linprog)
         return solution
 
-def setGlobalConstants():
-    """Call this before using cdd."""
-    dd_set_global_constants()
+# module initialization code comes here
+# initialize module constants
+dd_set_global_constants()
 
-def freeGlobalConstants():
-    """Call this when finished using cdd."""
-    dd_free_global_constants()
+# should call dd_free_global_constants() when module is destroyed
+# how does python do that?? let's not bother for now...
+
 
