@@ -31,13 +31,26 @@ Matrix functions
 Linear Programming
 ==================
 
+This is the testlp2.c example that comes with cddlib.
+
 >>> import pycddlib
->>> lp = pycddlib.Matrix([[1,-1,-1,-1,-1],[-1,1,1,1,1],[0,1,0,0,0],[0,0,1,0,0],[0,0,0,1,0],[0,0,0,0,1],[-0.2,1,0,0,0],[-0.3,1,1,0,0]])
+>>> lp = pycddlib.Matrix([[4.0/3.0,-2,-1],[2.0/3.0,0,-1],[0,1,0],[0,0,1]])
 >>> lp.setRepType(REP_INEQUALITY)
 >>> lp.setLPObjType(LPOBJ_MAX)
->>> lp.setLPObjFunc([12,13,10,7,2])
+>>> lp.setLPObjFunc([0,3,4])
 >>> print lp
->>> print lp.solveLP()
+[  1.333 -2.000 -1.000 ]
+[  0.667  0.000 -1.000 ]
+[  0.000  1.000  0.000 ]
+[  0.000  0.000  1.000 ]
+maximize
+[  0.000  3.000  4.000 ]
+<BLANKLINE>
+>>> status, result = lp.solveLP()
+>>> status
+1
+>>> print("%6.3f" % result)
+ 3.667
 """
 
 # pycddlib is a Python wrapper for Komei Fukuda's cddlib
