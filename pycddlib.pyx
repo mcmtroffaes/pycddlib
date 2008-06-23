@@ -6,26 +6,34 @@ Matrix functions
 >>> import pycddlib
 >>> mat1 = pycddlib.Matrix([[1,2],[3,4]])
 >>> print mat1
-[  1.000  2.000 ]
-[  3.000  4.000 ]
+begin
+ 2 2 real
+  1  2
+  3  4
+end
 <BLANKLINE>
 >>> mat1.rowsize
 2
 >>> mat1.colsize
 2
->>> mat3 = mat1.copy()
->>> mat2 = pycddlib.Matrix([[5,6]])
->>> mat1.appendRows(mat2)
+>>> mat2 = mat1.copy()
+>>> mat1.appendRows([[5,6]])
 >>> mat1.rowsize
 3
 >>> print mat1
-[  1.000  2.000 ]
-[  3.000  4.000 ]
-[  5.000  6.000 ]
+begin
+ 3 2 real
+  1  2
+  3  4
+  5  6
+end
 <BLANKLINE>
->>> print mat3
-[  1.000  2.000 ]
-[  3.000  4.000 ]
+>>> print mat2
+begin
+ 2 2 real
+  1  2
+  3  4
+end
 <BLANKLINE>
 
 Linear Programming
@@ -34,22 +42,30 @@ Linear Programming
 This is the testlp2.c example that comes with cddlib.
 
 >>> import pycddlib
->>> lp = pycddlib.Matrix([[4.0/3.0,-2,-1],[2.0/3.0,0,-1],[0,1,0],[0,0,1]])
->>> lp.setLPObjType(LPOBJ_MAX)
->>> lp.setLPObjFunc([0,3,4])
->>> print lp
-[  1.333 -2.000 -1.000 ]
-[  0.667  0.000 -1.000 ]
-[  0.000  1.000  0.000 ]
-[  0.000  0.000  1.000 ]
+>>> mat = pycddlib.Matrix([[4.0/3.0,-2,-1],[2.0/3.0,0,-1],[0,1,0],[0,0,1]])
+>>> mat.setLPObjType(LPOBJ_MAX)
+>>> mat.setLPObjFunc([0,3,4])
+>>> print mat
+begin
+ 4 3 real
+  1.333333333E+00 -2 -1
+  6.666666667E-01  0 -1
+  0  1  0
+  0  0  1
+end
 maximize
-[  0.000  3.000  4.000 ]
+  0  3  4
 <BLANKLINE>
->>> status, result = lp.solveLP()
->>> status
+>>> lp = pycddlib.LinProg(mat)
+>>> lp.solve()
+>>> lp.status
 1
->>> print("%6.3f" % result)
+>>> print("%6.3f" % lp.optValue)
  3.667
+>>> print(["%6.3f" % val for val in lp.primalSolution])
+[' 0.333', ' 0.667']
+>>> print(["%6.3f" % val for val in lp.dualSolution])
+[' 1.500', ' 2.500']
 """
 
 # pycddlib is a Python wrapper for Komei Fukuda's cddlib
@@ -69,16 +85,31 @@ maximize
 # with this program; if not, write to the Free Software Foundation, Inc.,
 # 51 Franklin Street, Fifth Floor, Boston, MA 02110-1301 USA.
 
-# this is only used for quick hacking and debugging
+import tempfile
+
+# some of cdd's functions read and write files
 cdef extern from "stdio.h":
     ctypedef struct FILE
+    ctypedef int size_t
     cdef FILE *stdout
+    cdef FILE *tmpfile()
+    cdef size_t fread(void *ptr, size_t size, size_t count, FILE *stream)
+    cdef size_t fwrite(void *ptr, size_t size, size_t count, FILE *stream)
+    cdef int SEEK_SET
+    cdef int SEEK_CUR
+    cdef int SEEK_END
+    cdef int fseek(FILE *stream, long int offset, int origin)
+    cdef long int ftell(FILE *stream)
 
-# include setoper.h to avoid compiler errors
+# get object as file
+cdef extern from "Python.h":
+    FILE *PyFile_AsFile(object)
+
+# set operations (need to include this before cdd.h to avoid compile errors)
 cdef extern from "setoper.h":
     ctypedef unsigned long *set_type
 
-# now include cdd.h
+# now include cdd.h declarations for main implementation
 cdef extern from "cdd.h":
 
     ctypedef int dd_boolean
@@ -252,15 +283,6 @@ cdef extern from "cdd.h":
         dd_LPObjectiveType objective
         dd_Arow rowvec
 
-    #ctypedef struct dd_SetFamily:
-    #    # not used so far
-    #    pass
-
-    #ctypedef struct dd_LPSolution:
-    #    dd_LPStatusType LPS
-    #    mytype optvalue
-    #    # there are more fields but so far they are not used
-
     ctypedef struct dd_lpdata:
         dd_LPObjectiveType objective
         dd_LPSolverType solver
@@ -277,11 +299,10 @@ cdef extern from "cdd.h":
         dd_LPStatusType LPS
         mytype optvalue
         dd_Arow sol
+        dd_Arow dsol
 
     ctypedef matrixdata *dd_MatrixPtr
     ctypedef dd_lpdata *dd_LPPtr
-    #ctypedef dd_SetFamily *dd_SetFamilyPtr
-    #ctypedef dd_LPSolution *dd_SetLPSolutionPtr
 
     # functions
     # not everything is defined here, just most common operations
@@ -294,6 +315,8 @@ cdef extern from "cdd.h":
 
     cdef void dd_set_global_constants()
     cdef void dd_free_global_constants()
+
+    cdef void dd_WriteErrorMessages(FILE *, dd_ErrorType)
 
     cdef dd_MatrixPtr dd_CreateMatrix(dd_rowrange, dd_colrange)
     cdef void dd_FreeMatrix(dd_MatrixPtr)
@@ -308,6 +331,21 @@ cdef extern from "cdd.h":
     cdef void dd_WriteLP(FILE *f, dd_LPPtr lp)
     cdef void dd_WriteLPResult(FILE *f, dd_LPPtr lp, dd_ErrorType err)
 
+cdef _raiseError(dd_ErrorType error, msg):
+    """Convert error into string and raise it."""
+    cdef FILE *pfile
+    # open file for writing the matrix data
+    tmp = tempfile.TemporaryFile()
+    pfile = PyFile_AsFile(tmp)
+    dd_WriteErrorMessages(pfile, error)
+    # read the file into a buffer
+    tmp.seek(0)
+    cddmsg = tmp.read(-1)
+    # close the file
+    tmp.close()
+    # raise it
+    raise RuntimeError(msg + "\n" + cddmsg)
+
 # matrix class
 cdef class Matrix:
     # pointer cointaining the matrix data
@@ -321,34 +359,24 @@ cdef class Matrix:
         def __get__(self):
             return self.thisptr.colsize
 
-    #property representation:
-    #    def __get__(self):
-    #        return self.thisptr.representation
-
-    #property objType:
-    #    def __get__(self):
-    #        return self.thisptr.objective
-    #    def __set__(self, dd_LPObjectiveType obj):
-    #        self.thisptr.objective = obj
-
     def __str__(self):
         """Print the matrix data."""
-        s = ""
-        for rowindex in xrange(self.rowsize):
-            s += "[ "
-            for colindex in xrange(self.colsize):
-                s += "%6.3f " % dd_get_d(self.thisptr.matrix[rowindex][colindex])
-            s += "]\n"
-        if self.thisptr.objective != dd_LPnone:
-            s += "%s\n" % ({dd_LPmin: "minimize", dd_LPmax: "maximize"}[self.thisptr.objective])
-            s += "[ "
-            for colindex in xrange(self.colsize):
-                s += "%6.3f " % dd_get_d(self.thisptr.rowvec[colindex])
-            s += "]\n"
-        return s
+        cdef FILE *pfile
+        # open file for writing the matrix data
+        tmp = tempfile.TemporaryFile()
+        pfile = PyFile_AsFile(tmp)
+        dd_WriteMatrix(pfile, self.thisptr)
+        # read the file into a buffer
+        tmp.seek(0)
+        result = tmp.read(-1)
+        # close the file
+        tmp.close()
+        return result
 
     def __cinit__(self, rows):
         """Load matrix data from the rows (which is a list of lists)."""
+        # reset pointer
+        self.thisptr = NULL
         # determine dimension
         numrows = len(rows)
         if numrows > 0:
@@ -359,8 +387,12 @@ cdef class Matrix:
         self.thisptr = dd_CreateMatrix(numrows, numcols)
         # load data
         for rowindex, row in enumerate(rows):
+            if len(row) != numcols:
+                raise ValueError("rows have different lengths")
             for colindex, value in enumerate(row):
                 dd_set_d(self.thisptr.matrix[rowindex][colindex], value)
+        # debug
+        #dd_WriteMatrix(stdout, self.thisptr)
 
     def __dealloc__(self):
         """Deallocate matrix."""
@@ -376,27 +408,28 @@ cdef class Matrix:
         cdef Matrix mat
         mat = Matrix([[0]])
         dd_FreeMatrix(mat.thisptr)
+        mat.thisptr = NULL
         # now assign to a copy
         mat.thisptr = dd_CopyMatrix(self.thisptr)
         # return the copy
         return mat
 
-    def appendRows(self, Matrix other):
-        """Append other to self (this corresponds to the dd_MatrixAppendTo
+    def appendRows(self, rows):
+        """Append rows to self (this corresponds to the dd_MatrixAppendTo
         function in cdd; to emulate the effect of dd_MatrixAppend, first call
         self.copy and then call append on the copy).
 
-        The colsize must be equal in the two input matrices. It
-        raises a ValueError if the input matrices are not appropriate. The new
-        rowsize is set to the sum of the rowsizes of the original self and
-        other. The matrixdata keeps everything else (i.e. numbertype,
-        representation, etc) from self."""
+        The column size must be equal in the two input matrices. It
+        raises a ValueError if the input rows are not appropriate."""
+        # create matrix with given rows
+        cdef Matrix other
+        other = Matrix(rows)
         # call dd_AppendToMatrix
         success = dd_MatrixAppendTo(&self.thisptr, other.thisptr)
         # check result
         if success != 1:
             raise ValueError(
-                "cannot append matrix because column sizes differ")
+                "cannot append because column sizes differ")
 
     def removeRow(self, dd_rowrange rownum):
         """Remove a row. Raises ValueError on failure."""
@@ -423,32 +456,84 @@ cdef class Matrix:
         for colindex, value in enumerate(objfunc):
             dd_set_d(self.thisptr.rowvec[colindex], value)
 
-    def solveLP(self, solver = LPSOLVER_DUALSIMPLEX):
+cdef class LinProg:
+    """Solves a linear program."""
+    # pointer to linear program
+    cdef dd_LPPtr thisptr
+
+    property solver:
+        def __get__(self):
+            return self.thisptr.solver
+
+    property objective:
+        def __get__(self):
+            return self.thisptr.objective
+
+    property status:
+        def __get__(self):
+            return self.thisptr.LPS
+
+    property optValue:
+        def __get__(self):
+            return dd_get_d(self.thisptr.optvalue)
+
+    property primalSolution:
+        def __get__(self):
+            cdef int colindex
+            return [dd_get_d(self.thisptr.sol[colindex])
+                    for 1 <= colindex < self.thisptr.d]
+
+    property dualSolution:
+        def __get__(self):
+            cdef int colindex
+            return [dd_get_d(self.thisptr.dsol[colindex])
+                    for 1 <= colindex < self.thisptr.d]
+
+    def __str__(self):
+        """Print the linear program data."""
+        cdef FILE *pfile
+        # open file for writing the data
+        tmp = tempfile.TemporaryFile()
+        pfile = PyFile_AsFile(tmp)
+        # note: if lp has an error, then exception is raised
+        # so pass ERR_NO_ERROR
+        dd_WriteLPResult(pfile, self.thisptr, ERR_NO_ERROR)
+        # read the file into a buffer
+        tmp.seek(0)
+        result = tmp.read(-1)
+        # close the file
+        tmp.close()
+        return result
+
+    def __cinit__(self, Matrix mat):
+        """Initialize linear program solution from solved linear program in
+        the given matrix."""
+        cdef dd_ErrorType error
+        error = dd_NoError
+        self.thisptr = NULL
+        # read matrix
+        self.thisptr = dd_Matrix2LP(mat.thisptr, &error)
+        if self.thisptr == NULL or error != dd_NoError:
+            if self.thisptr != NULL:
+                dd_FreeLPData(self.thisptr)
+            _raiseError(error, "failed to load linear program")
+        # debug
+        #dd_WriteLP(stdout, self.thisptr)
+
+    def __dealloc__(self):
+        """Deallocate solution memory."""
+        if self.thisptr != NULL:
+            dd_FreeLPData(self.thisptr)
+        self.thisptr = NULL
+
+    def solve(self, solver = LPSOLVER_DUALSIMPLEX):
         """Solve linear program. Returns status (one of the LPSTATUS_*
         constants) and optimal value."""
-        cdef dd_LPPtr linprog
         cdef dd_ErrorType error
-        # debug
-        #dd_WriteMatrix(stdout, self.thisptr)
-        error = dd_NoError
-        linprog = dd_Matrix2LP(self.thisptr, &error)
-        # debug
-        #dd_WriteLP(stdout, linprog)
-        if linprog == NULL or error != dd_NoError:
-            if linprog != NULL:
-                dd_FreeLPData(linprog)
-            raise ValueError(
-                "failed to load linear program (error code %i)" % error)
         error = ERR_NO_ERROR
-        dd_LPSolve(linprog, solver, &error)
-        # debug
-        #dd_WriteLPResult(stdout, linprog, error)
+        dd_LPSolve(self.thisptr, solver, &error)
         if error != dd_NoError:
-            raise RuntimeError(
-                "failed to solve linear program (error code %i)" % error)
-        solution = (linprog.LPS, dd_get_d(linprog.optvalue))
-        dd_FreeLPData(linprog)
-        return solution
+            _raiseError(error, "failed to solve linear program")
 
 # module initialization code comes here
 # initialize module constants

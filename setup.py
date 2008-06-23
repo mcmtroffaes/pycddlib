@@ -52,7 +52,7 @@ Operating System :: OS Independent"""
 
 from distutils.core import setup
 from distutils.extension import Extension
-from Pyrex.Distutils import build_ext
+from Cython.Distutils import build_ext
 
 import os
 
