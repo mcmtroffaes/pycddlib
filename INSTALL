@@ -1,0 +1,29 @@
+Requirements
+============
+
+To compile pycddlib, you need Cython, which you can get from
+http://www.cython.org/
+
+Manual installation
+===================
+
+Windows
+-------
+
+On Windows you first need to set up your build environment, for
+instance with MinGW:
+
+http://www.mingw.org/
+http://www.mingw.org/MinGWiki/index.php/Python extensions
+http://sourceforge.net/project/showfiles.php?group_id=2435&package_id=240780
+
+Now, simply run
+
+  python setup.py install --compiler=mingw32
+
+Linux
+-----
+
+Simply run
+
+  python setup.py install
