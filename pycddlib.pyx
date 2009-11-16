@@ -43,8 +43,8 @@ This is the testlp2.c example that comes with cddlib.
 
 >>> import pycddlib
 >>> mat = pycddlib.Matrix([[4.0/3.0,-2,-1],[2.0/3.0,0,-1],[0,1,0],[0,0,1]])
->>> mat.setLPObjType(LPOBJ_MAX)
->>> mat.setLPObjFunc([0,3,4])
+>>> mat.set_lp_obj_type(LPOBJ_MAX)
+>>> mat.set_lp_obj_func([0,3,4])
 >>> print mat
 begin
  4 3 real
@@ -440,15 +440,15 @@ cdef class Matrix:
             raise ValueError(
                 "cannot remove row %i" % rownum)
 
-    def setRepType(self, reptype):
+    def set_rep_type(self, reptype):
         """Set type of representation (use the REP_* constants)."""
         self.thisptr.representation = reptype
 
-    def setLPObjType(self, objtype):
+    def set_lp_obj_type(self, objtype):
         """Set linear programming objective type (use the LPOBJ_* constants)."""
         self.thisptr.objective = objtype
 
-    def setLPObjFunc(self, objfunc):
+    def set_lp_obj_func(self, objfunc):
         """Set objective function."""
         if len(objfunc) != self.colsize:
             raise ValueError(
