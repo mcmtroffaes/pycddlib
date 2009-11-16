@@ -431,7 +431,7 @@ cdef class Matrix:
             raise ValueError(
                 "cannot append because column sizes differ")
 
-    def removeRow(self, dd_rowrange rownum):
+    def remove_row(self, dd_rowrange rownum):
         """Remove a row. Raises ValueError on failure."""
         # remove the row
         success = dd_MatrixRowRemove(&self.thisptr, rownum)
