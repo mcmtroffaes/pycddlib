@@ -17,7 +17,7 @@ end
 >>> mat1.colsize
 2
 >>> mat2 = mat1.copy()
->>> mat1.appendRows([[5,6]])
+>>> mat1.append_rows([[5,6]])
 >>> mat1.rowsize
 3
 >>> print mat1
@@ -414,7 +414,7 @@ cdef class Matrix:
         # return the copy
         return mat
 
-    def appendRows(self, rows):
+    def append_rows(self, rows):
         """Append rows to self (this corresponds to the dd_MatrixAppendTo
         function in cdd; to emulate the effect of dd_MatrixAppend, first call
         self.copy and then call append on the copy).
