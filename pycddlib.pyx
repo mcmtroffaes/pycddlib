@@ -331,7 +331,7 @@ cdef extern from "cdd.h":
     cdef void dd_WriteLP(FILE *f, dd_LPPtr lp)
     cdef void dd_WriteLPResult(FILE *f, dd_LPPtr lp, dd_ErrorType err)
 
-cdef _raiseError(dd_ErrorType error, msg):
+cdef _raise_error(dd_ErrorType error, msg):
     """Convert error into string and raise it."""
     cdef FILE *pfile
     # open file for writing the matrix data
@@ -516,7 +516,7 @@ cdef class LinProg:
         if self.thisptr == NULL or error != dd_NoError:
             if self.thisptr != NULL:
                 dd_FreeLPData(self.thisptr)
-            _raiseError(error, "failed to load linear program")
+            _raise_error(error, "failed to load linear program")
         # debug
         #dd_WriteLP(stdout, self.thisptr)
 
@@ -533,7 +533,7 @@ cdef class LinProg:
         error = ERR_NO_ERROR
         dd_LPSolve(self.thisptr, solver, &error)
         if error != dd_NoError:
-            _raiseError(error, "failed to solve linear program")
+            _raise_error(error, "failed to solve linear program")
 
 # module initialization code comes here
 # initialize module constants
