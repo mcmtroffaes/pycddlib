@@ -60,11 +60,11 @@ maximize
 >>> lp.solve()
 >>> lp.status
 1
->>> print("%6.3f" % lp.optValue)
+>>> print("%6.3f" % lp.opt_value)
  3.667
->>> print(["%6.3f" % val for val in lp.primalSolution])
+>>> print(["%6.3f" % val for val in lp.primal_solution])
 [' 0.333', ' 0.667']
->>> print(["%6.3f" % val for val in lp.dualSolution])
+>>> print(["%6.3f" % val for val in lp.dual_solution])
 [' 1.500', ' 2.500']
 """
 
@@ -473,17 +473,17 @@ cdef class LinProg:
         def __get__(self):
             return self.thisptr.LPS
 
-    property optValue:
+    property opt_value:
         def __get__(self):
             return dd_get_d(self.thisptr.optvalue)
 
-    property primalSolution:
+    property primal_solution:
         def __get__(self):
             cdef int colindex
             return [dd_get_d(self.thisptr.sol[colindex])
                     for 1 <= colindex < self.thisptr.d]
 
-    property dualSolution:
+    property dual_solution:
         def __get__(self):
             cdef int colindex
             return [dd_get_d(self.thisptr.dsol[colindex])
