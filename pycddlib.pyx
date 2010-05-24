@@ -16,6 +16,14 @@ end
 2
 >>> mat1.colsize
 2
+>>> print(mat1[0])
+[1.0, 2.0]
+>>> print(mat1[1])
+[3.0, 4.0]
+>>> print(mat1[2]) # doctest: +ELLIPSIS
+Traceback (most recent call last):
+  ...
+IndexError: row index out of range
 >>> mat2 = mat1.copy()
 >>> mat1.append_rows([[5,6]])
 >>> mat1.rowsize
@@ -28,6 +36,12 @@ begin
   5  6
 end
 <BLANKLINE>
+>>> print(mat1[0])
+[1.0, 2.0]
+>>> print(mat1[1])
+[3.0, 4.0]
+>>> print(mat1[2])
+[5.0, 6.0]
 >>> print mat2
 begin
  2 2 real
@@ -439,6 +453,13 @@ cdef class Matrix:
         if success != 1:
             raise ValueError(
                 "cannot remove row %i" % rownum)
+
+    def __getitem__(self, dd_rowrange rownum):
+        """Return a given row of the matrix."""
+        if rownum < 0 or rownum >= self.thisptr.rowsize:
+            raise IndexError("row index out of range")
+        return [dd_get_d(self.thisptr.matrix[rownum][j])
+                for 0 <= j < self.thisptr.colsize]
 
     def set_rep_type(self, reptype):
         """Set type of representation (use the REP_* constants)."""
