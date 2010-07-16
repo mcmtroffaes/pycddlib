@@ -287,6 +287,34 @@ LPSTATUS_DUALUNBOUNDED         = dd_DualUnbounded
 # structures
 
 cdef extern from "cdd.h":
+
+    # forward, pointer, and alias declarations
+    ctypedef struct dd_raydata
+    ctypedef dd_raydata *dd_RayPtr
+    ctypedef struct dd_adjacencydata
+    ctypedef dd_adjacencydata *dd_AdjacencyPtr
+    ctypedef dd_adjacencydata dd_AdjacencyType
+    ctypedef struct dd_lpdata
+    ctypedef dd_lpdata *dd_LPPtr
+    ctypedef struct matrixdata
+    ctypedef matrixdata *dd_MatrixPtr
+    ctypedef struct dd_polyhedradata
+    ctypedef dd_polyhedradata *dd_PolyhedraPtr
+    ctypedef struct dd_conedata
+    ctypedef dd_conedata *dd_ConePtr
+
+    ctypedef struct dd_raydata:
+        mytype *Ray
+        dd_rowset ZeroSet
+        dd_rowrange FirstInfeasIndex
+        dd_boolean feasible
+        mytype ARay
+        dd_RayPtr Next
+
+    ctypedef struct dd_adjacencydata:
+        dd_RayPtr Ray1, Ray2
+        dd_AdjacencyPtr Next
+
     ctypedef struct dd_lpdata:
         dd_LPObjectiveType objective
         dd_LPSolverType solver
@@ -300,10 +328,27 @@ cdef extern from "cdd.h":
         dd_NumberType numbtype
         dd_rowrange eqnumber # number of equalities
         dd_rowset equalityset
+        dd_boolean redcheck_extensive
+        dd_rowrange ired
+        dd_rowset redset_extra
+        dd_rowset redset_accum
+        dd_rowset posset_extra
+        dd_boolean lexicopivot
         dd_LPStatusType LPS
+        dd_rowrange m_alloc
+        dd_colrange d_alloc
         mytype optvalue
         dd_Arow sol
         dd_Arow dsol
+        dd_colindex nbindex
+        dd_rowrange re
+        dd_colrange se
+        long pivots[5]
+        long total_pivots
+        int use_given_basis
+        dd_colindex given_nbindex
+        #time_t starttime
+        #time_t endtime
 
     ctypedef struct matrixdata:
         dd_rowrange rowsize
@@ -315,8 +360,63 @@ cdef extern from "cdd.h":
         dd_LPObjectiveType objective
         dd_Arow rowvec
 
-    ctypedef matrixdata *dd_MatrixPtr
-    ctypedef dd_lpdata *dd_LPPtr
+    ctypedef struct dd_polyhedradata:
+        dd_RepresentationType representation
+        dd_boolean homogeneous
+        dd_colrange d
+        dd_rowrange m
+        dd_Amatrix A
+        dd_NumberType numbtype
+        dd_ConePtr child
+        dd_rowrange m_alloc
+        dd_colrange d_alloc
+        dd_Arow c
+        dd_rowflag EqualityIndex
+        dd_boolean IsEmpty
+        dd_boolean NondegAssumed
+        dd_boolean InitBasisAtBottom
+        dd_boolean RestrictedEnumeration
+        dd_boolean RelaxedEnumeration
+        dd_rowrange m1
+        dd_boolean AincGenerated
+        dd_colrange ldim
+        dd_bigrange n
+        dd_Aincidence Ainc
+        dd_rowset Ared
+        dd_rowset Adom
+
+    ctypedef struct dd_conedata:
+        dd_RepresentationType representation
+        dd_rowrange m
+        dd_colrange d
+        dd_Amatrix A
+        dd_NumberType numbtype
+        dd_PolyhedraPtr parent
+        dd_rowrange m_alloc
+        dd_colrange d_alloc
+        dd_rowrange Iteration
+        dd_RowOrderType HalfspaceOrder
+        dd_RayPtr FirstRay, LastRay, ArtificialRay
+        dd_RayPtr PosHead, ZeroHead, NegHead, PosLast, ZeroLast, NegLast
+        dd_AdjacencyType **Edges
+        unsigned int rseed
+        dd_boolean ColReduced
+        dd_bigrange LinearityDim 
+        dd_colrange d_orig
+        dd_colindex newcol
+        dd_colindex InitialRayIndex
+        dd_rowindex OrderVector
+        dd_boolean RecomputeRowOrder
+        dd_boolean PreOrderedRun
+        dd_rowset GroundSet, EqualitySet, NonequalitySet, AddedHalfspaces, WeaklyAddedHalfspaces, InitialHalfspaces
+        long RayCount, FeasibleRayCount, WeaklyFeasibleRayCount, TotalRayCount, ZeroRayCount
+        long EdgeCount, TotalEdgeCount
+        long count_int, count_int_good, count_int_bad
+        dd_Bmatrix B
+        dd_Bmatrix Bsave
+        dd_ErrorType Error
+        dd_CompStatusType CompStatus
+        #time_t starttime, endtime # ignored for now, as time_t has no standard implementation
 
     # functions
     # not everything is defined here, just most common operations
