@@ -80,6 +80,34 @@ maximize
 [' 0.333', ' 0.667']
 >>> print(["%6.3f" % val for val in lp.dual_solution])
 [' 1.500', ' 2.500']
+
+Polyhedra
+=========
+
+>>> import pycddlib
+>>> poly = pycddlib.Polyhedra([[2,-1,-1,0],[0,1,0,0],[0,0,1,0]], REP_INEQUALITY)
+>>> print(poly)
+begin
+ 3 4 real
+  2 -1 -1  0
+  0  1  0  0
+  0  0  1  0
+end
+<BLANKLINE>
+>>> ext = poly.get_generators()
+>>> print(ext.linset)
+set([4])
+>>> print(ext)
+V-representation
+linearity 1  4
+begin
+ 4 4 real
+  1  0  0  0
+  1  2  0  0
+  1  0  2  0
+  0  0  0  1
+end
+<BLANKLINE>
 """
 
 # pycddlib is a Python wrapper for Komei Fukuda's cddlib
@@ -122,6 +150,26 @@ cdef extern from "Python.h":
 # set operations (need to include this before cdd.h to avoid compile errors)
 cdef extern from "setoper.h":
     ctypedef unsigned long *set_type
+    cdef unsigned long set_blocks(long len)
+    cdef void set_initialize(set_type *setp,long len)
+    cdef void set_free(set_type set)
+    cdef void set_emptyset(set_type set)
+    cdef void set_copy(set_type setcopy,set_type set)
+    cdef void set_addelem(set_type set, long elem)
+    cdef void set_delelem(set_type set, long elem)
+    cdef void set_int(set_type set,set_type set1,set_type set2)
+    cdef void set_uni(set_type set,set_type set1,set_type set2)
+    cdef void set_diff(set_type set,set_type set1,set_type set2)
+    cdef void set_compl(set_type set,set_type set1)
+    cdef int set_subset(set_type set1,set_type set2)
+    cdef int set_member(long elem, set_type set)
+    cdef long set_card(set_type set)
+    cdef long set_groundsize(set_type set)
+    cdef void set_write(set_type set)
+    cdef void set_fwrite(FILE *f,set_type set)
+    cdef void set_fwrite_compl(FILE *f,set_type set)
+    cdef void set_binwrite(set_type set)
+    cdef void set_fbinwrite(FILE *f,set_type set)
 
 # now include cdd.h declarations for main implementation
 cdef extern from "cdd.h":
@@ -563,6 +611,27 @@ cdef _raise_error(dd_ErrorType error, msg):
     # raise it
     raise RuntimeError(msg + "\n" + cddmsg)
 
+cdef _make_matrix(dd_MatrixPtr matptr):
+    """Create matrix from given pointer."""
+    # we must "cdef Matrix mat" because otherwise pyrex will not
+    # recognize mat.thisptr as a C pointer
+    cdef Matrix mat
+    if matptr == NULL:
+        raise ValueError("failed to make matrix")
+    mat = Matrix([[0]])
+    dd_FreeMatrix(mat.thisptr)
+    mat.thisptr = matptr
+    return mat
+
+cdef _make_set(set_type set_):
+    """Create Python set from given set_type."""
+    cdef int elem
+    result = set()
+    for elem from 1 <= elem <= set_[0]:
+        if set_member(elem, set_):
+            result.add(elem)
+    return result
+
 # matrix class
 cdef class Matrix:
     # pointer cointaining the matrix data
@@ -575,6 +644,22 @@ cdef class Matrix:
     property colsize:
         def __get__(self):
             return self.thisptr.colsize
+
+    property linset:
+        def __get__(self):
+            return _make_set(self.thisptr.linset)
+
+    property representation:
+        def __get__(self):
+            return self.thisptr.representation
+        def __set__(self, dd_RepresentationType value):
+            self.thisptr.representation = value
+
+    property objective:
+        def __get__(self):
+            return self.thisptr.objective
+        def __set__(self, dd_LPObjectiveType value):
+            self.thisptr.objective = value
 
     def __str__(self):
         """Print the matrix data."""
@@ -619,17 +704,7 @@ cdef class Matrix:
 
     def copy(self):
         """Make a copy of the matrix and return that copy."""
-        # this hack fools pyrex into creating a Matrix object with NULL
-        # thisptr; we must "cdef Matrix mat" because otherwise pyrex will not
-        # recognize mat.thisptr as a C pointer
-        cdef Matrix mat
-        mat = Matrix([[0]])
-        dd_FreeMatrix(mat.thisptr)
-        mat.thisptr = NULL
-        # now assign to a copy
-        mat.thisptr = dd_CopyMatrix(self.thisptr)
-        # return the copy
-        return mat
+        return _make_matrix(dd_CopyMatrix(self.thisptr))
 
     def append_rows(self, rows):
         """Append rows to self (this corresponds to the dd_MatrixAppendTo
@@ -758,6 +833,62 @@ cdef class LinProg:
         dd_LPSolve(self.thisptr, solver, &error)
         if error != dd_NoError:
             _raise_error(error, "failed to solve linear program")
+
+cdef class Polyhedra:
+    # pointer to polyhedra
+    cdef dd_PolyhedraPtr thisptr
+
+    property representation:
+        def __get__(self):
+            return self.thisptr.representation
+        def __set__(self, dd_RepresentationType value):
+            self.thisptr.representation = value
+
+    def __str__(self):
+        """Print the polyhedra data."""
+        cdef FILE *pfile
+        # open file for writing the data
+        tmp = tempfile.TemporaryFile()
+        pfile = PyFile_AsFile(tmp)
+        dd_WritePolyFile(pfile, self.thisptr)
+        # read the file into a buffer
+        tmp.seek(0)
+        result = tmp.read(-1)
+        # close the file
+        tmp.close()
+        return result
+
+    def __cinit__(self, rows, dd_RepresentationType representation):
+        """Initialize polyhedra from given matrix."""
+        cdef dd_ErrorType error
+        cdef Matrix mat
+
+        mat = Matrix(rows)
+        mat.representation = representation
+        error = dd_NoError
+        self.thisptr = NULL
+        # read matrix
+        self.thisptr = dd_DDMatrix2Poly(mat.thisptr, &error)
+        if self.thisptr == NULL or error != dd_NoError:
+            if self.thisptr != NULL:
+                dd_FreePolyhedra(self.thisptr)
+            _raise_error(error, "failed to load polyhedra")
+        # debug
+        #dd_WritePolyFile(stdout, self.thisptr)
+
+    def __dealloc__(self):
+        """Deallocate matrix."""
+        if self.thisptr != NULL:
+            dd_FreePolyhedra(self.thisptr)
+        self.thisptr = NULL
+
+    def get_inequalities(self):
+        """Return matrix containing all inequalities."""
+        return _make_matrix(dd_CopyInequalities(self.thisptr))
+
+    def get_generators(self):
+        """Return matrix containing all generators."""
+        return _make_matrix(dd_CopyGenerators(self.thisptr))
 
 # module initialization code comes here
 # initialize module constants
