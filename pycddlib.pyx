@@ -294,10 +294,18 @@ cdef extern from "cdd.h":
     ctypedef struct dd_adjacencydata
     ctypedef dd_adjacencydata *dd_AdjacencyPtr
     ctypedef dd_adjacencydata dd_AdjacencyType
+    ctypedef struct dd_lpsolution
+    ctypedef dd_lpsolution *dd_LPSolutionPtr
     ctypedef struct dd_lpdata
     ctypedef dd_lpdata *dd_LPPtr
     ctypedef struct matrixdata
     ctypedef matrixdata *dd_MatrixPtr
+    ctypedef struct dd_setfamily
+    ctypedef dd_setfamily *dd_SetFamilyPtr
+    ctypedef struct dd_nodedata
+    ctypedef dd_nodedata *dd_NodePtr
+    ctypedef struct dd_graphdata
+    ctypedef dd_graphdata *dd_GraphPtr
     ctypedef struct dd_polyhedradata
     ctypedef dd_polyhedradata *dd_PolyhedraPtr
     ctypedef struct dd_conedata
@@ -314,6 +322,23 @@ cdef extern from "cdd.h":
     ctypedef struct dd_adjacencydata:
         dd_RayPtr Ray1, Ray2
         dd_AdjacencyPtr Next
+
+    ctypedef struct dd_lpsolution:
+        #dd_DataFileType filename
+        dd_LPObjectiveType objective
+        dd_LPSolverType solver
+        dd_rowrange m
+        dd_colrange d
+        dd_NumberType numbtype
+        dd_LPStatusType LPS
+        mytype optvalue
+        dd_Arow sol
+        dd_Arow dsol
+        dd_colindex nbindex
+        dd_rowrange re
+        dd_colrange se
+        long pivots[5]
+        long total_pivots
 
     ctypedef struct dd_lpdata:
         dd_LPObjectiveType objective
@@ -359,6 +384,19 @@ cdef extern from "cdd.h":
         dd_Amatrix matrix
         dd_LPObjectiveType objective
         dd_Arow rowvec
+
+    ctypedef struct dd_setfamily:
+        dd_bigrange famsize
+        dd_bigrange setsize
+        dd_SetVector set
+
+    ctypedef struct dd_nodedata:
+        dd_bigrange key
+        dd_NodePtr next
+
+    ctypedef struct dd_graphdata:
+        dd_bigrange vsize
+        dd_NodePtr *adjlist
 
     ctypedef struct dd_polyhedradata:
         dd_RepresentationType representation
@@ -432,12 +470,77 @@ cdef extern from "cdd.h":
 
     cdef void dd_WriteErrorMessages(FILE *, dd_ErrorType)
 
-    cdef dd_MatrixPtr dd_CreateMatrix(dd_rowrange, dd_colrange)
+    cdef void dd_InitializeArow(dd_colrange,dd_Arow *)
+    cdef void dd_InitializeAmatrix(dd_rowrange,dd_colrange,dd_Amatrix *)
+    cdef void dd_InitializeBmatrix(dd_colrange, dd_Bmatrix *)
+    cdef dd_SetFamilyPtr dd_CreateSetFamily(dd_bigrange,dd_bigrange)
+    cdef void dd_FreeSetFamily(dd_SetFamilyPtr)
+    cdef dd_MatrixPtr dd_CreateMatrix(dd_rowrange,dd_colrange)
+    cdef void dd_FreeAmatrix(dd_rowrange,dd_colrange,dd_Amatrix)
+    cdef void dd_FreeArow(dd_colrange, dd_Arow)
+    cdef void dd_FreeBmatrix(dd_colrange,dd_Bmatrix)
+    cdef void dd_FreeDDMemory(dd_PolyhedraPtr)
+    cdef void dd_FreePolyhedra(dd_PolyhedraPtr)
     cdef void dd_FreeMatrix(dd_MatrixPtr)
+    cdef void dd_SetToIdentity(dd_colrange, dd_Bmatrix)
+
+    cdef dd_MatrixPtr dd_CopyInput(dd_PolyhedraPtr)
+    cdef dd_MatrixPtr dd_CopyOutput(dd_PolyhedraPtr)
+    cdef dd_MatrixPtr dd_CopyInequalities(dd_PolyhedraPtr)
+    cdef dd_MatrixPtr dd_CopyGenerators(dd_PolyhedraPtr)
+    cdef dd_SetFamilyPtr dd_CopyIncidence(dd_PolyhedraPtr)
+    cdef dd_SetFamilyPtr dd_CopyAdjacency(dd_PolyhedraPtr)
+    cdef dd_SetFamilyPtr dd_CopyInputIncidence(dd_PolyhedraPtr)
+    cdef dd_SetFamilyPtr dd_CopyInputAdjacency(dd_PolyhedraPtr)
+    cdef dd_boolean dd_DDFile2File(char *ifile, char *ofile, dd_ErrorType *err)
+    cdef dd_boolean dd_DDInputAppend(dd_PolyhedraPtr*, dd_MatrixPtr, dd_ErrorType*)
+    cdef dd_MatrixPtr dd_PolyFile2Matrix(FILE *f, dd_ErrorType *)
+    
+    cdef dd_PolyhedraPtr dd_DDMatrix2Poly(dd_MatrixPtr, dd_ErrorType *)
+    cdef dd_PolyhedraPtr dd_DDMatrix2Poly2(dd_MatrixPtr, dd_RowOrderType, dd_ErrorType *)
+    cdef dd_boolean dd_Redundant(dd_MatrixPtr, dd_rowrange, dd_Arow, dd_ErrorType *)
+    cdef dd_rowset dd_RedundantRows(dd_MatrixPtr, dd_ErrorType *)
+    cdef dd_boolean dd_SRedundant(dd_MatrixPtr, dd_rowrange, dd_Arow, dd_ErrorType *)
+    cdef dd_rowset dd_SRedundantRows(dd_MatrixPtr, dd_ErrorType *)
+    cdef dd_rowset dd_RedundantRowsViaShooting(dd_MatrixPtr, dd_ErrorType *)
+    cdef dd_rowrange dd_RayShooting(dd_MatrixPtr, dd_Arow intpt, dd_Arow direction)
+    cdef dd_boolean dd_ImplicitLinearity(dd_MatrixPtr, dd_rowrange, dd_Arow, dd_ErrorType *)
+    cdef dd_rowset dd_ImplicitLinearityRows(dd_MatrixPtr, dd_ErrorType *)
+    cdef int dd_FreeOfImplicitLinearity(dd_MatrixPtr, dd_Arow, dd_rowset *, dd_ErrorType *)
+    cdef dd_boolean dd_MatrixCanonicalizeLinearity(dd_MatrixPtr *, dd_rowset *,dd_rowindex *, dd_ErrorType *)
+    cdef dd_boolean dd_MatrixCanonicalize(dd_MatrixPtr *, dd_rowset *, dd_rowset *, dd_rowindex *, dd_ErrorType *)
+    cdef dd_boolean dd_MatrixRedundancyRemove(dd_MatrixPtr *M, dd_rowset *redset,dd_rowindex *newpos, dd_ErrorType *)
+    cdef dd_boolean dd_FindRelativeInterior(dd_MatrixPtr, dd_rowset *, dd_rowset *, dd_LPSolutionPtr *, dd_ErrorType *)
+    cdef dd_boolean dd_ExistsRestrictedFace(dd_MatrixPtr, dd_rowset, dd_rowset, dd_ErrorType *)
+    cdef dd_boolean dd_ExistsRestrictedFace2(dd_MatrixPtr, dd_rowset, dd_rowset, dd_LPSolutionPtr *, dd_ErrorType *)
+    
+    cdef dd_SetFamilyPtr dd_Matrix2Adjacency(dd_MatrixPtr, dd_ErrorType *)
+    cdef dd_SetFamilyPtr dd_Matrix2WeakAdjacency(dd_MatrixPtr, dd_ErrorType *)
+    cdef long dd_MatrixRank(dd_MatrixPtr, dd_rowset, dd_colset, dd_rowset *, dd_colset *)
+
     cdef dd_MatrixPtr dd_CopyMatrix(dd_MatrixPtr)
     cdef int dd_MatrixAppendTo(dd_MatrixPtr*, dd_MatrixPtr)
     cdef int dd_MatrixRowRemove(dd_MatrixPtr *M, dd_rowrange r)
+
+    cdef void dd_WriteAmatrix(FILE *, dd_Amatrix, dd_rowrange, dd_colrange)
+    cdef void dd_WriteArow(FILE *f, dd_Arow a, dd_colrange)
+    cdef void dd_WriteBmatrix(FILE *, dd_colrange, dd_Bmatrix T)
     cdef void dd_WriteMatrix(FILE *, dd_MatrixPtr)
+    cdef void dd_MatrixIntegerFilter(dd_MatrixPtr)
+    cdef void dd_WriteReal(FILE *, mytype)
+    cdef void dd_WriteNumber(FILE *f, mytype x)
+    cdef void dd_WritePolyFile(FILE *, dd_PolyhedraPtr)
+    cdef void dd_WriteRunningMode(FILE *, dd_PolyhedraPtr)
+    cdef void dd_WriteErrorMessages(FILE *, dd_ErrorType)
+    cdef void dd_WriteSetFamily(FILE *, dd_SetFamilyPtr)
+    cdef void dd_WriteSetFamilyCompressed(FILE *, dd_SetFamilyPtr)
+    cdef void dd_WriteProgramDescription(FILE *)
+    cdef void dd_WriteDDTimes(FILE *, dd_PolyhedraPtr)
+    #cdef void dd_WriteTimes(FILE *, time_t, time_t)
+    cdef void dd_WriteIncidence(FILE *, dd_PolyhedraPtr)
+    cdef void dd_WriteAdjacency(FILE *, dd_PolyhedraPtr)
+    cdef void dd_WriteInputAdjacency(FILE *, dd_PolyhedraPtr)
+    cdef void dd_WriteInputIncidence(FILE *, dd_PolyhedraPtr)
 
     cdef dd_LPPtr dd_Matrix2LP(dd_MatrixPtr, dd_ErrorType *)
     cdef dd_boolean dd_LPSolve(dd_LPPtr, dd_LPSolverType, dd_ErrorType *)
