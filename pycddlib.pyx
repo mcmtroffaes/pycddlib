@@ -287,16 +287,6 @@ LPSTATUS_DUALUNBOUNDED         = dd_DualUnbounded
 # structures
 
 cdef extern from "cdd.h":
-    ctypedef struct matrixdata:
-        dd_rowrange rowsize
-        dd_rowset linset
-        dd_colrange colsize
-        dd_RepresentationType representation
-        dd_NumberType numbtype
-        dd_Amatrix matrix
-        dd_LPObjectiveType objective
-        dd_Arow rowvec
-
     ctypedef struct dd_lpdata:
         dd_LPObjectiveType objective
         dd_LPSolverType solver
@@ -314,6 +304,16 @@ cdef extern from "cdd.h":
         mytype optvalue
         dd_Arow sol
         dd_Arow dsol
+
+    ctypedef struct matrixdata:
+        dd_rowrange rowsize
+        dd_rowset linset
+        dd_colrange colsize
+        dd_RepresentationType representation
+        dd_NumberType numbtype
+        dd_Amatrix matrix
+        dd_LPObjectiveType objective
+        dd_Arow rowvec
 
     ctypedef matrixdata *dd_MatrixPtr
     ctypedef dd_lpdata *dd_LPPtr
