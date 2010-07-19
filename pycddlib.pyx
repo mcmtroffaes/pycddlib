@@ -25,7 +25,7 @@ Traceback (most recent call last):
   ...
 IndexError: row index out of range
 >>> mat2 = mat1.copy()
->>> mat1.append_rows([[5,6]])
+>>> mat1.extend([[5,6]])
 >>> mat1.rowsize
 3
 >>> print mat1
@@ -98,7 +98,7 @@ end
 <BLANKLINE>
 >>> ext = poly.get_generators()
 >>> print(ext.linset)
-frozenset([4])
+frozenset([3])
 >>> print(ext)
 V-representation
 linearity 1  4
@@ -110,7 +110,7 @@ begin
   0  0  0  1
 end
 <BLANKLINE>
->>> ext.linset = set([1, 3])
+>>> ext.linset = set([0, 2])
 >>> print(ext)
 V-representation
 linearity 2  1 3
@@ -643,7 +643,7 @@ cdef _make_matrix(dd_MatrixPtr matptr):
 cdef _get_set(set_type set_):
     """Create Python frozenset from given set_type."""
     cdef long elem
-    return frozenset([elem
+    return frozenset([elem - 1
                       for elem from 1 <= elem <= set_[0]
                       if set_member(elem, set_)])
 
@@ -651,7 +651,7 @@ cdef _set_set(set_type set_, pset):
     """Set elements of set_type by elements from Python set."""
     cdef long elem
     for elem from 1 <= elem <= set_[0]:
-        if elem in pset:
+        if elem - 1 in pset:
             set_addelem(set_, elem)
         else:
             set_delelem(set_, elem)
@@ -755,16 +755,19 @@ cdef class Matrix:
         """Make a copy of the matrix and return that copy."""
         return _make_matrix(dd_CopyMatrix(self.thisptr))
 
-    def append_rows(self, rows):
+    def extend(self, rows, linear=False):
         """Append rows to self (this corresponds to the dd_MatrixAppendTo
         function in cdd; to emulate the effect of dd_MatrixAppend, first call
-        self.copy and then call append on the copy).
+        copy and then call extend on the copy).
 
         The column size must be equal in the two input matrices. It
         raises a ValueError if the input rows are not appropriate."""
         # create matrix with given rows
         cdef Matrix other
         other = Matrix(rows)
+        if linear:
+            # set all constraints as linear
+            set_compl(other.thisptr.linset, other.thisptr.linset)
         # call dd_AppendToMatrix
         success = dd_MatrixAppendTo(&self.thisptr, other.thisptr)
         # check result
