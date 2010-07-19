@@ -91,7 +91,9 @@ Polyhedra
 =========
 
 >>> import pycddlib
->>> poly = pycddlib.Polyhedra([[2,-1,-1,0],[0,1,0,0],[0,0,1,0]], REP_INEQUALITY)
+>>> mat = pycddlib.Matrix([[2,-1,-1,0],[0,1,0,0],[0,0,1,0]])
+>>> mat.representation = REP_INEQUALITY
+>>> poly = pycddlib.Polyhedra(mat)
 >>> print(poly)
 begin
  3 4 real
@@ -909,13 +911,9 @@ cdef class Polyhedra:
         tmp.close()
         return result
 
-    def __cinit__(self, rows, dd_RepresentationType representation):
+    def __cinit__(self, Matrix mat):
         """Initialize polyhedra from given matrix."""
         cdef dd_ErrorType error
-        cdef Matrix mat
-
-        mat = Matrix(rows)
-        mat.representation = representation
         error = dd_NoError
         self.thisptr = NULL
         # read matrix
