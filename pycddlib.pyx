@@ -157,6 +157,9 @@ cdef extern from "stdio.h":
     cdef int fseek(FILE *stream, long int offset, int origin)
     cdef long int ftell(FILE *stream)
 
+cdef extern from "time.h":
+    ctypedef long time_t
+
 # get object as file
 cdef extern from "Python.h":
     FILE *PyFile_AsFile(object)
@@ -434,8 +437,8 @@ cdef extern from "cdd.h":
         long total_pivots
         int use_given_basis
         dd_colindex given_nbindex
-        #time_t starttime
-        #time_t endtime
+        time_t starttime
+        time_t endtime
 
     ctypedef struct matrixdata:
         dd_rowrange rowsize
@@ -516,7 +519,7 @@ cdef extern from "cdd.h":
         dd_Bmatrix Bsave
         dd_ErrorType Error
         dd_CompStatusType CompStatus
-        #time_t starttime, endtime # ignored for now, as time_t has no standard implementation
+        time_t starttime, endtime
 
     # functions
     # not everything is defined here, just most common operations
@@ -598,7 +601,7 @@ cdef extern from "cdd.h":
     cdef void dd_WriteSetFamilyCompressed(FILE *, dd_SetFamilyPtr)
     cdef void dd_WriteProgramDescription(FILE *)
     cdef void dd_WriteDDTimes(FILE *, dd_PolyhedraPtr)
-    #cdef void dd_WriteTimes(FILE *, time_t, time_t)
+    cdef void dd_WriteTimes(FILE *, time_t, time_t)
     cdef void dd_WriteIncidence(FILE *, dd_PolyhedraPtr)
     cdef void dd_WriteAdjacency(FILE *, dd_PolyhedraPtr)
     cdef void dd_WriteInputAdjacency(FILE *, dd_PolyhedraPtr)
