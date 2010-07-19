@@ -17,9 +17,9 @@ end
 >>> mat1.colsize
 2
 >>> print(mat1[0])
-[1.0, 2.0]
+(1.0, 2.0)
 >>> print(mat1[1])
-[3.0, 4.0]
+(3.0, 4.0)
 >>> print(mat1[2]) # doctest: +ELLIPSIS
 Traceback (most recent call last):
   ...
@@ -37,11 +37,11 @@ begin
 end
 <BLANKLINE>
 >>> print(mat1[0])
-[1.0, 2.0]
+(1.0, 2.0)
 >>> print(mat1[1])
-[3.0, 4.0]
+(3.0, 4.0)
 >>> print(mat1[2])
-[5.0, 6.0]
+(5.0, 6.0)
 >>> print mat2
 begin
  2 2 real
@@ -57,8 +57,8 @@ This is the testlp2.c example that comes with cddlib.
 
 >>> import pycddlib
 >>> mat = pycddlib.Matrix([[4.0/3.0,-2,-1],[2.0/3.0,0,-1],[0,1,0],[0,0,1]])
->>> mat.set_lp_obj_type(LPOBJ_MAX)
->>> mat.set_lp_obj_func([0,3,4])
+>>> mat.lp_obj_type = LPOBJ_MAX
+>>> mat.lp_obj_func = (0,3,4)
 >>> print mat
 begin
  4 3 real
@@ -70,6 +70,8 @@ end
 maximize
   0  3  4
 <BLANKLINE>
+>>> print(mat.lp_obj_func)
+(0.0, 3.0, 4.0)
 >>> lp = pycddlib.LinProg(mat)
 >>> lp.solve()
 >>> lp.status
@@ -96,10 +98,22 @@ end
 <BLANKLINE>
 >>> ext = poly.get_generators()
 >>> print(ext.linset)
-set([4])
+frozenset([4])
 >>> print(ext)
 V-representation
 linearity 1  4
+begin
+ 4 4 real
+  1  0  0  0
+  1  2  0  0
+  1  0  2  0
+  0  0  0  1
+end
+<BLANKLINE>
+>>> ext.linset = set([1, 3])
+>>> print(ext)
+V-representation
+linearity 2  1 3
 begin
  4 4 real
   1  0  0  0
@@ -623,18 +637,25 @@ cdef _make_matrix(dd_MatrixPtr matptr):
     mat.thisptr = matptr
     return mat
 
-cdef _make_set(set_type set_):
-    """Create Python set from given set_type."""
-    cdef int elem
-    result = set()
+cdef _get_set(set_type set_):
+    """Create Python frozenset from given set_type."""
+    cdef long elem
+    return frozenset([elem
+                      for elem from 1 <= elem <= set_[0]
+                      if set_member(elem, set_)])
+
+cdef _set_set(set_type set_, pset):
+    """Set elements of set_type by elements from Python set."""
+    cdef long elem
     for elem from 1 <= elem <= set_[0]:
-        if set_member(elem, set_):
-            result.add(elem)
-    return result
+        if elem in pset:
+            set_addelem(set_, elem)
+        else:
+            set_delelem(set_, elem)
 
 # matrix class
 cdef class Matrix:
-    # pointer cointaining the matrix data
+    # pointer containing the matrix data
     cdef dd_MatrixPtr thisptr
 
     property rowsize:
@@ -646,20 +667,44 @@ cdef class Matrix:
             return self.thisptr.colsize
 
     property linset:
+        """Rows of linearity (generators of linearity space for
+        V-representation, and equations for H-representation).
+        """
         def __get__(self):
-            return _make_set(self.thisptr.linset)
+            return _get_set(self.thisptr.linset)
+        def __set__(self, value):
+            _set_set(self.thisptr.linset, value)
 
     property representation:
+        """Representation. Uses the REP_* constants: REP_INEQUALITY is
+        H-representation, REP_GENERATOR is V-representation.
+        """
         def __get__(self):
             return self.thisptr.representation
         def __set__(self, dd_RepresentationType value):
             self.thisptr.representation = value
 
-    property objective:
+    property lp_obj_type:
+        """Linear programming objective (maximize or minimize). Uses
+        the LPOBJ_* constants.
+        """
         def __get__(self):
             return self.thisptr.objective
         def __set__(self, dd_LPObjectiveType value):
             self.thisptr.objective = value
+
+    property lp_obj_func:
+        """Linear programming objective function."""
+        def __get__(self):
+            # return an immutable tuple to prohibit item assignment
+            return tuple([dd_get_d(self.thisptr.rowvec[colindex])
+                          for 0 <= colindex < self.thisptr.colsize])
+        def __set__(self, obj_func):
+            if len(obj_func) != self.colsize:
+                raise ValueError(
+                    "objective function does not match matrix column size")
+            for colindex, value in enumerate(obj_func):
+                dd_set_d(self.thisptr.rowvec[colindex], value)
 
     def __str__(self):
         """Print the matrix data."""
@@ -687,6 +732,7 @@ cdef class Matrix:
             numcols = 0
         # create new matrix
         self.thisptr = dd_CreateMatrix(numrows, numcols)
+        self.thisptr.numbtype = dd_Real
         # load data
         for rowindex, row in enumerate(rows):
             if len(row) != numcols:
@@ -723,7 +769,7 @@ cdef class Matrix:
             raise ValueError(
                 "cannot append because column sizes differ")
 
-    def remove_row(self, dd_rowrange rownum):
+    def __delitem__(self, dd_rowrange rownum):
         """Remove a row. Raises ValueError on failure."""
         # remove the row
         success = dd_MatrixRowRemove(&self.thisptr, rownum)
@@ -736,24 +782,9 @@ cdef class Matrix:
         """Return a given row of the matrix."""
         if rownum < 0 or rownum >= self.thisptr.rowsize:
             raise IndexError("row index out of range")
-        return [dd_get_d(self.thisptr.matrix[rownum][j])
-                for 0 <= j < self.thisptr.colsize]
-
-    def set_rep_type(self, reptype):
-        """Set type of representation (use the REP_* constants)."""
-        self.thisptr.representation = reptype
-
-    def set_lp_obj_type(self, objtype):
-        """Set linear programming objective type (use the LPOBJ_* constants)."""
-        self.thisptr.objective = objtype
-
-    def set_lp_obj_func(self, objfunc):
-        """Set objective function."""
-        if len(objfunc) != self.colsize:
-            raise ValueError(
-                "objective function does not match matrix column size")
-        for colindex, value in enumerate(objfunc):
-            dd_set_d(self.thisptr.rowvec[colindex], value)
+        # return an immutable tuple to prohibit item assignment
+        return tuple([dd_get_d(self.thisptr.matrix[rownum][j])
+                      for 0 <= j < self.thisptr.colsize])
 
 cdef class LinProg:
     """Solves a linear program."""
@@ -883,11 +914,15 @@ cdef class Polyhedra:
         self.thisptr = NULL
 
     def get_inequalities(self):
-        """Return matrix containing all inequalities."""
+        """Return matrix containing all inequalities
+        (i.e. H-representation).
+        """
         return _make_matrix(dd_CopyInequalities(self.thisptr))
 
     def get_generators(self):
-        """Return matrix containing all generators."""
+        """Return matrix containing all generators
+        (i.e. V-representation).
+        """
         return _make_matrix(dd_CopyGenerators(self.thisptr))
 
 # module initialization code comes here
