@@ -42,6 +42,10 @@ end
 (3.0, 4.0)
 >>> print(mat1[2])
 (5.0, 6.0)
+>>> mat1[1:3]
+[(3.0, 4.0), (5.0, 6.0)]
+>>> mat1[:-1]
+[(1.0, 2.0), (3.0, 4.0)]
 >>> print mat2
 begin
  2 2 real
@@ -665,6 +669,9 @@ cdef class Matrix:
         def __get__(self):
             return self.thisptr.rowsize
 
+    def __len__(self):
+        return self.thisptr.rowsize
+
     property colsize:
         def __get__(self):
             return self.thisptr.colsize
@@ -784,13 +791,20 @@ cdef class Matrix:
             raise ValueError(
                 "cannot remove row %i" % rownum)
 
-    def __getitem__(self, dd_rowrange rownum):
+    def __getitem__(self, item):
         """Return a given row of the matrix."""
-        if rownum < 0 or rownum >= self.thisptr.rowsize:
-            raise IndexError("row index out of range")
-        # return an immutable tuple to prohibit item assignment
-        return tuple([dd_get_d(self.thisptr.matrix[rownum][j])
-                      for 0 <= j < self.thisptr.colsize])
+        cdef dd_rowrange rownum
+        # check if we are slicing
+        if isinstance(item, slice):
+            indices = item.indices(len(self))
+            return [self.__getitem__(i) for i in xrange(*indices)]
+        else:
+            rownum = item
+            if rownum < 0 or rownum >= self.thisptr.rowsize:
+                raise IndexError("row index out of range")
+            # return an immutable tuple to prohibit item assignment
+            return tuple([dd_get_d(self.thisptr.matrix[rownum][j])
+                          for 0 <= j < self.thisptr.colsize])
 
 cdef class LinProg:
     """Solves a linear program."""
