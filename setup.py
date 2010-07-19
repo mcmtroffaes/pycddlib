@@ -58,7 +58,7 @@ import os
 
 doclines = __doc__.split("\n")
 
-cdd_dir = 'cddlib-094f/lib-src'
+cdd_dir = 'cddlib/lib-src'
 cdd_sources = [
     'cddcore.c',
     'cddio.c',
@@ -83,5 +83,5 @@ setup(
     platforms = "any",
     description = doclines[0],
     long_description = "\n".join(doclines[2:]),
-    url = "http://code.google.com/p/stip/",
+    url = "http://github.com/mcmtroffaes/pycddlib/",
     cmdclass = {'build_ext': build_ext})
