@@ -634,6 +634,11 @@ cdef _set_set(set_type set_, pset):
 cdef class Matrix:
     """A class for working with matrices, sets of linear constraints,
     and extreme points.
+
+    :param rows: The rows of the matrix.
+    :type rows: ``list`` of ``list`` of ``float``
+    :param linear: Whether to add the rows to the :attr:`lin_set` or not.
+    :type linear: ``bool``
     """
 
     # pointer containing the matrix data
@@ -782,18 +787,23 @@ cdef class Matrix:
             raise ValueError(
                 "cannot remove row %i" % rownum)
 
-    def __getitem__(self, item):
-        """Return a given row, or given slice of rows, of the matrix."""
+    def __getitem__(self, key):
+        """Return a row, or a slice of rows, of the matrix.
+
+        :param key: The row number, or slice of row numbers, to get.
+        :type key: ``int`` or ``slice``
+        :rtype: ``tuple`` of ``float``, or ``tuple`` of ``tuple`` of ``float``
+        """
         cdef dd_rowrange rownum
         cdef dd_rowrange j
         # check if we are slicing
-        if isinstance(item, slice):
-            indices = item.indices(len(self))
+        if isinstance(key, slice):
+            indices = key.indices(len(self))
             # XXX once generators are supported in cython, this should
             # return (self.__getitem__(i) for i in xrange(*indices))
             return tuple([self.__getitem__(i) for i in xrange(*indices)])
         else:
-            rownum = item
+            rownum = key
             if rownum < 0 or rownum >= self.thisptr.rowsize:
                 raise IndexError("row index out of range")
             # return an immutable tuple to prohibit item assignment

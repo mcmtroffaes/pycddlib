@@ -3,21 +3,12 @@ Matrix
 
 .. module:: pycddlib
 
-.. autoclass:: Matrix
+.. autoclass:: Matrix(self, rows, linear=False)
 
 Methods
 -------
 
-.. method:: Matrix.__init__(self, rows, linear=False)
-
-   Load matrix data from the *rows*.
-
-   :param rows: The rows of the matrix.
-   :type rows: ``list`` of ``list`` of ``float``
-   :param linear: Whether to add the rows to the :attr:`lin_set` or not.
-   :type linear: ``bool``
-
-.. automethod:: Matrix.__getitem__(self, item)
+.. automethod:: Matrix.__getitem__(self, key)
 
 .. method:: Matrix.__len__(self)
 
