@@ -1,13 +1,20 @@
-Polyhedra
-=========
+Polyhedron
+==========
 
 .. module:: pycddlib
 
-Class
------
+.. autoclass:: Polyhedron(self, mat)
 
-.. autoclass:: Polyhedra
-   :members:
+Methods
+-------
+
+.. automethod:: Polyhedron.get_inequalities(self)
+.. automethod:: Polyhedron.get_generators(self)
+
+Attributes
+----------
+
+.. autoattribute:: Polyhedron.rep_type
 
 Examples
 --------
@@ -17,7 +24,7 @@ This is the sampleh1.ine example that comes with cddlib.
 >>> import pycddlib
 >>> mat = pycddlib.Matrix([[2,-1,-1,0],[0,1,0,0],[0,0,1,0]])
 >>> mat.rep_type = pycddlib.RepType.INEQUALITY
->>> poly = pycddlib.Polyhedra(mat)
+>>> poly = pycddlib.Polyhedron(mat)
 >>> print(poly)
 begin
  3 4 real
@@ -56,7 +63,7 @@ begin
   1  0  1
 end
 <BLANKLINE>
->>> print(pycddlib.Polyhedra(mat).get_generators())
+>>> print(pycddlib.Polyhedron(mat).get_generators())
 V-representation
 begin
  4 3 real
@@ -82,7 +89,7 @@ begin
   7 -3  1
 end
 <BLANKLINE>
->>> print(pycddlib.Polyhedra(mat).get_generators())
+>>> print(pycddlib.Polyhedron(mat).get_generators())
 V-representation
 begin
  2 3 real

@@ -909,8 +909,12 @@ cdef class LinProg:
         if error != dd_NoError:
             _raise_error(error, "failed to solve linear program")
 
-cdef class Polyhedra:
-    """A class for converting between representations of a polyhedron."""
+cdef class Polyhedron:
+    """A class for converting between representations of a polyhedron.
+
+    :param mat: The matrix to load the polyhedron from.
+    :type mat: :class:`Matrix`
+    """
 
     # pointer to polyhedra
     cdef dd_PolyhedraPtr thisptr
@@ -971,13 +975,6 @@ cdef class Polyhedra:
         :rtype: :class:`Matrix`
         """
         return _make_matrix(dd_CopyGenerators(self.thisptr))
-
-cdef class Cone:
-    """Cone.
-
-    .. note:: Wrapper not implemented.
-    """
-    cdef dd_ConePtr thisptr
 
 # module initialization code comes here
 # initialize module constants
