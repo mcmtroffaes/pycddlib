@@ -43,9 +43,9 @@ end
 >>> print(mat1[2])
 (5.0, 6.0)
 >>> mat1[1:3]
-[(3.0, 4.0), (5.0, 6.0)]
+((3.0, 4.0), (5.0, 6.0))
 >>> mat1[:-1]
-[(1.0, 2.0), (3.0, 4.0)]
+((1.0, 2.0), (3.0, 4.0))
 >>> print mat2
 begin
  2 2 real
@@ -80,12 +80,12 @@ maximize
 >>> lp.solve()
 >>> lp.status
 1
->>> print("%6.3f" % lp.opt_value)
- 3.667
->>> print(["%6.3f" % val for val in lp.primal_solution])
-[' 0.333', ' 0.667']
->>> print(["%6.3f" % val for val in lp.dual_solution])
-[' 1.500', ' 2.500']
+>>> print("{0:.3f}".format(lp.opt_value))
+3.667
+>>> print(" ".join("{0:.3f}".format(val) for val in lp.primal_solution))
+0.333 0.667
+>>> print(" ".join("{0:.3f}".format(val) for val in lp.dual_solution))
+1.500 2.500
 
 Polyhedra
 =========
@@ -709,10 +709,13 @@ cdef class Matrix:
         """Linear programming objective function."""
         def __get__(self):
             # return an immutable tuple to prohibit item assignment
+            cdef int colindex
             return tuple([dd_get_d(self.thisptr.rowvec[colindex])
                           for 0 <= colindex < self.thisptr.colsize])
         def __set__(self, obj_func):
-            if len(obj_func) != self.colsize:
+            cdef int colindex
+            cdef double value
+            if len(obj_func) != self.thisptr.colsize:
                 raise ValueError(
                     "objective function does not match matrix column size")
             for colindex, value in enumerate(obj_func):
@@ -734,6 +737,8 @@ cdef class Matrix:
 
     def __cinit__(self, rows):
         """Load matrix data from the rows (which is a list of lists)."""
+        cdef int numrows, numcols, rowindex, colindex
+        cdef double value
         # reset pointer
         self.thisptr = NULL
         # determine dimension
@@ -771,8 +776,9 @@ cdef class Matrix:
 
         The column size must be equal in the two input matrices. It
         raises a ValueError if the input rows are not appropriate."""
-        # create matrix with given rows
         cdef Matrix other
+        cdef int success
+        # create matrix with given rows
         other = Matrix(rows)
         if linear:
             # set all constraints as linear
@@ -786,6 +792,7 @@ cdef class Matrix:
 
     def __delitem__(self, dd_rowrange rownum):
         """Remove a row. Raises ValueError on failure."""
+        cdef int success
         # remove the row
         success = dd_MatrixRowRemove(&self.thisptr, rownum)
         # check the result
@@ -796,10 +803,13 @@ cdef class Matrix:
     def __getitem__(self, item):
         """Return a given row of the matrix."""
         cdef dd_rowrange rownum
+        cdef dd_rowrange j
         # check if we are slicing
         if isinstance(item, slice):
             indices = item.indices(len(self))
-            return [self.__getitem__(i) for i in xrange(*indices)]
+            # XXX once generators are supported in cython, this should
+            # return (self.__getitem__(i) for i in xrange(*indices))
+            return tuple([self.__getitem__(i) for i in xrange(*indices)])
         else:
             rownum = item
             if rownum < 0 or rownum >= self.thisptr.rowsize:
@@ -832,14 +842,14 @@ cdef class LinProg:
     property primal_solution:
         def __get__(self):
             cdef int colindex
-            return [dd_get_d(self.thisptr.sol[colindex])
-                    for 1 <= colindex < self.thisptr.d]
+            return tuple([dd_get_d(self.thisptr.sol[colindex])
+                          for 1 <= colindex < self.thisptr.d])
 
     property dual_solution:
         def __get__(self):
             cdef int colindex
-            return [dd_get_d(self.thisptr.dsol[colindex])
-                    for 1 <= colindex < self.thisptr.d]
+            return tuple([dd_get_d(self.thisptr.dsol[colindex])
+                          for 1 <= colindex < self.thisptr.d])
 
     def __str__(self):
         """Print the linear program data."""
