@@ -677,7 +677,7 @@ cdef class Matrix:
         def __set__(self, dd_RepresentationType value):
             self.thisptr.representation = value
 
-    property lp_obj_type:
+    property obj_type:
         """Linear programming objective: maximize or minimize (see
         :class:`LPObjType`).
         """
@@ -686,7 +686,7 @@ cdef class Matrix:
         def __set__(self, dd_LPObjectiveType value):
             self.thisptr.objective = value
 
-    property lp_obj_func:
+    property obj_func:
         """A ``tuple`` containing the linear programming objective
         function.
         """

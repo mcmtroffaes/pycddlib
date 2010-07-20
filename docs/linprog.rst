@@ -27,8 +27,8 @@ This is the testlp2.c example that comes with cddlib.
 
 >>> import pycddlib
 >>> mat = pycddlib.Matrix([[4.0/3.0,-2,-1],[2.0/3.0,0,-1],[0,1,0],[0,0,1]])
->>> mat.lp_obj_type = pycddlib.LPObjType.MAX
->>> mat.lp_obj_func = (0,3,4)
+>>> mat.obj_type = pycddlib.LPObjType.MAX
+>>> mat.obj_func = (0,3,4)
 >>> print mat
 begin
  4 3 real
@@ -40,7 +40,7 @@ end
 maximize
   0  3  4
 <BLANKLINE>
->>> print(mat.lp_obj_func)
+>>> print(mat.obj_func)
 (0.0, 3.0, 4.0)
 >>> lp = pycddlib.LinProg(mat)
 >>> lp.solve()

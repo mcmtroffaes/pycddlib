@@ -19,8 +19,8 @@ Attributes
 .. autoattribute:: Matrix.col_size
 .. autoattribute:: Matrix.lin_set
 .. autoattribute:: Matrix.rep_type
-.. autoattribute:: Matrix.lp_obj_type
-.. autoattribute:: Matrix.lp_obj_func
+.. autoattribute:: Matrix.obj_type
+.. autoattribute:: Matrix.obj_func
 
 Examples
 --------
@@ -85,7 +85,7 @@ Traceback (most recent call last):
 ValueError: rows have different lengths
 
 >>> mat = pycddlib.Matrix([[1], [2]])
->>> mat.lp_obj_func = (0, 0) # doctest: +ELLIPSIS
+>>> mat.obj_func = (0, 0) # doctest: +ELLIPSIS
 Traceback (most recent call last):
     ...
 ValueError: objective function does not match matrix column size
