@@ -14,7 +14,7 @@ Methods
 
    :param rows: The rows of the matrix.
    :type rows: ``list`` of ``list`` of ``float``
-   :param linear: Whether to add the rows to the :attr:`linset` or not.
+   :param linear: Whether to add the rows to the :attr:`lin_set` or not.
    :type linear: ``bool``
 
 .. automethod:: Matrix.__getitem__(self, item)
@@ -30,9 +30,9 @@ Methods
 Attributes
 ----------
 
-.. autoattribute:: Matrix.rowsize
-.. autoattribute:: Matrix.colsize
-.. autoattribute:: Matrix.linset
+.. autoattribute:: Matrix.row_size
+.. autoattribute:: Matrix.col_size
+.. autoattribute:: Matrix.lin_set
 .. autoattribute:: Matrix.rep_type
 .. autoattribute:: Matrix.lp_obj_type
 .. autoattribute:: Matrix.lp_obj_func
@@ -49,9 +49,9 @@ begin
   3  4
 end
 <BLANKLINE>
->>> mat1.rowsize
+>>> mat1.row_size
 2
->>> mat1.colsize
+>>> mat1.col_size
 2
 >>> print(mat1[0])
 (1.0, 2.0)
@@ -63,7 +63,7 @@ Traceback (most recent call last):
 IndexError: row index out of range
 >>> mat2 = mat1.copy()
 >>> mat1.extend([[5,6]])
->>> mat1.rowsize
+>>> mat1.row_size
 3
 >>> print mat1
 begin

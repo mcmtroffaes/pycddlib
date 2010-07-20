@@ -639,7 +639,7 @@ cdef class Matrix:
     # pointer containing the matrix data
     cdef dd_MatrixPtr thisptr
 
-    property rowsize:
+    property row_size:
         """Number of rows."""
         def __get__(self):
             return self.thisptr.rowsize
@@ -648,12 +648,12 @@ cdef class Matrix:
         """Number of rows."""
         return self.thisptr.rowsize
 
-    property colsize:
+    property col_size:
         """Number of columns."""
         def __get__(self):
             return self.thisptr.colsize
 
-    property linset:
+    property lin_set:
         """A ``frozenset`` containing the rows of linearity
         (generators of linearity space for V-representation, and
         equations for H-representation).
@@ -758,7 +758,7 @@ cdef class Matrix:
 
         :param rows: The rows to append.
         :type rows: ``list`` of ``list`` of ``float``
-        :param linear: Whether to add the rows to the :attr:`linset` or not.
+        :param linear: Whether to add the rows to the :attr:`lin_set` or not.
         :type linear: ``bool``
         """
         cdef Matrix other
