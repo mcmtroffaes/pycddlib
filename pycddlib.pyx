@@ -1,134 +1,4 @@
-"""The pycddlib module wraps the cdd.h header file from Komei Fukuda's cddlib.
-
-Matrix functions
-================
-
->>> import pycddlib
->>> mat1 = pycddlib.Matrix([[1,2],[3,4]])
->>> print mat1
-begin
- 2 2 real
-  1  2
-  3  4
-end
-<BLANKLINE>
->>> mat1.rowsize
-2
->>> mat1.colsize
-2
->>> print(mat1[0])
-(1.0, 2.0)
->>> print(mat1[1])
-(3.0, 4.0)
->>> print(mat1[2]) # doctest: +ELLIPSIS
-Traceback (most recent call last):
-  ...
-IndexError: row index out of range
->>> mat2 = mat1.copy()
->>> mat1.extend([[5,6]])
->>> mat1.rowsize
-3
->>> print mat1
-begin
- 3 2 real
-  1  2
-  3  4
-  5  6
-end
-<BLANKLINE>
->>> print(mat1[0])
-(1.0, 2.0)
->>> print(mat1[1])
-(3.0, 4.0)
->>> print(mat1[2])
-(5.0, 6.0)
->>> mat1[1:3]
-((3.0, 4.0), (5.0, 6.0))
->>> mat1[:-1]
-((1.0, 2.0), (3.0, 4.0))
->>> print mat2
-begin
- 2 2 real
-  1  2
-  3  4
-end
-<BLANKLINE>
-
-Linear Programming
-==================
-
-This is the testlp2.c example that comes with cddlib.
-
->>> import pycddlib
->>> mat = pycddlib.Matrix([[4.0/3.0,-2,-1],[2.0/3.0,0,-1],[0,1,0],[0,0,1]])
->>> mat.lp_obj_type = LPOBJ_MAX
->>> mat.lp_obj_func = (0,3,4)
->>> print mat
-begin
- 4 3 real
-  1.333333333E+00 -2 -1
-  6.666666667E-01  0 -1
-  0  1  0
-  0  0  1
-end
-maximize
-  0  3  4
-<BLANKLINE>
->>> print(mat.lp_obj_func)
-(0.0, 3.0, 4.0)
->>> lp = pycddlib.LinProg(mat)
->>> lp.solve()
->>> lp.status
-1
->>> print("{0:.3f}".format(lp.opt_value))
-3.667
->>> print(" ".join("{0:.3f}".format(val) for val in lp.primal_solution))
-0.333 0.667
->>> print(" ".join("{0:.3f}".format(val) for val in lp.dual_solution))
-1.500 2.500
-
-Polyhedra
-=========
-
->>> import pycddlib
->>> mat = pycddlib.Matrix([[2,-1,-1,0],[0,1,0,0],[0,0,1,0]])
->>> mat.representation = REP_INEQUALITY
->>> poly = pycddlib.Polyhedra(mat)
->>> print(poly)
-begin
- 3 4 real
-  2 -1 -1  0
-  0  1  0  0
-  0  0  1  0
-end
-<BLANKLINE>
->>> ext = poly.get_generators()
->>> print(ext.linset)
-frozenset([3])
->>> print(ext)
-V-representation
-linearity 1  4
-begin
- 4 4 real
-  1  0  0  0
-  1  2  0  0
-  1  0  2  0
-  0  0  0  1
-end
-<BLANKLINE>
->>> ext.linset = set([0, 2])
->>> print(ext)
-V-representation
-linearity 2  1 3
-begin
- 4 4 real
-  1  0  0  0
-  1  2  0  0
-  1  0  2  0
-  0  0  0  1
-end
-<BLANKLINE>
-"""
+"""The pycddlib module is a Python wrapper for Komei Fukuda's cddlib."""
 
 # pycddlib is a Python wrapper for Komei Fukuda's cddlib
 # Copyright (c) 2008, Matthias Troffaes
@@ -220,8 +90,14 @@ cdef extern from "cdd.h":
         dd_Combinatorial
         dd_Algebraic
 
-ADJ_COMBINATORIAL = dd_Combinatorial
-ADJ_ALGEBRAIC     = dd_Algebraic
+cdef class AdjacencyTestType:
+    """Adjacency test type."""
+
+    COMBINATORIAL = dd_Combinatorial
+    """Combinatorial type."""
+
+    ALGEBRAIC     = dd_Algebraic
+    """Algebraic type."""
 
 cdef extern from "cdd.h":
     ctypedef enum dd_NumberType:
@@ -230,10 +106,20 @@ cdef extern from "cdd.h":
         dd_Rational
         dd_Integer
 
-NUMTYPE_UNKNOWN  = dd_Unknown
-NUMTYPE_REAL     = dd_Real
-NUMTYPE_RATIONAL = dd_Rational
-NUMTYPE_INTEGER  = dd_Integer
+cdef class NumberType:
+    """Number type."""
+
+    UNKNOWN  = dd_Unknown
+    """Unknown."""
+
+    REAL     = dd_Real
+    """Real."""
+
+    RATIONAL = dd_Rational
+    """Rational."""
+
+    INTEGER  = dd_Integer
+    """Integer."""
 
 cdef extern from "cdd.h":
     ctypedef enum dd_RepresentationType:
@@ -241,9 +127,17 @@ cdef extern from "cdd.h":
         dd_Inequality
         dd_Generator
 
-REP_UNSPECIFIED = dd_Unspecified
-REP_INEQUALITY  = dd_Inequality
-REP_GENERATOR   = dd_Generator
+cdef class RepType:
+    """Type of representation."""
+
+    UNSPECIFIED = dd_Unspecified
+    """Unspecified representation."""
+
+    INEQUALITY  = dd_Inequality
+    """H-representation."""
+
+    GENERATOR   = dd_Generator
+    """V-representation."""
 
 cdef extern from "cdd.h":
     ctypedef enum dd_RowOrderType:
@@ -288,24 +182,26 @@ cdef extern from "cdd.h":
         dd_NumericallyInconsistent
         dd_NoError
 
-ERR_DIMENSION_TOO_LARGE      = dd_DimensionTooLarge
-ERR_IMPROPER_INPUT_FORMAT    = dd_ImproperInputFormat
-ERR_NEGATIVE_MATRIX_SIZE     = dd_NegativeMatrixSize
-ERR_EMPTY_V_REPRESENTATION   = dd_EmptyVrepresentation
-ERR_EMPTY_H_REPRESENTATION   = dd_EmptyHrepresentation
-ERR_EMPTY_REPRESENTATION     = dd_EmptyRepresentation
-ERR_I_FILE_NOT_FOUND         = dd_IFileNotFound
-ERR_O_FILE_NOT_FOUND         = dd_OFileNotOpen
-ERR_NO_LP_OBJECTIVE          = dd_NoLPObjective
-ERR_NO_REAL_NUMBER_SUPPORT   = dd_NoRealNumberSupport
-ERR_NOT_AVAIL_FOR_H          = dd_NotAvailForH
-ERR_NOT_AVAIL_FOR_V          = dd_NotAvailForV
-ERR_CANNOT_HANDLE_LINEARITY  = dd_CannotHandleLinearity
-ERR_ROW_INDEX_OUT_OF_RANGE   = dd_RowIndexOutOfRange
-ERR_COL_INDEX_OUT_OF_RANGE   = dd_ColIndexOutOfRange
-ERR_LP_CYCLING               = dd_LPCycling
-ERR_NUMERICALLY_INCONSISTENT = dd_NumericallyInconsistent
-ERR_NO_ERROR                 = dd_NoError
+cdef class Error:
+    """Error constants."""
+    DIMENSION_TOO_LARGE      = dd_DimensionTooLarge
+    IMPROPER_INPUT_FORMAT    = dd_ImproperInputFormat
+    NEGATIVE_MATRIX_SIZE     = dd_NegativeMatrixSize
+    EMPTY_V_REPRESENTATION   = dd_EmptyVrepresentation
+    EMPTY_H_REPRESENTATION   = dd_EmptyHrepresentation
+    EMPTY_REPRESENTATION     = dd_EmptyRepresentation
+    I_FILE_NOT_FOUND         = dd_IFileNotFound
+    O_FILE_NOT_FOUND         = dd_OFileNotOpen
+    NO_LP_OBJECTIVE          = dd_NoLPObjective
+    NO_REAL_NUMBER_SUPPORT   = dd_NoRealNumberSupport
+    NOT_AVAIL_FOR_H          = dd_NotAvailForH
+    NOT_AVAIL_FOR_V          = dd_NotAvailForV
+    CANNOT_HANDLE_LINEARITY  = dd_CannotHandleLinearity
+    ROW_INDEX_OUT_OF_RANGE   = dd_RowIndexOutOfRange
+    COL_INDEX_OUT_OF_RANGE   = dd_ColIndexOutOfRange
+    LP_CYCLING               = dd_LPCycling
+    NUMERICALLY_INCONSISTENT = dd_NumericallyInconsistent
+    NO_ERROR                 = dd_NoError
 
 cdef extern from "cdd.h":
     ctypedef enum dd_CompStatusType:
@@ -313,9 +209,17 @@ cdef extern from "cdd.h":
         dd_AllFound
         dd_RegionEmpty
 
-COMPSTATUS_INPROGRESS  = dd_InProgress
-COMPSTATUS_ALLFOUND    = dd_AllFound
-COMPSTATUS_REGIONEMPTY = dd_RegionEmpty
+cdef class CompStatus:
+    """Status of computation."""
+
+    IN_PROGRESS  = dd_InProgress
+    """In progress."""
+
+    ALL_FOUND    = dd_AllFound
+    """All found."""
+
+    REGION_EMPTY = dd_RegionEmpty
+    """Region is empty."""
 
 cdef extern from "cdd.h":
     ctypedef enum dd_LPObjectiveType:
@@ -664,17 +568,24 @@ cdef _set_set(set_type set_, pset):
 
 # matrix class
 cdef class Matrix:
+    """A class for working with matrices, sets of linear constraints,
+    and extreme points.
+    """
+
     # pointer containing the matrix data
     cdef dd_MatrixPtr thisptr
 
     property rowsize:
+        """Number of rows."""
         def __get__(self):
             return self.thisptr.rowsize
 
     def __len__(self):
+        """Number of rows."""
         return self.thisptr.rowsize
 
     property colsize:
+        """Number of columns."""
         def __get__(self):
             return self.thisptr.colsize
 
@@ -819,33 +730,39 @@ cdef class Matrix:
                           for 0 <= j < self.thisptr.colsize])
 
 cdef class LinProg:
-    """Solves a linear program."""
+    """Solving a linear program."""
     # pointer to linear program
     cdef dd_LPPtr thisptr
 
     property solver:
+        """Whether we are minimizing or maximizing (see LPSOLVER_*)."""
         def __get__(self):
             return self.thisptr.solver
 
     property objective:
+        """Whether we are minimizing or maximizing (see LPOBJ_*)."""
         def __get__(self):
             return self.thisptr.objective
 
     property status:
+        """The status of the linear program (see LPSTATUS_*)."""
         def __get__(self):
             return self.thisptr.LPS
 
     property opt_value:
+        """The optimal value of the objective function."""
         def __get__(self):
             return dd_get_d(self.thisptr.optvalue)
 
     property primal_solution:
+        """The primal solution."""
         def __get__(self):
             cdef int colindex
             return tuple([dd_get_d(self.thisptr.sol[colindex])
                           for 1 <= colindex < self.thisptr.d])
 
     property dual_solution:
+        """The dual solution."""
         def __get__(self):
             cdef int colindex
             return tuple([dd_get_d(self.thisptr.dsol[colindex])
@@ -858,8 +775,8 @@ cdef class LinProg:
         tmp = tempfile.TemporaryFile()
         pfile = PyFile_AsFile(tmp)
         # note: if lp has an error, then exception is raised
-        # so pass ERR_NO_ERROR
-        dd_WriteLPResult(pfile, self.thisptr, ERR_NO_ERROR)
+        # so pass dd_NoError
+        dd_WriteLPResult(pfile, self.thisptr, dd_NoError)
         # read the file into a buffer
         tmp.seek(0)
         result = tmp.read(-1)
@@ -892,12 +809,14 @@ cdef class LinProg:
         """Solve linear program. Returns status (one of the LPSTATUS_*
         constants) and optimal value."""
         cdef dd_ErrorType error
-        error = ERR_NO_ERROR
+        error = dd_NoError
         dd_LPSolve(self.thisptr, solver, &error)
         if error != dd_NoError:
             _raise_error(error, "failed to solve linear program")
 
 cdef class Polyhedra:
+    """A class for converting between representations of a polyhedron."""
+
     # pointer to polyhedra
     cdef dd_PolyhedraPtr thisptr
 
@@ -952,6 +871,13 @@ cdef class Polyhedra:
         (i.e. V-representation).
         """
         return _make_matrix(dd_CopyGenerators(self.thisptr))
+
+cdef class Cone:
+    """Cone representation.
+
+    .. note:: Wrapper not implemented.
+    """
+    cdef dd_ConePtr thisptr
 
 # module initialization code comes here
 # initialize module constants

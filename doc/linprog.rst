@@ -1,0 +1,43 @@
+LinProg
+=======
+
+.. module:: pycddlib
+
+Class
+-----
+
+.. autoclass:: LinProg
+   :members:
+
+Examples
+--------
+
+This is the testlp2.c example that comes with cddlib.
+
+>>> import pycddlib
+>>> mat = pycddlib.Matrix([[4.0/3.0,-2,-1],[2.0/3.0,0,-1],[0,1,0],[0,0,1]])
+>>> mat.lp_obj_type = pycddlib.LPOBJ_MAX
+>>> mat.lp_obj_func = (0,3,4)
+>>> print mat
+begin
+ 4 3 real
+  1.333333333E+00 -2 -1
+  6.666666667E-01  0 -1
+  0  1  0
+  0  0  1
+end
+maximize
+  0  3  4
+<BLANKLINE>
+>>> print(mat.lp_obj_func)
+(0.0, 3.0, 4.0)
+>>> lp = pycddlib.LinProg(mat)
+>>> lp.solve()
+>>> lp.status
+1
+>>> print("{0:.3f}".format(lp.opt_value))
+3.667
+>>> print(" ".join("{0:.3f}".format(val) for val in lp.primal_solution))
+0.333 0.667
+>>> print(" ".join("{0:.3f}".format(val) for val in lp.dual_solution))
+1.500 2.500

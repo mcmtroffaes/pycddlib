@@ -6,10 +6,16 @@
 Welcome to pycddlib's documentation!
 ====================================
 
+.. automodule:: pycddlib
+
 Contents:
 
 .. toctree::
    :maxdepth: 2
+
+   matrix
+   linprog
+   polyhedra
 
 Indices and tables
 ==================
