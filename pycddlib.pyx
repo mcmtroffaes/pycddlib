@@ -816,18 +816,20 @@ cdef class LinProg:
     cdef dd_LPPtr thisptr
 
     property solver:
-        """Whether we are minimizing or maximizing (see
+        """The type of solver to use (see
         :class:`LPSolverType`).
         """
         def __get__(self):
             return self.thisptr.solver
 
-    property objective:
+    property obj_type:
         """Whether we are minimizing or maximizing (see
         :class:`LPObjType`).
         """
         def __get__(self):
             return self.thisptr.objective
+        def __set__(self, dd_LPObjectiveType value):
+            self.thisptr.objective = value
 
     property status:
         """The status of the linear program (see
@@ -836,7 +838,7 @@ cdef class LinProg:
         def __get__(self):
             return self.thisptr.LPS
 
-    property opt_value:
+    property obj_value:
         """The optimal value of the objective function."""
         def __get__(self):
             return dd_get_d(self.thisptr.optvalue)

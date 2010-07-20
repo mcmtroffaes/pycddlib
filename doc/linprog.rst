@@ -35,7 +35,7 @@ maximize
 >>> lp.solve()
 >>> lp.status == pycddlib.LPStatusType.OPTIMAL
 True
->>> print("{0:.3f}".format(lp.opt_value))
+>>> print("{0:.3f}".format(lp.obj_value))
 3.667
 >>> print(" ".join("{0:.3f}".format(val) for val in lp.primal_solution))
 0.333 0.667
