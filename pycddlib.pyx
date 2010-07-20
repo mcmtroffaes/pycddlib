@@ -1,4 +1,4 @@
-"""The pycddlib module is a Python wrapper for Komei Fukuda's cddlib."""
+"""The :mod:`pycddlib` module is a Python wrapper for Komei Fukuda's cddlib."""
 
 # pycddlib is a Python wrapper for Komei Fukuda's cddlib
 # Copyright (c) 2008, Matthias Troffaes

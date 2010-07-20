@@ -1,14 +1,20 @@
-.. pycddlib documentation master file, created by
-   sphinx-quickstart on Tue Jul 20 10:56:51 2010.
-   You can adapt this file completely to your liking, but it should at least
-   contain the root `toctree` directive.
+Welcome to :mod:`pycddlib`'s documentation!
+===========================================
 
-Welcome to pycddlib's documentation!
-====================================
+:Release: |version|
+:Date:    |today|
 
 .. automodule:: pycddlib
 
-Contents:
+   * `Download <http://github.com/mcmtroffaes/pycddlib/downloads/>`_ :mod:`pycddlib`.
+   * Clone :mod:`pycddlib` with `Git <http://git-scm.com>`_ by running::
+
+       git clone --recursive git://github.com/mcmtroffaes/pycddlib
+
+   * Browse the source code on GitHub: `mcmtroffaes/pycddlib <http://github.com/mcmtroffaes/pycddlib>`_.
+
+Contents
+--------
 
 .. toctree::
    :maxdepth: 2
@@ -18,10 +24,4 @@ Contents:
    linprog
    polyhedra
 
-Indices and tables
-==================
-
 * :ref:`genindex`
-* :ref:`modindex`
-* :ref:`search`
-

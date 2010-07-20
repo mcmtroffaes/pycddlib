@@ -1,7 +1,7 @@
 Matrix
 ======
 
-.. module:: pycddlib
+.. currentmodule:: pycddlib
 
 .. autoclass:: Matrix(self, rows, linear=False)
 
@@ -9,12 +9,6 @@ Methods
 -------
 
 .. automethod:: Matrix.__getitem__(self, key)
-
-.. method:: Matrix.__len__(self)
-
-   Number of rows.
-
-.. automethod:: Matrix.__str__(self)
 .. automethod:: Matrix.copy(self)
 .. automethod:: Matrix.extend(self, rows, linear=False)
 

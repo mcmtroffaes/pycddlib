@@ -1,7 +1,7 @@
 Polyhedron
 ==========
 
-.. module:: pycddlib
+.. currentmodule:: pycddlib
 
 .. autoclass:: Polyhedron(self, mat)
 

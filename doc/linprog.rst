@@ -1,7 +1,7 @@
 LinProg
 =======
 
-.. module:: pycddlib
+.. currentmodule:: pycddlib
 
 .. autoclass:: LinProg(self, mat)
 
