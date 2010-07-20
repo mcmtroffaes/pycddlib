@@ -3,11 +3,22 @@ LinProg
 
 .. module:: pycddlib
 
-Class
------
+.. autoclass:: LinProg(self, mat)
 
-.. autoclass:: LinProg
-   :members:
+Methods
+-------
+
+.. automethod:: LinProg.solve(self, solver=LPSolverType.DUAL_SIMPLEX)
+
+Attributes
+----------
+
+.. autoattribute:: LinProg.dual_solution
+.. autoattribute:: LinProg.obj_type
+.. autoattribute:: LinProg.obj_value
+.. autoattribute:: LinProg.primal_solution
+.. autoattribute:: LinProg.solver
+.. autoattribute:: LinProg.status
 
 Examples
 --------

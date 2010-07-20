@@ -811,14 +811,16 @@ cdef class Matrix:
                           for 0 <= j < self.thisptr.colsize])
 
 cdef class LinProg:
-    """Solving a linear program."""
+    """A class for solving linear programs.
+
+    :param mat: The matrix to load the linear program from.
+    :type mat: :class:`Matrix`
+    """
     # pointer to linear program
     cdef dd_LPPtr thisptr
 
     property solver:
-        """The type of solver to use (see
-        :class:`LPSolverType`).
-        """
+        """The type of solver to use (see :class:`LPSolverType`)."""
         def __get__(self):
             return self.thisptr.solver
 
@@ -844,14 +846,14 @@ cdef class LinProg:
             return dd_get_d(self.thisptr.optvalue)
 
     property primal_solution:
-        """The primal solution."""
+        """A ``tuple`` containing the primal solution."""
         def __get__(self):
             cdef int colindex
             return tuple([dd_get_d(self.thisptr.sol[colindex])
                           for 1 <= colindex < self.thisptr.d])
 
     property dual_solution:
-        """The dual solution."""
+        """A ``tuple`` containing the dual solution."""
         def __get__(self):
             cdef int colindex
             return tuple([dd_get_d(self.thisptr.dsol[colindex])
@@ -896,7 +898,11 @@ cdef class LinProg:
         self.thisptr = NULL
 
     def solve(self, dd_LPSolverType solver=dd_DualSimplex):
-        """Solve linear program."""
+        """Solve linear program.
+
+        :param solver: The method of solution (see :class:`LPSolverType`).
+        :type solver: ``int``
+        """
         cdef dd_ErrorType error
         error = dd_NoError
         dd_LPSolve(self.thisptr, solver, &error)
