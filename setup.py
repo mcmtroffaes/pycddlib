@@ -20,7 +20,9 @@ a linear function over P.
 See http://www.ifor.math.ethz.ch/~fukuda/cdd_home/cdd.html for more information
 about cddlib.
 
-See http://code.google.com/p/stip/ for more information about pycddlib."""
+See http://github.com/mcmtroffaes/pycddlib/ for more information about
+pycddlib.
+"""
 
 # pycddlib is a Python wrapper for Komei Fukuda's cddlib
 # Copyright (c) 2008, Matthias Troffaes
@@ -56,6 +58,14 @@ from Cython.Distutils import build_ext
 
 import os
 
+# get version from pyx file
+for line in open('pycddlib.pyx'):
+    if line.startswith("__version__"):
+       version = line[line.find('"')+1:line.rfind('"')]
+       break
+else:
+    raise RuntimeError("failed to extract version from pycddlib.pyx")
+
 doclines = __doc__.split("\n")
 
 cdd_dir = 'cddlib/lib-src'
@@ -70,7 +80,7 @@ cdd_sources = [
 
 setup(
     name = "pycddlib",
-    version = "0.0.0",
+    version = version,
     ext_modules= [
         Extension("pycddlib",
                   ["pycddlib.pyx"] + [os.path.join(cdd_dir, srcfile)
