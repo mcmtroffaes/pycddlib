@@ -22,6 +22,6 @@ Contents
    constants
    matrix
    linprog
-   polyhedra
+   polyhedron
 
 * :ref:`genindex`
