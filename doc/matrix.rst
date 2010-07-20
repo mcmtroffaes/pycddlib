@@ -3,11 +3,39 @@ Matrix
 
 .. module:: pycddlib
 
-Class
------
-
 .. autoclass:: Matrix
-   :members:
+
+Methods
+-------
+
+.. method:: Matrix.__init__(self, rows, linear=False)
+
+   Load matrix data from the *rows*.
+
+   :param rows: The rows of the matrix.
+   :type rows: ``list`` of ``list`` of ``float``
+   :param linear: Whether to add the rows to the :attr:`linset` or not.
+   :type linear: ``bool``
+
+.. automethod:: Matrix.__getitem__(self, item)
+
+.. method:: Matrix.__len__(self)
+
+   Number of rows.
+
+.. automethod:: Matrix.__str__(self)
+.. automethod:: Matrix.copy(self)
+.. automethod:: Matrix.extend(self, rows, linear=False)
+
+Attributes
+----------
+
+.. autoattribute:: Matrix.rowsize
+.. autoattribute:: Matrix.colsize
+.. autoattribute:: Matrix.linset
+.. autoattribute:: Matrix.rep_type
+.. autoattribute:: Matrix.lp_obj_type
+.. autoattribute:: Matrix.lp_obj_func
 
 Examples
 --------
@@ -62,3 +90,17 @@ begin
   3  4
 end
 <BLANKLINE>
+
+Regression Tests
+----------------
+
+>>> pycddlib.Matrix([[1], [1, 2]]) # doctest: +ELLIPSIS
+Traceback (most recent call last):
+    ...
+ValueError: rows have different lengths
+
+>>> mat = pycddlib.Matrix([[1], [2]])
+>>> mat.lp_obj_func = (0, 0) # doctest: +ELLIPSIS
+Traceback (most recent call last):
+    ...
+ValueError: objective function does not match matrix column size

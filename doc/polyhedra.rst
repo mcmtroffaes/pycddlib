@@ -16,7 +16,7 @@ This is the sampleh1.ine example that comes with cddlib.
 
 >>> import pycddlib
 >>> mat = pycddlib.Matrix([[2,-1,-1,0],[0,1,0,0],[0,0,1,0]])
->>> mat.representation = pycddlib.RepType.INEQUALITY
+>>> mat.rep_type = pycddlib.RepType.INEQUALITY
 >>> poly = pycddlib.Polyhedra(mat)
 >>> print(poly)
 begin
@@ -45,7 +45,7 @@ This is the testcdd2.c example that comes with cddlib.
 
 >>> import pycddlib
 >>> mat = pycddlib.Matrix([[7,-3,-0],[7,0,-3],[1,1,0],[1,0,1]])
->>> mat.representation = pycddlib.RepType.INEQUALITY
+>>> mat.rep_type = pycddlib.RepType.INEQUALITY
 >>> print(mat)
 H-representation
 begin

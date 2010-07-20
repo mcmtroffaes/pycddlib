@@ -91,13 +91,14 @@ cdef extern from "cdd.h":
         dd_Algebraic
 
 cdef class AdjacencyTestType:
-    """Adjacency test type."""
+    """Adjacency test type.
 
+    .. attribute::
+       COMBINATORIAL
+       ALGEBRAIC
+    """
     COMBINATORIAL = dd_Combinatorial
-    """Combinatorial type."""
-
     ALGEBRAIC     = dd_Algebraic
-    """Algebraic type."""
 
 cdef extern from "cdd.h":
     ctypedef enum dd_NumberType:
@@ -107,19 +108,18 @@ cdef extern from "cdd.h":
         dd_Integer
 
 cdef class NumberType:
-    """Number type."""
+    """Number type.
 
+    .. attribute::
+       UNKNOWN
+       REAL
+       RATIONAL
+       INTEGER
+    """
     UNKNOWN  = dd_Unknown
-    """Unknown."""
-
     REAL     = dd_Real
-    """Real."""
-
     RATIONAL = dd_Rational
-    """Rational."""
-
     INTEGER  = dd_Integer
-    """Integer."""
 
 cdef extern from "cdd.h":
     ctypedef enum dd_RepresentationType:
@@ -128,16 +128,18 @@ cdef extern from "cdd.h":
         dd_Generator
 
 cdef class RepType:
-    """Type of representation."""
+    """Type of representation. Use :attr:`INEQUALITY` for
+    H-representation and :attr:`GENERATOR` for V-representation.
+
+    .. attribute::
+       UNSPECIFIED
+       INEQUALITY
+       GENERATOR
+    """
 
     UNSPECIFIED = dd_Unspecified
-    """Unspecified representation."""
-
     INEQUALITY  = dd_Inequality
-    """H-representation."""
-
     GENERATOR   = dd_Generator
-    """V-representation."""
 
 cdef extern from "cdd.h":
     ctypedef enum dd_RowOrderType:
@@ -150,14 +152,27 @@ cdef extern from "cdd.h":
         dd_LexMax
         dd_RandomRow
 
-ROWORDER_MAXINDEX  = dd_MaxIndex
-ROWORDER_MININDEX  = dd_MinIndex
-ROWORDER_MINCUTOFF = dd_MinCutoff
-ROWORDER_MAXCUTOFF = dd_MaxCutoff
-ROWORDER_MIXCUTOFF = dd_MixCutoff
-ROWORDER_LEXMIN    = dd_LexMin
-ROWORDER_LEXMAX    = dd_LexMax
-ROWORDER_RANDOMROW = dd_RandomRow
+cdef class RowOrderType:
+    """The row order.
+
+    .. attribute::
+       MAX_INDEX
+       MIN_INDEX
+       MIN_CUTOFF
+       MAX_CUTOFF
+       MIX_CUTOFF
+       LEX_MIN
+       LEX_MAX
+       RANDOM_ROW
+    """
+    MAX_INDEX  = dd_MaxIndex
+    MIN_INDEX  = dd_MinIndex
+    MIN_CUTOFF = dd_MinCutoff
+    MAX_CUTOFF = dd_MaxCutoff
+    MIX_CUTOFF = dd_MixCutoff
+    LEX_MIN    = dd_LexMin
+    LEX_MAX    = dd_LexMax
+    RANDOM_ROW = dd_RandomRow
 
     # not translated: dd_ConversionType, dd_IncidenceOutputType, dd_AdjacencyOutputType, dd_FileInputModeType
 
@@ -183,7 +198,28 @@ cdef extern from "cdd.h":
         dd_NoError
 
 cdef class Error:
-    """Error constants."""
+    """Error constants.
+
+    .. attribute::
+       DIMENSION_TOO_LARGE
+       IMPROPER_INPUT_FORMAT
+       NEGATIVE_MATRIX_SIZE
+       EMPTY_V_REPRESENTATION
+       EMPTY_H_REPRESENTATION
+       EMPTY_REPRESENTATION
+       I_FILE_NOT_FOUND
+       O_FILE_NOT_FOUND
+       NO_LP_OBJECTIVE
+       NO_REAL_NUMBER_SUPPORT
+       NOT_AVAIL_FOR_H
+       NOT_AVAIL_FOR_V
+       CANNOT_HANDLE_LINEARITY
+       ROW_INDEX_OUT_OF_RANGE
+       COL_INDEX_OUT_OF_RANGE
+       LP_CYCLING
+       NUMERICALLY_INCONSISTENT
+       NO_ERROR
+    """
     DIMENSION_TOO_LARGE      = dd_DimensionTooLarge
     IMPROPER_INPUT_FORMAT    = dd_ImproperInputFormat
     NEGATIVE_MATRIX_SIZE     = dd_NegativeMatrixSize
@@ -210,16 +246,16 @@ cdef extern from "cdd.h":
         dd_RegionEmpty
 
 cdef class CompStatus:
-    """Status of computation."""
+    """Status of computation.
 
+    .. attribute::
+       IN_PROGRESS
+       ALL_FOUND
+       REGION_EMPTY
+    """
     IN_PROGRESS  = dd_InProgress
-    """In progress."""
-
     ALL_FOUND    = dd_AllFound
-    """All found."""
-
     REGION_EMPTY = dd_RegionEmpty
-    """Region is empty."""
 
 cdef extern from "cdd.h":
     ctypedef enum dd_LPObjectiveType:
@@ -227,17 +263,32 @@ cdef extern from "cdd.h":
         dd_LPmax
         dd_LPmin
 
-LPOBJ_NONE = dd_LPnone
-LPOBJ_MAX  = dd_LPmax
-LPOBJ_MIN  = dd_LPmin
+cdef class LPObjType:
+    """Type of objective for a linear program.
+
+    .. attribute::
+       NONE
+       MAX
+       MIN
+    """
+    NONE = dd_LPnone
+    MAX  = dd_LPmax
+    MIN  = dd_LPmin
 
 cdef extern from "cdd.h":
     ctypedef enum dd_LPSolverType:
         dd_CrissCross
         dd_DualSimplex
 
-LPSOLVER_CRISSCROSS  = dd_CrissCross
-LPSOLVER_DUALSIMPLEX = dd_DualSimplex
+cdef class LPSolverType:
+    """Type of solver for a linear program.
+
+    .. attribute::
+       CRISS_CROSS
+       DUAL_SIMPLEX
+    """
+    CRISS_CROSS  = dd_CrissCross
+    DUAL_SIMPLEX = dd_DualSimplex
 
 cdef extern from "cdd.h":
     ctypedef enum dd_LPStatusType:
@@ -250,14 +301,27 @@ cdef extern from "cdd.h":
         dd_Unbounded
         dd_DualUnbounded
 
-LPSTATUS_UNDECIDED             = dd_LPSundecided
-LPSTATUS_OPTIMAL               = dd_Optimal
-LPSTATUS_INCONSISTENT          = dd_Inconsistent
-LPSTATUS_DUALINCONSISTENT      = dd_DualInconsistent
-LPSTATUS_STRUCINCONSISTENT     = dd_StrucInconsistent
-LPSTATUS_STRUCDUALINCONSISTENT = dd_StrucDualInconsistent
-LPSTATUS_UNBOUNDED             = dd_Unbounded
-LPSTATUS_DUALUNBOUNDED         = dd_DualUnbounded
+cdef class LPStatusType:
+    """Status of a linear program.
+
+    .. attribute::
+       UNDECIDED
+       OPTIMAL
+       INCONSISTENT
+       DUAL_INCONSISTENT
+       STRUC_INCONSISTENT
+       STRUC_DUAL_INCONSISTENT
+       UNBOUNDED
+       DUAL_UNBOUNDED
+    """
+    UNDECIDED             = dd_LPSundecided
+    OPTIMAL               = dd_Optimal
+    INCONSISTENT          = dd_Inconsistent
+    DUALINCONSISTENT      = dd_DualInconsistent
+    STRUCINCONSISTENT     = dd_StrucInconsistent
+    STRUCDUALINCONSISTENT = dd_StrucDualInconsistent
+    UNBOUNDED             = dd_Unbounded
+    DUALUNBOUNDED         = dd_DualUnbounded
 
 # structures
 
@@ -590,26 +654,25 @@ cdef class Matrix:
             return self.thisptr.colsize
 
     property linset:
-        """Rows of linearity (generators of linearity space for
-        V-representation, and equations for H-representation).
+        """A ``frozenset`` containing the rows of linearity
+        (generators of linearity space for V-representation, and
+        equations for H-representation).
         """
         def __get__(self):
             return _get_set(self.thisptr.linset)
         def __set__(self, value):
             _set_set(self.thisptr.linset, value)
 
-    property representation:
-        """Representation. Uses the REP_* constants: REP_INEQUALITY is
-        H-representation, REP_GENERATOR is V-representation.
-        """
+    property rep_type:
+        """Representation (see :class:`RepType`)."""
         def __get__(self):
             return self.thisptr.representation
         def __set__(self, dd_RepresentationType value):
             self.thisptr.representation = value
 
     property lp_obj_type:
-        """Linear programming objective (maximize or minimize). Uses
-        the LPOBJ_* constants.
+        """Linear programming objective: maximize or minimize (see
+        :class:`LPObjType`).
         """
         def __get__(self):
             return self.thisptr.objective
@@ -617,7 +680,9 @@ cdef class Matrix:
             self.thisptr.objective = value
 
     property lp_obj_func:
-        """Linear programming objective function."""
+        """A ``tuple`` containing the linear programming objective
+        function.
+        """
         def __get__(self):
             # return an immutable tuple to prohibit item assignment
             cdef int colindex
@@ -646,7 +711,7 @@ cdef class Matrix:
         tmp.close()
         return result
 
-    def __cinit__(self, rows):
+    def __cinit__(self, rows, linear=False):
         """Load matrix data from the rows (which is a list of lists)."""
         cdef int numrows, numcols, rowindex, colindex
         cdef double value
@@ -667,6 +732,9 @@ cdef class Matrix:
                 raise ValueError("rows have different lengths")
             for colindex, value in enumerate(row):
                 dd_set_d(self.thisptr.matrix[rowindex][colindex], value)
+        if linear:
+            # set all constraints as linear
+            set_compl(self.thisptr.linset, self.thisptr.linset)
         # debug
         #dd_WriteMatrix(stdout, self.thisptr)
 
@@ -686,14 +754,17 @@ cdef class Matrix:
         copy and then call extend on the copy).
 
         The column size must be equal in the two input matrices. It
-        raises a ValueError if the input rows are not appropriate."""
+        raises a ValueError if the input rows are not appropriate.
+
+        :param rows: The rows to append.
+        :type rows: ``list`` of ``list`` of ``float``
+        :param linear: Whether to add the rows to the :attr:`linset` or not.
+        :type linear: ``bool``
+        """
         cdef Matrix other
         cdef int success
         # create matrix with given rows
-        other = Matrix(rows)
-        if linear:
-            # set all constraints as linear
-            set_compl(other.thisptr.linset, other.thisptr.linset)
+        other = Matrix(rows, linear=linear)
         # call dd_AppendToMatrix
         success = dd_MatrixAppendTo(&self.thisptr, other.thisptr)
         # check result
@@ -712,7 +783,7 @@ cdef class Matrix:
                 "cannot remove row %i" % rownum)
 
     def __getitem__(self, item):
-        """Return a given row of the matrix."""
+        """Return a given row, or given slice of rows, of the matrix."""
         cdef dd_rowrange rownum
         cdef dd_rowrange j
         # check if we are slicing
@@ -735,17 +806,23 @@ cdef class LinProg:
     cdef dd_LPPtr thisptr
 
     property solver:
-        """Whether we are minimizing or maximizing (see LPSOLVER_*)."""
+        """Whether we are minimizing or maximizing (see
+        :class:`LPSolverType`).
+        """
         def __get__(self):
             return self.thisptr.solver
 
     property objective:
-        """Whether we are minimizing or maximizing (see LPOBJ_*)."""
+        """Whether we are minimizing or maximizing (see
+        :class:`LPObjType`).
+        """
         def __get__(self):
             return self.thisptr.objective
 
     property status:
-        """The status of the linear program (see LPSTATUS_*)."""
+        """The status of the linear program (see
+        :class:`LPStatusType`).
+        """
         def __get__(self):
             return self.thisptr.LPS
 
@@ -786,7 +863,8 @@ cdef class LinProg:
 
     def __cinit__(self, Matrix mat):
         """Initialize linear program solution from solved linear program in
-        the given matrix."""
+        the given matrix.
+        """
         cdef dd_ErrorType error
         error = dd_NoError
         self.thisptr = NULL
@@ -805,9 +883,8 @@ cdef class LinProg:
             dd_FreeLPData(self.thisptr)
         self.thisptr = NULL
 
-    def solve(self, solver = LPSOLVER_DUALSIMPLEX):
-        """Solve linear program. Returns status (one of the LPSTATUS_*
-        constants) and optimal value."""
+    def solve(self, dd_LPSolverType solver=dd_DualSimplex):
+        """Solve linear program."""
         cdef dd_ErrorType error
         error = dd_NoError
         dd_LPSolve(self.thisptr, solver, &error)
@@ -820,7 +897,8 @@ cdef class Polyhedra:
     # pointer to polyhedra
     cdef dd_PolyhedraPtr thisptr
 
-    property representation:
+    property rep_type:
+        """Representation (see :class:`RepType`)."""
         def __get__(self):
             return self.thisptr.representation
         def __set__(self, dd_RepresentationType value):
@@ -861,19 +939,23 @@ cdef class Polyhedra:
         self.thisptr = NULL
 
     def get_inequalities(self):
-        """Return matrix containing all inequalities
-        (i.e. H-representation).
+        """Get all inequalities.
+
+        :returns: H-representation.
+        :rtype: :class:`Matrix`
         """
         return _make_matrix(dd_CopyInequalities(self.thisptr))
 
     def get_generators(self):
-        """Return matrix containing all generators
-        (i.e. V-representation).
+        """Get all generators.
+
+        :returns: V-representation.
+        :rtype: :class:`Matrix`
         """
         return _make_matrix(dd_CopyGenerators(self.thisptr))
 
 cdef class Cone:
-    """Cone representation.
+    """Cone.
 
     .. note:: Wrapper not implemented.
     """

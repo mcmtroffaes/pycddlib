@@ -13,6 +13,7 @@ Contents:
 .. toctree::
    :maxdepth: 2
 
+   constants
    matrix
    linprog
    polyhedra
