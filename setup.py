@@ -66,6 +66,11 @@ cdd_sources = [
     'cddmp.c',
     'cddproj.c',
     'setoper.c']
+cdd_headers = [
+    'cdd.h',
+    'cddmp.h',
+    'cddtypes.h',
+    'setoper.h']
 
 setup(
     name = "pycddlib",
@@ -74,7 +79,9 @@ setup(
         Extension("pycddlib",
                   ["pycddlib.pyx"] + [os.path.join(cdd_dir, srcfile)
                                       for srcfile in cdd_sources],
-                  include_dirs = [cdd_dir])],
+                  include_dirs = [cdd_dir],
+                  depends=[os.path.join(cdd_dir, hdrfile)
+                           for hdrfile in cdd_headers])],
     author = "Matthias Troffaes",
     author_email = "matthias.troffaes@gmail.com",
     license = "GPL",

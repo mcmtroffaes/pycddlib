@@ -7,6 +7,10 @@ include cddlib/COPYING
 include cddlib/README
 include cddlib/AUTHORS
 include cddlib/ChangeLog
+include cddlib/lib-src/cdd.h
+include cddlib/lib-src/cddmp.h
+include cddlib/lib-src/cddtypes.h
+include cddlib/lib-src/setoper.h
 graft docs/_build/html
 prune docs/_build/html/.git
 exclude docs/_build/html/.nojekyll
