@@ -31,8 +31,6 @@ linear function over a polyhedron.
 # with this program; if not, write to the Free Software Foundation, Inc.,
 # 51 Franklin Street, Fifth Floor, Boston, MA 02110-1301 USA.
 
-import tempfile
-
 __version__ = "1.0.0"
 
 # some of cdd's functions read and write files
@@ -48,6 +46,7 @@ cdef extern from "stdio.h":
     cdef int SEEK_END
     cdef int fseek(FILE *stream, long int offset, int origin)
     cdef long int ftell(FILE *stream)
+    cdef int fclose(FILE *stream)
 
 cdef extern from "time.h":
     ctypedef long time_t
@@ -603,20 +602,30 @@ cdef extern from "cdd.h":
     cdef void dd_WriteLP(FILE *f, dd_LPPtr lp)
     cdef void dd_WriteLPResult(FILE *f, dd_LPPtr lp, dd_ErrorType err)
 
+cdef FILE *_tmpfile() except NULL:
+     cdef FILE *result
+     result = tmpfile()
+     if result == NULL:
+         raise RuntimeError("failed to create temporary file")
+     return result
+
+cdef _tmpread(FILE *pfile):
+    cdef char result[1024]
+    cdef size_t num_bytes
+    # read the file
+    fseek(pfile, 0, SEEK_SET)
+    num_bytes = fread(result, 1, 1024, pfile)
+    # close the file
+    fclose(pfile)
+    # return result
+    return result[:num_bytes]
+
 cdef _raise_error(dd_ErrorType error, msg):
     """Convert error into string and raise it."""
     cdef FILE *pfile
-    # open file for writing the matrix data
-    tmp = tempfile.TemporaryFile()
-    pfile = PyFile_AsFile(tmp)
+    pfile = _tmpfile()
     dd_WriteErrorMessages(pfile, error)
-    # read the file into a buffer
-    tmp.seek(0)
-    cddmsg = tmp.read(-1)
-    # close the file
-    tmp.close()
-    # raise it
-    raise RuntimeError(msg + "\n" + cddmsg)
+    raise RuntimeError(msg + "\n" + _tmpread(pfile))
 
 cdef _make_matrix(dd_MatrixPtr matptr):
     """Create matrix from given pointer."""
@@ -721,16 +730,9 @@ cdef class Matrix:
     def __str__(self):
         """Print the matrix data."""
         cdef FILE *pfile
-        # open file for writing the matrix data
-        tmp = tempfile.TemporaryFile()
-        pfile = PyFile_AsFile(tmp)
+        pfile = _tmpfile()
         dd_WriteMatrix(pfile, self.thisptr)
-        # read the file into a buffer
-        tmp.seek(0)
-        result = tmp.read(-1)
-        # close the file
-        tmp.close()
-        return result
+        return _tmpread(pfile)
 
     def __cinit__(self, rows, linear=False):
         """Load matrix data from the rows (which is a list of lists)."""
@@ -879,17 +881,11 @@ cdef class LinProg:
         """Print the linear program data."""
         cdef FILE *pfile
         # open file for writing the data
-        tmp = tempfile.TemporaryFile()
-        pfile = PyFile_AsFile(tmp)
+        pfile = _tmpfile()
         # note: if lp has an error, then exception is raised
         # so pass dd_NoError
         dd_WriteLPResult(pfile, self.thisptr, dd_NoError)
-        # read the file into a buffer
-        tmp.seek(0)
-        result = tmp.read(-1)
-        # close the file
-        tmp.close()
-        return result
+        return _tmpread(pfile)
 
     def __cinit__(self, Matrix mat):
         """Initialize linear program solution from solved linear program in
@@ -945,16 +941,9 @@ cdef class Polyhedron:
     def __str__(self):
         """Print the polyhedra data."""
         cdef FILE *pfile
-        # open file for writing the data
-        tmp = tempfile.TemporaryFile()
-        pfile = PyFile_AsFile(tmp)
+        pfile = _tmpfile()
         dd_WritePolyFile(pfile, self.thisptr)
-        # read the file into a buffer
-        tmp.seek(0)
-        result = tmp.read(-1)
-        # close the file
-        tmp.close()
-        return result
+        return _tmpread(pfile)
 
     def __cinit__(self, Matrix mat):
         """Initialize polyhedra from given matrix."""
