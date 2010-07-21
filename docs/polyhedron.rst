@@ -1,5 +1,5 @@
-Polyhedron
-==========
+Working With Polyhedron Representations
+=======================================
 
 .. currentmodule:: pycddlib
 

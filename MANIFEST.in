@@ -3,5 +3,11 @@ include README
 include CHANGELOG
 include AUTHORS
 include INSTALL
-
-
+include cddlib/COPYING
+include cddlib/README
+include cddlib/AUTHORS
+include cddlib/ChangeLog
+graft docs/_build/html
+prune docs/_build/html/.git
+exclude docs/_build/html/.nojekyll
+include docs/_build/latex/pycddlib.pdf

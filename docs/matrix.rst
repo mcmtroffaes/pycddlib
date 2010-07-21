@@ -1,5 +1,5 @@
-Matrix
-======
+Declaring Sets of Linear Inequalities and Generators
+====================================================
 
 .. currentmodule:: pycddlib
 
@@ -76,8 +76,7 @@ begin
 end
 <BLANKLINE>
 
-Regression Tests
-----------------
+Some regression tests:
 
 >>> pycddlib.Matrix([[1], [1, 2]]) # doctest: +ELLIPSIS
 Traceback (most recent call last):

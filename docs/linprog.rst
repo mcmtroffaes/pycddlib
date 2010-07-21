@@ -1,5 +1,5 @@
-LinProg
-=======
+Solving Linear Programs
+=======================
 
 .. currentmodule:: pycddlib
 

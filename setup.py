@@ -1,28 +1,4 @@
-"""pycddlib is a Python wrapper for Komei Fukuda's cddlib.
-
-The C-library  cddlib is a C implementation of the Double Description 
-Method of Motzkin et al. for generating all vertices (i.e. extreme points)
-and extreme rays of a general convex polyhedron in R^d given by a system 
-of linear inequalities:
-
-   P = { x=(x1, ..., xd)^T :  b - A  x  >= 0 }
-
-where  A  is a given m x d real matrix, b is a given m-vector 
-and 0 is the m-vector of all zeros.
-
-The program can be used for the reverse operation (i.e. convex hull
-computation).  This means that  one can move back and forth between 
-an inequality representation  and a generator (i.e. vertex and ray) 
-representation of a polyhedron with cdd.  Also, cdd can solve a linear
-programming problem, i.e. a problem of maximizing and minimizing 
-a linear function over P.
-
-See http://www.ifor.math.ethz.ch/~fukuda/cdd_home/cdd.html for more information
-about cddlib.
-
-See http://github.com/mcmtroffaes/pycddlib/ for more information about
-pycddlib.
-"""
+"""Setup script for pycddlib."""
 
 # pycddlib is a Python wrapper for Komei Fukuda's cddlib
 # Copyright (c) 2008, Matthias Troffaes
@@ -66,7 +42,20 @@ for line in open('pycddlib.pyx'):
 else:
     raise RuntimeError("failed to extract version from pycddlib.pyx")
 
-doclines = __doc__.split("\n")
+# get documentation from pyx file
+doclines = []
+for line in open('pycddlib.pyx'):
+    # last line of docstring?
+    if line == '"""\n':
+        break
+    # first line of docstring?
+    if line.startswith('"""'):
+        line = line[3:-1]
+    else:
+        line = line[:-1]
+    doclines.append(line)
+else:
+    raise RuntimeError("failed to extract docstring from pycddlib.pyx")
 
 cdd_dir = 'cddlib/lib-src'
 cdd_sources = [
@@ -93,5 +82,5 @@ setup(
     platforms = "any",
     description = doclines[0],
     long_description = "\n".join(doclines[2:]),
-    url = "http://github.com/mcmtroffaes/pycddlib/",
+    url = "http://mcmtroffaes.github.com/pycddlib/",
     cmdclass = {'build_ext': build_ext})
