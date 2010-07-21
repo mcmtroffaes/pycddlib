@@ -31,10 +31,12 @@ linear function over a polyhedron.
 # with this program; if not, write to the Free Software Foundation, Inc.,
 # 51 Franklin Street, Fifth Floor, Boston, MA 02110-1301 USA.
 
+cimport python_unicode
+
 __version__ = "1.0.0"
 
 # some of cdd's functions read and write files
-cdef extern from "stdio.h":
+cdef extern from "stdio.h" nogil:
     ctypedef struct FILE
     ctypedef int size_t
     cdef FILE *stdout
@@ -56,7 +58,7 @@ cdef extern from "Python.h":
     FILE *PyFile_AsFile(object)
 
 # set operations (need to include this before cdd.h to avoid compile errors)
-cdef extern from "setoper.h":
+cdef extern from "setoper.h" nogil:
     ctypedef unsigned long *set_type
     cdef unsigned long set_blocks(long len)
     cdef void set_initialize(set_type *setp,long len)
@@ -340,7 +342,7 @@ cdef class LPStatusType:
 
 # structures
 
-cdef extern from "cdd.h":
+cdef extern from "cdd.h" nogil:
 
     # forward, pointer, and alias declarations
     ctypedef struct dd_raydata
@@ -618,7 +620,7 @@ cdef _tmpread(FILE *pfile):
     # close the file
     fclose(pfile)
     # return result
-    return result[:num_bytes]
+    return python_unicode.PyUnicode_DecodeUTF8(result, num_bytes, 'strict')
 
 cdef _raise_error(dd_ErrorType error, msg):
     """Convert error into string and raise it."""
