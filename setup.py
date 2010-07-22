@@ -42,20 +42,8 @@ for line in open('pycddlib.pyx'):
 else:
     raise RuntimeError("failed to extract version from pycddlib.pyx")
 
-# get documentation from pyx file
-doclines = []
-for line in open('pycddlib.pyx'):
-    # last line of docstring?
-    if line == '"""\n':
-        break
-    # first line of docstring?
-    if line.startswith('"""'):
-        line = line[3:-1]
-    else:
-        line = line[:-1]
-    doclines.append(line)
-else:
-    raise RuntimeError("failed to extract docstring from pycddlib.pyx")
+# get documentation from README file
+doclines = open('README').read().split('\n')
 
 cdd_dir = 'cddlib/lib-src'
 cdd_sources = [

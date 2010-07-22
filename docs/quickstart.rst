@@ -4,7 +4,7 @@ Getting Started
 Overview
 --------
 
-.. automodule:: pycddlib
+.. include:: ../README
 
 Installation
 ------------
