@@ -1,29 +1,19 @@
-Requirements
-============
+Automatic Installer
+~~~~~~~~~~~~~~~~~~~
 
-To compile pycddlib, you need Cython, which you can get from
-http://www.cython.org/
+The simplest way to install pycddlib, is to `download <http://github.com/mcmtroffaes/pycddlib/downloads/>`_ an installer and run it.
 
-Manual installation
-===================
+Building From Source
+~~~~~~~~~~~~~~~~~~~~
 
-Windows
--------
+To get the source code, clone it with `Git <http://git-scm.com>`_ by running::
 
-On Windows you first need to set up your build environment, for
-instance with MinGW:
+    git clone --recursive git://github.com/mcmtroffaes/pycddlib
 
-http://www.mingw.org/
-http://www.mingw.org/MinGWiki/index.php/Python extensions
-http://sourceforge.net/project/showfiles.php?group_id=2435&package_id=240780
+You can also browse the source code on GitHub: `mcmtroffaes/pycddlib <http://github.com/mcmtroffaes/pycddlib>`_.
 
-Now, simply run
+Then simply run the :file:`build.sh` script: this will build the library, install it, generate the documentation, and run all the doctests. Note that you need `Cython <http://www.cython.org/>`_ to compile the source, and `Sphinx <http://sphinx.pocoo.org/>`_ to generate the documentation.
 
-  python setup.py install --compiler=mingw32
+If you merely want to compile and install the library, just run::
 
-Linux
------
-
-Simply run
-
-  python setup.py install
+    python setup.py install
