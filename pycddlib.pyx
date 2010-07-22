@@ -33,7 +33,7 @@ linear function over a polyhedron.
 
 cimport python_unicode
 
-__version__ = "1.0.0"
+__version__ = "1.0.1"
 
 # some of cdd's functions read and write files
 cdef extern from "stdio.h" nogil:
