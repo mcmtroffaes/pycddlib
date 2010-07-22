@@ -3,6 +3,9 @@ git clean -xfd
 python setup.py build
 python setup.py install --user
 pushd docs
+pushd _build/html
+ls -1 | xargs rm -r
+popd
 make doctest
 make html
 make latex
