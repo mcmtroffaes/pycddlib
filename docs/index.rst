@@ -1,7 +1,7 @@
 Welcome to pycddlib's documentation!
 ====================================
 
-:Release: |version|
+:Release: |release|
 :Date:    |today|
 
 .. toctree::

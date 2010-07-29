@@ -20,6 +20,7 @@
 cimport python_unicode
 
 __version__ = "1.0.1"
+__release__ = __version__ + " (beta)"
 
 # some of cdd's functions read and write files
 cdef extern from "stdio.h" nogil:
