@@ -1,3 +1,7 @@
+.. testsetup::
+
+   from pycddlib import *
+
 Solving Linear Programs
 =======================
 
@@ -23,13 +27,16 @@ Attributes
 Examples
 --------
 
+Note that the following examples presume:
+
+>>> from pycddlib import *
+
 This is the testlp2.c example that comes with cddlib.
 
->>> import pycddlib
->>> mat = pycddlib.Matrix([['4/3',-2,-1],['2/3',0,-1],[0,1,0],[0,0,1]])
->>> mat.obj_type = pycddlib.LPObjType.MAX
+>>> mat = Matrix([['4/3',-2,-1],['2/3',0,-1],[0,1,0],[0,0,1]])
+>>> mat.obj_type = LPObjType.MAX
 >>> mat.obj_func = (0,3,4)
->>> print mat
+>>> print(mat)
 begin
  4 3 rational
  4/3 -2 -1
@@ -41,9 +48,9 @@ maximize
  0 3 4
 >>> print(mat.obj_func)
 (0, 3, 4)
->>> lp = pycddlib.LinProg(mat)
+>>> lp = LinProg(mat)
 >>> lp.solve()
->>> lp.status == pycddlib.LPStatusType.OPTIMAL
+>>> lp.status == LPStatusType.OPTIMAL
 True
 >>> print(lp.obj_value)
 11/3

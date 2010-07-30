@@ -1,3 +1,7 @@
+.. testsetup::
+
+   from pycddlib import *
+
 Working With Polyhedron Representations
 =======================================
 
@@ -19,12 +23,15 @@ Attributes
 Examples
 --------
 
+Note that the following examples presume:
+
+>>> from pycddlib import *
+
 This is the sampleh1.ine example that comes with cddlib.
 
->>> import pycddlib
->>> mat = pycddlib.Matrix([[2,-1,-1,0],[0,1,0,0],[0,0,1,0]])
->>> mat.rep_type = pycddlib.RepType.INEQUALITY
->>> poly = pycddlib.Polyhedron(mat)
+>>> mat = Matrix([[2,-1,-1,0],[0,1,0,0],[0,0,1,0]])
+>>> mat.rep_type = RepType.INEQUALITY
+>>> poly = Polyhedron(mat)
 >>> print(poly)
 begin
  3 4 rational
@@ -48,9 +55,8 @@ frozenset([3])
 
 This is the testcdd2.c example that comes with cddlib.
 
->>> import pycddlib
->>> mat = pycddlib.Matrix([[7,-3,-0],[7,0,-3],[1,1,0],[1,0,1]])
->>> mat.rep_type = pycddlib.RepType.INEQUALITY
+>>> mat = Matrix([[7,-3,-0],[7,0,-3],[1,1,0],[1,0,1]])
+>>> mat.rep_type = RepType.INEQUALITY
 >>> print(mat)
 H-representation
 begin
@@ -60,7 +66,7 @@ begin
  1 1 0
  1 0 1
 end
->>> print(pycddlib.Polyhedron(mat).get_generators())
+>>> print(Polyhedron(mat).get_generators())
 V-representation
 begin
  4 3 rational
@@ -84,7 +90,7 @@ begin
  7 1 -3
  7 -3 1
 end
->>> print(pycddlib.Polyhedron(mat).get_generators())
+>>> print(Polyhedron(mat).get_generators())
 V-representation
 begin
  2 3 rational

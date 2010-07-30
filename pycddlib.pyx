@@ -699,16 +699,14 @@ cdef class Matrix:
 
        Beware when using floats:
 
-       >>> import pycddlib
-       >>> print(pycddlib.Matrix([[1.12]])[0][0])
+       >>> print(Matrix([[1.12]])[0][0])
        1261007895663739/1125899906842624
 
        If the float represents a fraction, it is better to pass it as a
        string, so it gets automatically converted to its exact fraction
        representation:
 
-       >>> import pycddlib
-       >>> print(pycddlib.Matrix([['1.12']])[0][0])
+       >>> print(Matrix([['1.12']])[0][0])
        28/25
     """
 

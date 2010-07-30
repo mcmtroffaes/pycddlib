@@ -1,3 +1,7 @@
+.. testsetup::
+
+   from pycddlib import *
+
 Sets of Linear Inequalities and Generators
 ==========================================
 
@@ -25,8 +29,13 @@ Attributes
 Examples
 --------
 
->>> import pycddlib
->>> mat1 = pycddlib.Matrix([[1,2],[3,4]])
+Note that the following examples presume:
+
+>>> from pycddlib import *
+
+Declaring matrices, and checking some attributes:
+
+>>> mat1 = Matrix([[1,2],[3,4]])
 >>> print mat1
 begin
  2 2 rational
@@ -73,36 +82,14 @@ begin
  3 4
 end
 
-.. warning::
-
-   Beware when you use floats:
-
-   >>> import pycddlib
-   >>> print(pycddlib.Matrix([[1.12]]))
-   begin
-    1 1 rational
-    1261007895663739/1125899906842624
-   end
-
-   If the float represents a fraction, it is better to pass it as a
-   string, so it gets automatically converted to its exact fraction
-   representation:
-
-   >>> import pycddlib
-   >>> print(pycddlib.Matrix([['1.12']]))
-   begin
-    1 1 rational
-    28/25
-   end
-
 Some regression tests:
 
->>> pycddlib.Matrix([[1], [1, 2]]) # doctest: +ELLIPSIS
+>>> Matrix([[1], [1, 2]]) # doctest: +ELLIPSIS
 Traceback (most recent call last):
     ...
 ValueError: rows have different lengths
 
->>> mat = pycddlib.Matrix([[1], [2]])
+>>> mat = Matrix([[1], [2]])
 >>> mat.obj_func = (0, 0) # doctest: +ELLIPSIS
 Traceback (most recent call last):
     ...
