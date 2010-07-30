@@ -58,3 +58,18 @@ True
 1/3 2/3
 >>> print(" ".join("{0}".format(val) for val in lp.dual_solution))
 3/2 5/2
+
+Another example.
+
+>>> mat = Matrix([[1,-1,-1,-1],[-1,1,1,1],[0,1,0,0],[0,0,1,0],[0,0,0,1]])
+>>> mat.obj_type = LPObjType.MIN
+>>> mat.obj_func = (0,1,2,3)
+>>> lp = LinProg(mat)
+>>> lp.solve()
+>>> print(lp.obj_value)
+1
+>>> mat.obj_func = (0,-1,-2,-3)
+>>> lp = LinProg(mat)
+>>> lp.solve()
+>>> print(lp.obj_value)
+-3

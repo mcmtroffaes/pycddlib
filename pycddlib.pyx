@@ -658,8 +658,8 @@ cdef _set_set(set_type set_, pset):
 
 cdef _get_mytype(mytype target):
     """Get :class:`fractions.Fraction` or :class:`int` from target."""
-    cdef unsigned long num
-    cdef unsigned long den
+    cdef signed long num
+    cdef signed long den
     num = mpz_get_si(mpq_numref(target))
     den = mpz_get_si(mpq_denref(target))
     if den == 1:
