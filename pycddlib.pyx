@@ -687,8 +687,8 @@ cdef _set_mytype(mytype target, value):
 
 # matrix class
 cdef class Matrix:
-    """A class for working with matrices, sets of linear constraints,
-    and extreme points.
+    """A class for working with sets of linear constraints and extreme
+    points.
 
     :param rows: The rows of the matrix. Each element can be an :class:`int`, :class:`float`, :class:`fractions.Fraction`, or :class:`str`. The values are automatically converted to a fraction.
     :type rows: ``list`` of ``list``\ s.
