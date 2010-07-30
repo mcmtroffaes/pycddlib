@@ -764,7 +764,6 @@ cdef class Matrix:
                           for 0 <= colindex < self.thisptr.colsize])
         def __set__(self, obj_func):
             cdef int colindex
-            cdef double value
             if len(obj_func) != self.thisptr.colsize:
                 raise ValueError(
                     "objective function does not match matrix column size")

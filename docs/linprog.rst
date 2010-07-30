@@ -73,3 +73,8 @@ Another example.
 >>> lp.solve()
 >>> print(lp.obj_value)
 -3
+>>> mat.obj_func = (0,'1.12','1.2','1.3')
+>>> lp = LinProg(mat)
+>>> lp.solve()
+>>> print(lp.obj_value) # 28/25 is 1.12
+28/25
