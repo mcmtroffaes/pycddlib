@@ -691,9 +691,9 @@ cdef class Matrix:
     points.
 
     :param rows: The rows of the matrix. Each element can be an :class:`int`, :class:`float`, :class:`fractions.Fraction`, or :class:`str`. The values are automatically converted to a fraction.
-    :type rows: ``list`` of ``list``\ s.
+    :type rows: :class:`list` of :class:`list`\ s.
     :param linear: Whether to add the rows to the :attr:`lin_set` or not.
-    :type linear: ``bool``
+    :type linear: :class:`bool`
 
     .. warning::
 
@@ -728,7 +728,7 @@ cdef class Matrix:
             return self.thisptr.colsize
 
     property lin_set:
-        """A ``frozenset`` containing the rows of linearity
+        """A :class:`frozenset` containing the rows of linearity
         (generators of linearity space for V-representation, and
         equations for H-representation).
         """
@@ -754,7 +754,7 @@ cdef class Matrix:
             self.thisptr.objective = value
 
     property obj_func:
-        """A ``tuple`` containing the linear programming objective
+        """A :class:`tuple` containing the linear programming objective
         function.
         """
         def __get__(self):
@@ -822,9 +822,9 @@ cdef class Matrix:
         raises a ValueError if the input rows are not appropriate.
 
         :param rows: The rows to append.
-        :type rows: ``list`` of ``list`` of ``float``
+        :type rows: :class:`list` of :class:`list`\ s
         :param linear: Whether to add the rows to the :attr:`lin_set` or not.
-        :type linear: ``bool``
+        :type linear: :class:`bool`
         """
         cdef Matrix other
         cdef int success
@@ -851,8 +851,8 @@ cdef class Matrix:
         """Return a row, or a slice of rows, of the matrix.
 
         :param key: The row number, or slice of row numbers, to get.
-        :type key: ``int`` or ``slice``
-        :rtype: ``tuple`` of ``float``, or ``tuple`` of ``tuple`` of ``float``
+        :type key: :class:`int` or :class:`slice`
+        :rtype: :class:`tuple` of :class:`fractions.Fraction`, or :class:`tuple` of :class:`tuple` of :class:`fractions.Fraction`
         """
         cdef dd_rowrange rownum
         cdef dd_rowrange j
@@ -906,14 +906,14 @@ cdef class LinProg:
             return _get_mytype(self.thisptr.optvalue)
 
     property primal_solution:
-        """A ``tuple`` containing the primal solution."""
+        """A :class:`tuple` containing the primal solution."""
         def __get__(self):
             cdef int colindex
             return tuple([_get_mytype(self.thisptr.sol[colindex])
                           for 1 <= colindex < self.thisptr.d])
 
     property dual_solution:
-        """A ``tuple`` containing the dual solution."""
+        """A :class:`tuple` containing the dual solution."""
         def __get__(self):
             cdef int colindex
             return tuple([_get_mytype(self.thisptr.dsol[colindex])
@@ -955,7 +955,7 @@ cdef class LinProg:
         """Solve linear program.
 
         :param solver: The method of solution (see :class:`LPSolverType`).
-        :type solver: ``int``
+        :type solver: :class:`int`
         """
         cdef dd_ErrorType error
         error = dd_NoError
