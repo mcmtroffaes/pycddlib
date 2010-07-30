@@ -2,6 +2,7 @@ Version 1.0.1:
 * minor documentation updates
 * updated for GMPRATIONAL build of cddlib, using Python's fractions.Fraction
 * using MPIR so it also builds on Windows
+* removed trailing newlines in __str__ methods
 
 Version 1.0.0:
 * first release, based on cddlib 0.94f

@@ -32,7 +32,6 @@ begin
  0 1 0 0
  0 0 1 0
 end
-<BLANKLINE>
 >>> ext = poly.get_generators()
 >>> print(ext)
 V-representation
@@ -44,7 +43,6 @@ begin
  1 0 2 0
  0 0 0 1
 end
-<BLANKLINE>
 >>> print(ext.lin_set) # note: first row is 0, so fourth row is 3
 frozenset([3])
 
@@ -62,7 +60,6 @@ begin
  1 1 0
  1 0 1
 end
-<BLANKLINE>
 >>> print(pycddlib.Polyhedron(mat).get_generators())
 V-representation
 begin
@@ -72,7 +69,6 @@ begin
  1 -1 7/3
  1 7/3 7/3
 end
-<BLANKLINE>
 >>> # add an equality and an inequality
 >>> mat.extend([[7, 1, -3]], linear=True)
 >>> mat.extend([[7, -3, 1]])
@@ -88,7 +84,6 @@ begin
  7 1 -3
  7 -3 1
 end
-<BLANKLINE>
 >>> print(pycddlib.Polyhedron(mat).get_generators())
 V-representation
 begin
@@ -96,4 +91,3 @@ begin
  1 -1 2
  1 0 7/3
 end
-<BLANKLINE>

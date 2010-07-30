@@ -39,7 +39,6 @@ begin
 end
 maximize
  0 3 4
-<BLANKLINE>
 >>> print(mat.obj_func)
 (0, 3, 4)
 >>> lp = pycddlib.LinProg(mat)

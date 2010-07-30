@@ -33,7 +33,6 @@ begin
  1 2
  3 4
 end
-<BLANKLINE>
 >>> mat1.row_size
 2
 >>> mat1.col_size
@@ -57,7 +56,6 @@ begin
  3 4
  5 6
 end
-<BLANKLINE>
 >>> print(mat1[0])
 (1, 2)
 >>> print(mat1[1])
@@ -74,7 +72,28 @@ begin
  1 2
  3 4
 end
-<BLANKLINE>
+
+.. warning::
+
+   Beware when you use floats:
+
+   >>> import pycddlib
+   >>> print(pycddlib.Matrix([[1.12]]))
+   begin
+    1 1 rational
+    1261007895663739/1125899906842624
+   end
+
+   If the float represents a fraction, it is better to pass it as a
+   string, so it gets automatically converted to its exact fraction
+   representation:
+
+   >>> import pycddlib
+   >>> print(pycddlib.Matrix([['1.12']]))
+   begin
+    1 1 rational
+    28/25
+   end
 
 Some regression tests:
 

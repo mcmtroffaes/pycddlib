@@ -626,7 +626,7 @@ cdef _raise_error(dd_ErrorType error, msg):
     cdef FILE *pfile
     pfile = _tmpfile()
     dd_WriteErrorMessages(pfile, error)
-    raise RuntimeError(msg + "\n" + _tmpread(pfile))
+    raise RuntimeError(msg + "\n" + _tmpread(pfile).rstrip('\n'))
 
 cdef _make_matrix(dd_MatrixPtr matptr):
     """Create matrix from given pointer."""
@@ -690,10 +690,26 @@ cdef class Matrix:
     """A class for working with matrices, sets of linear constraints,
     and extreme points.
 
-    :param rows: The rows of the matrix.
-    :type rows: ``list`` of ``list`` of ``float``
+    :param rows: The rows of the matrix. Each element can be an :class:`int`, :class:`float`, :class:`fractions.Fraction`, or :class:`str`. The values are automatically converted to a fraction.
+    :type rows: ``list`` of ``list``\ s.
     :param linear: Whether to add the rows to the :attr:`lin_set` or not.
     :type linear: ``bool``
+
+    .. warning::
+
+       Beware when using floats:
+
+       >>> import pycddlib
+       >>> print(pycddlib.Matrix([[1.12]])[0][0])
+       1261007895663739/1125899906842624
+
+       If the float represents a fraction, it is better to pass it as a
+       string, so it gets automatically converted to its exact fraction
+       representation:
+
+       >>> import pycddlib
+       >>> print(pycddlib.Matrix([['1.12']])[0][0])
+       28/25
     """
 
     # pointer containing the matrix data
@@ -762,7 +778,7 @@ cdef class Matrix:
         cdef FILE *pfile
         pfile = _tmpfile()
         dd_WriteMatrix(pfile, self.thisptr)
-        return _tmpread(pfile)
+        return _tmpread(pfile).rstrip('\n')
 
     def __cinit__(self, rows, linear=False):
         """Load matrix data from the rows (which is a list of lists)."""
@@ -913,7 +929,7 @@ cdef class LinProg:
         # note: if lp has an error, then exception is raised
         # so pass dd_NoError
         dd_WriteLPResult(pfile, self.thisptr, dd_NoError)
-        return _tmpread(pfile)
+        return _tmpread(pfile).rstrip('\n')
 
     def __cinit__(self, Matrix mat):
         """Initialize linear program solution from solved linear program in
@@ -971,7 +987,7 @@ cdef class Polyhedron:
         cdef FILE *pfile
         pfile = _tmpfile()
         dd_WritePolyFile(pfile, self.thisptr)
-        return _tmpread(pfile)
+        return _tmpread(pfile).rstrip('\n')
 
     def __cinit__(self, Matrix mat):
         """Initialize polyhedra from given matrix."""
