@@ -27,10 +27,10 @@ This is the sampleh1.ine example that comes with cddlib.
 >>> poly = pycddlib.Polyhedron(mat)
 >>> print(poly)
 begin
- 3 4 real
-  2 -1 -1  0
-  0  1  0  0
-  0  0  1  0
+ 3 4 rational
+ 2 -1 -1 0
+ 0 1 0 0
+ 0 0 1 0
 end
 <BLANKLINE>
 >>> ext = poly.get_generators()
@@ -38,11 +38,11 @@ end
 V-representation
 linearity 1  4
 begin
- 4 4 real
-  1  0  0  0
-  1  2  0  0
-  1  0  2  0
-  0  0  0  1
+ 4 4 rational
+ 1 0 0 0
+ 1 2 0 0
+ 1 0 2 0
+ 0 0 0 1
 end
 <BLANKLINE>
 >>> print(ext.lin_set) # note: first row is 0, so fourth row is 3
@@ -56,21 +56,21 @@ This is the testcdd2.c example that comes with cddlib.
 >>> print(mat)
 H-representation
 begin
- 4 3 real
-  7 -3  0
-  7  0 -3
-  1  1  0
-  1  0  1
+ 4 3 rational
+ 7 -3 0
+ 7 0 -3
+ 1 1 0
+ 1 0 1
 end
 <BLANKLINE>
 >>> print(pycddlib.Polyhedron(mat).get_generators())
 V-representation
 begin
- 4 3 real
-  1  2.333333333E+00 -1
-  1 -1 -1
-  1 -1  2.333333333E+00
-  1  2.333333333E+00  2.333333333E+00
+ 4 3 rational
+ 1 7/3 -1
+ 1 -1 -1
+ 1 -1 7/3
+ 1 7/3 7/3
 end
 <BLANKLINE>
 >>> # add an equality and an inequality
@@ -80,20 +80,20 @@ end
 H-representation
 linearity 1  5
 begin
- 6 3 real
-  7 -3  0
-  7  0 -3
-  1  1  0
-  1  0  1
-  7  1 -3
-  7 -3  1
+ 6 3 rational
+ 7 -3 0
+ 7 0 -3
+ 1 1 0
+ 1 0 1
+ 7 1 -3
+ 7 -3 1
 end
 <BLANKLINE>
 >>> print(pycddlib.Polyhedron(mat).get_generators())
 V-representation
 begin
- 2 3 real
-  1 -1  2
-  1  0  2.333333333E+00
+ 2 3 rational
+ 1 -1 2
+ 1 0 7/3
 end
 <BLANKLINE>

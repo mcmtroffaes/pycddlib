@@ -60,16 +60,42 @@ cdd_headers = [
     'cddtypes.h',
     'setoper.h']
 
+cddgmp_dir = 'cddlib/lib-src-gmp'
+cddgmp_sources = cdd_sources + [
+    'cddcore_f.c',
+    'cddio_f.c',
+    'cddlib_f.c',
+    'cddlp_f.c',
+    'cddmp_f.c',
+    'cddproj_f.c']
+cddgmp_headers = cdd_headers + [
+    'cdd_f.h',
+    'cddmp_f.h',
+    'cddtypes_f.h']
+
 setup(
     name = "pycddlib",
     version = version,
     ext_modules= [
+        # old extension which builds without gmp
+        #Extension("pycddlib",
+        #          ["pycddlib.pyx"] + [os.path.join(cdd_dir, srcfile)
+        #                              for srcfile in cdd_sources],
+        #          include_dirs = [cdd_dir],
+        #          depends=[os.path.join(cdd_dir, hdrfile)
+        #                   for hdrfile in cdd_headers],
+        #          ),
         Extension("pycddlib",
-                  ["pycddlib.pyx"] + [os.path.join(cdd_dir, srcfile)
-                                      for srcfile in cdd_sources],
-                  include_dirs = [cdd_dir],
-                  depends=[os.path.join(cdd_dir, hdrfile)
-                           for hdrfile in cdd_headers])],
+                  ["pycddlib.pyx"] + [os.path.join(cddgmp_dir, srcfile)
+                                      for srcfile in cddgmp_sources],
+                  include_dirs = [cddgmp_dir],
+                  depends=[os.path.join(cddgmp_dir, hdrfile)
+                           for hdrfile in cddgmp_headers],
+                  define_macros = [('GMPRATIONAL', None),
+                                   ('MPIR', None)],
+                  libraries = ['mpir'],
+                  ),
+        ],
     author = "Matthias Troffaes",
     author_email = "matthias.troffaes@gmail.com",
     license = "GPL",

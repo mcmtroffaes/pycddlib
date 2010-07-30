@@ -1,5 +1,5 @@
-Declaring Sets of Linear Inequalities and Generators
-====================================================
+Sets of Linear Inequalities and Generators
+==========================================
 
 .. currentmodule:: pycddlib
 
@@ -29,9 +29,9 @@ Examples
 >>> mat1 = pycddlib.Matrix([[1,2],[3,4]])
 >>> print mat1
 begin
- 2 2 real
-  1  2
-  3  4
+ 2 2 rational
+ 1 2
+ 3 4
 end
 <BLANKLINE>
 >>> mat1.row_size
@@ -39,9 +39,9 @@ end
 >>> mat1.col_size
 2
 >>> print(mat1[0])
-(1.0, 2.0)
+(1, 2)
 >>> print(mat1[1])
-(3.0, 4.0)
+(3, 4)
 >>> print(mat1[2]) # doctest: +ELLIPSIS
 Traceback (most recent call last):
   ...
@@ -52,27 +52,27 @@ IndexError: row index out of range
 3
 >>> print mat1
 begin
- 3 2 real
-  1  2
-  3  4
-  5  6
+ 3 2 rational
+ 1 2
+ 3 4
+ 5 6
 end
 <BLANKLINE>
 >>> print(mat1[0])
-(1.0, 2.0)
+(1, 2)
 >>> print(mat1[1])
-(3.0, 4.0)
+(3, 4)
 >>> print(mat1[2])
-(5.0, 6.0)
+(5, 6)
 >>> mat1[1:3]
-((3.0, 4.0), (5.0, 6.0))
+((3, 4), (5, 6))
 >>> mat1[:-1]
-((1.0, 2.0), (3.0, 4.0))
+((1, 2), (3, 4))
 >>> print mat2
 begin
- 2 2 real
-  1  2
-  3  4
+ 2 2 rational
+ 1 2
+ 3 4
 end
 <BLANKLINE>
 

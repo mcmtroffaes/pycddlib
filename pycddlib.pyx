@@ -19,8 +19,20 @@
 
 cimport python_unicode
 
+from fractions import Fraction
+
 __version__ = "1.0.1"
 __release__ = __version__ + " (beta)"
+
+# gmp functions
+cdef extern from "mpir.h" nogil:
+    ctypedef struct mpz_t:
+        pass
+    ctypedef struct mpq_t:
+        pass
+    cdef mpz_t mpq_numref(mpq_t op)
+    cdef mpz_t mpq_denref(mpq_t op)
+    cdef unsigned long mpz_get_si(mpz_t op)
 
 # some of cdd's functions read and write files
 cdef extern from "stdio.h" nogil:
@@ -72,7 +84,7 @@ cdef extern from "setoper.h" nogil:
 cdef extern from "cdd.h":
 
     ctypedef int dd_boolean
-    ctypedef double mytype[1]
+    ctypedef mpq_t mytype
     ctypedef long dd_rowrange
     ctypedef long dd_colrange
     ctypedef long dd_bigrange
@@ -644,6 +656,35 @@ cdef _set_set(set_type set_, pset):
         else:
             set_delelem(set_, elem)
 
+cdef _get_mytype(mytype target):
+    """Get :class:`fractions.Fraction` or :class:`int` from target."""
+    cdef unsigned long num
+    cdef unsigned long den
+    num = mpz_get_si(mpq_numref(target))
+    den = mpz_get_si(mpq_denref(target))
+    if den == 1:
+        # calling int() makes that we don't return a long unless needed
+        return int(num)
+    else:
+        return Fraction(num, den)
+
+cdef _set_mytype(mytype target, value):
+    """Set target to given value (:class:`str`, :class:`int`,
+    :class:`long`, :class:`float`, or :class:`fractions.Fraction`). A
+    :class:`str` is automatically converted to a
+    :class:`fractions.Fraction` using its constructor.
+    """
+    # convert string to fraction
+    if isinstance(value, str):
+        value = Fraction(value)
+    # set target to value
+    if isinstance(value, (int, long)):
+        dd_set_si(target, value)
+    elif isinstance(value, float):
+        dd_set_d(target, value)
+    elif isinstance(value, Fraction):
+        dd_set_si2(target, value.numerator, value.denominator)
+
 # matrix class
 cdef class Matrix:
     """A class for working with matrices, sets of linear constraints,
@@ -705,7 +746,7 @@ cdef class Matrix:
         def __get__(self):
             # return an immutable tuple to prohibit item assignment
             cdef int colindex
-            return tuple([dd_get_d(self.thisptr.rowvec[colindex])
+            return tuple([_get_mytype(self.thisptr.rowvec[colindex])
                           for 0 <= colindex < self.thisptr.colsize])
         def __set__(self, obj_func):
             cdef int colindex
@@ -714,7 +755,7 @@ cdef class Matrix:
                 raise ValueError(
                     "objective function does not match matrix column size")
             for colindex, value in enumerate(obj_func):
-                dd_set_d(self.thisptr.rowvec[colindex], value)
+                _set_mytype(self.thisptr.rowvec[colindex], value)
 
     def __str__(self):
         """Print the matrix data."""
@@ -726,7 +767,6 @@ cdef class Matrix:
     def __cinit__(self, rows, linear=False):
         """Load matrix data from the rows (which is a list of lists)."""
         cdef int numrows, numcols, rowindex, colindex
-        cdef double value
         # reset pointer
         self.thisptr = NULL
         # determine dimension
@@ -737,13 +777,12 @@ cdef class Matrix:
             numcols = 0
         # create new matrix
         self.thisptr = dd_CreateMatrix(numrows, numcols)
-        self.thisptr.numbtype = dd_Real
         # load data
         for rowindex, row in enumerate(rows):
             if len(row) != numcols:
                 raise ValueError("rows have different lengths")
             for colindex, value in enumerate(row):
-                dd_set_d(self.thisptr.matrix[rowindex][colindex], value)
+                _set_mytype(self.thisptr.matrix[rowindex][colindex], value)
         if linear:
             # set all constraints as linear
             set_compl(self.thisptr.linset, self.thisptr.linset)
@@ -814,7 +853,7 @@ cdef class Matrix:
             if rownum < 0 or rownum >= self.thisptr.rowsize:
                 raise IndexError("row index out of range")
             # return an immutable tuple to prohibit item assignment
-            return tuple([dd_get_d(self.thisptr.matrix[rownum][j])
+            return tuple([_get_mytype(self.thisptr.matrix[rownum][j])
                           for 0 <= j < self.thisptr.colsize])
 
 cdef class LinProg:
@@ -850,20 +889,20 @@ cdef class LinProg:
     property obj_value:
         """The optimal value of the objective function."""
         def __get__(self):
-            return dd_get_d(self.thisptr.optvalue)
+            return _get_mytype(self.thisptr.optvalue)
 
     property primal_solution:
         """A ``tuple`` containing the primal solution."""
         def __get__(self):
             cdef int colindex
-            return tuple([dd_get_d(self.thisptr.sol[colindex])
+            return tuple([_get_mytype(self.thisptr.sol[colindex])
                           for 1 <= colindex < self.thisptr.d])
 
     property dual_solution:
         """A ``tuple`` containing the dual solution."""
         def __get__(self):
             cdef int colindex
-            return tuple([dd_get_d(self.thisptr.dsol[colindex])
+            return tuple([_get_mytype(self.thisptr.dsol[colindex])
                           for 1 <= colindex < self.thisptr.d])
 
     def __str__(self):
