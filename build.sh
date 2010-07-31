@@ -2,8 +2,11 @@
 pushd .
 (
 git clean -xfd &&
-python setup.py build &&
-python setup.py install --user &&
+python2 setup.py build &&
+python2 setup.py install --user &&
+git clean -xfd &&
+python3 setup.py build &&
+python3 setup.py install --user &&
 pushd docs &&
 pushd _build/html &&
 (([ "`ls -1 | xargs`" ] && (ls -1 | xargs rm -r)) || true) &&
@@ -12,6 +15,6 @@ make html &&
 make latexpdf &&
 make doctest &&
 popd  &&
-python setup.py sdist --formats=zip
+python3 setup.py sdist --formats=zip
 ) || popd
 
