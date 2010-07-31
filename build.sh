@@ -9,10 +9,7 @@ pushd _build/html &&
 (([ "`ls -1 | xargs`" ] && (ls -1 | xargs rm -r)) || true) &&
 popd &&
 make html &&
-make latex &&
-pushd _build/latex &&
-make all-pdf &&
-popd &&
+make latexpdf &&
 make doctest &&
 popd  &&
 python setup.py sdist --formats=zip
