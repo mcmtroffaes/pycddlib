@@ -18,6 +18,7 @@
 # 51 Franklin Street, Fifth Floor, Boston, MA 02110-1301 USA.
 
 cimport python_unicode
+cimport python_bytes
 
 from fractions import Fraction
 
@@ -64,8 +65,6 @@ cdef extern from "mpir.h" nogil:
 # get object as file
 cdef extern from "Python.h":
     FILE *PyFile_AsFile(object)
-    object PyString_FromStringAndSize(char *v, Py_ssize_t len)
-    char* PyString_AsString(object)
 
 # set operations (need to include this before cdd.h to avoid compile errors)
 cdef extern from "setoper.h" nogil:
@@ -681,11 +680,11 @@ cdef _get_mytype(mytype target):
         else:
             return Fraction(num, den)
     else:
-        buf = PyString_FromStringAndSize(NULL, mpz_sizeinbase(mpq_numref(target), 10) + mpz_sizeinbase(mpq_denref(target), 10) + 3)
-        buf_ptr = PyString_AsString(buf)
+        buf = python_bytes.PyBytes_FromStringAndSize(NULL, mpz_sizeinbase(mpq_numref(target), 10) + mpz_sizeinbase(mpq_denref(target), 10) + 3)
+        buf_ptr = python_bytes.PyBytes_AsString(buf)
         mpq_get_str(buf_ptr, 10, target)
-        # Fraction(buf) would also include the trailing null characters
-        return Fraction(buf_ptr)
+        # trick: bytes(buf_ptr) removes everything after the null
+        return Fraction(bytes(buf_ptr).decode('ascii'))
 
 cdef _set_mytype(mytype target, value):
     """Set target to given value (:class:`str`, :class:`int`,
@@ -704,7 +703,7 @@ cdef _set_mytype(mytype target, value):
             dd_set_si2(target, value.numerator, value.denominator)
         except OverflowError:
             # in case of overflow, set it using mpq_set_str
-            buf = str(value)
+            buf = str(value).encode('ascii')
             if mpq_set_str(target, buf, 10) == -1:
                 raise ValueError('could not convert %s to mpq_t' % value)
 

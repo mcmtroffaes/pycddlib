@@ -36,7 +36,7 @@ Note that the following examples presume:
 Declaring matrices, and checking some attributes:
 
 >>> mat1 = Matrix([[1,2],[3,4]])
->>> print mat1
+>>> print(mat1)
 begin
  2 2 rational
  1 2
@@ -58,7 +58,7 @@ IndexError: row index out of range
 >>> mat1.extend([[5,6]])
 >>> mat1.row_size
 3
->>> print mat1
+>>> print(mat1)
 begin
  3 2 rational
  1 2
@@ -75,7 +75,7 @@ end
 ((3, 4), (5, 6))
 >>> mat1[:-1]
 ((1, 2), (3, 4))
->>> print mat2
+>>> print(mat2)
 begin
  2 2 rational
  1 2

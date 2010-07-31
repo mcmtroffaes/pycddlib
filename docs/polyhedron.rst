@@ -50,8 +50,8 @@ begin
  1 0 2 0
  0 0 0 1
 end
->>> print(ext.lin_set) # note: first row is 0, so fourth row is 3
-frozenset([3])
+>>> print(list(ext.lin_set)) # note: first row is 0, so fourth row is 3
+[3]
 
 This is the testcdd2.c example that comes with cddlib.
 
