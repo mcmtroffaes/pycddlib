@@ -24,37 +24,48 @@ from fractions import Fraction
 __version__ = "1.0.1"
 __release__ = __version__ + " (beta)"
 
-# gmp functions
-cdef extern from "mpir.h" nogil:
-    ctypedef struct mpz_t:
-        pass
-    ctypedef struct mpq_t:
-        pass
-    cdef mpz_t mpq_numref(mpq_t op)
-    cdef mpz_t mpq_denref(mpq_t op)
-    cdef unsigned long mpz_get_si(mpz_t op)
-
 # some of cdd's functions read and write files
 cdef extern from "stdio.h" nogil:
     ctypedef struct FILE
     ctypedef int size_t
-    cdef FILE *stdout
-    cdef FILE *tmpfile()
-    cdef size_t fread(void *ptr, size_t size, size_t count, FILE *stream)
-    cdef size_t fwrite(void *ptr, size_t size, size_t count, FILE *stream)
-    cdef int SEEK_SET
-    cdef int SEEK_CUR
-    cdef int SEEK_END
-    cdef int fseek(FILE *stream, long int offset, int origin)
-    cdef long int ftell(FILE *stream)
-    cdef int fclose(FILE *stream)
+    FILE *stdout
+    FILE *tmpfile()
+    size_t fread(void *ptr, size_t size, size_t count, FILE *stream)
+    size_t fwrite(void *ptr, size_t size, size_t count, FILE *stream)
+    int SEEK_SET
+    int SEEK_CUR
+    int SEEK_END
+    int fseek(FILE *stream, long int offset, int origin)
+    long int ftell(FILE *stream)
+    int fclose(FILE *stream)
 
 cdef extern from "time.h":
     ctypedef long time_t
 
+# gmp integer functions
+cdef extern from "mpir.h" nogil:
+    ctypedef struct mpz_t:
+        pass
+    signed long int mpz_get_si(mpz_t op)
+    unsigned long int mpz_get_ui(mpz_t op)
+    int mpz_fits_slong_p(mpz_t op)
+    int mpz_fits_ulong_p(mpz_t op)
+    size_t mpz_sizeinbase(mpz_t op, int base)
+
+# gmp rational functions
+cdef extern from "mpir.h" nogil:
+    ctypedef struct mpq_t:
+        pass
+    mpz_t mpq_numref(mpq_t op)
+    mpz_t mpq_denref(mpq_t op)
+    char *mpq_get_str(char *str, int base, mpq_t op)
+    int mpq_set_str(mpq_t rop, char *str, int base)
+
 # get object as file
 cdef extern from "Python.h":
     FILE *PyFile_AsFile(object)
+    object PyString_FromStringAndSize(char *v, Py_ssize_t len)
+    char* PyString_AsString(object)
 
 # set operations (need to include this before cdd.h to avoid compile errors)
 cdef extern from "setoper.h" nogil:
@@ -516,8 +527,8 @@ cdef extern from "cdd.h" nogil:
     # add more as needed...
 
     cdef void dd_set_d(mytype, double)
-    cdef void dd_set_si(mytype, signed long)
-    cdef void dd_set_si2(mytype, signed long, unsigned long)
+    cdef void dd_set_si(mytype, signed long int)
+    cdef void dd_set_si2(mytype, signed long int, unsigned long int)
     cdef double dd_get_d(mytype)
 
     cdef void dd_set_global_constants()
@@ -658,15 +669,23 @@ cdef _set_set(set_type set_, pset):
 
 cdef _get_mytype(mytype target):
     """Get :class:`fractions.Fraction` or :class:`int` from target."""
-    cdef signed long num
-    cdef signed long den
-    num = mpz_get_si(mpq_numref(target))
-    den = mpz_get_si(mpq_denref(target))
-    if den == 1:
-        # calling int() makes that we don't return a long unless needed
-        return int(num)
+    cdef signed long int num
+    cdef unsigned long int den
+    cdef char *buf_ptr
+    if mpz_fits_slong_p(mpq_numref(target)) and mpz_fits_ulong_p(mpq_denref(target)):
+        num = mpz_get_si(mpq_numref(target))
+        den = mpz_get_ui(mpq_denref(target))
+        if den == 1:
+            # calling int() makes that we don't return a long unless needed
+            return int(num)
+        else:
+            return Fraction(num, den)
     else:
-        return Fraction(num, den)
+        buf = PyString_FromStringAndSize(NULL, mpz_sizeinbase(mpq_numref(target), 10) + mpz_sizeinbase(mpq_denref(target), 10) + 3)
+        buf_ptr = PyString_AsString(buf)
+        mpq_get_str(buf_ptr, 10, target)
+        # Fraction(buf) would also include the trailing null characters
+        return Fraction(buf_ptr)
 
 cdef _set_mytype(mytype target, value):
     """Set target to given value (:class:`str`, :class:`int`,
@@ -678,12 +697,16 @@ cdef _set_mytype(mytype target, value):
     if isinstance(value, str):
         value = Fraction(value)
     # set target to value
-    if isinstance(value, (int, long)):
-        dd_set_si(target, value)
-    elif isinstance(value, float):
+    if isinstance(value, float):
         dd_set_d(target, value)
-    elif isinstance(value, Fraction):
-        dd_set_si2(target, value.numerator, value.denominator)
+    elif isinstance(value, (Fraction, int, long)):
+        try:
+            dd_set_si2(target, value.numerator, value.denominator)
+        except OverflowError:
+            # in case of overflow, set it using mpq_set_str
+            buf = str(value)
+            if mpq_set_str(target, buf, 10) == -1:
+                raise ValueError('could not convert %s to mpq_t' % value)
 
 # matrix class
 cdef class Matrix:
