@@ -12,7 +12,7 @@ To get the source code, clone it with `Git <http://git-scm.com>`_ by running::
 
 You can also browse the source code on GitHub: `mcmtroffaes/pycddlib <http://github.com/mcmtroffaes/pycddlib>`_.
 
-Then simply run the :file:`build.sh` script: this will build the library, install it, generate the documentation, and run all the doctests. Note that you need `Cython <http://www.cython.org/>`_ to compile the source, and `Sphinx <http://sphinx.pocoo.org/>`_ to generate the documentation.
+Then simply run the :file:`build.sh` script: this will build the library, install it, generate the documentation, and run all the doctests. Note that you need `MPIR <http://www.mpir.org/>`_ and `Cython <http://www.cython.org/>`_ to compile the source, and `Sphinx <http://sphinx.pocoo.org/>`_ to generate the documentation.
 
 If you merely want to compile and install the library, just run::
 
