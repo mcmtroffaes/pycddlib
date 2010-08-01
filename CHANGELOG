@@ -1,9 +1,10 @@
-Version 1.0.1:
+Version 1.0.1 (1 August 2010):
 * minor documentation updates
 * also support the GMPRATIONAL build of cddlib with Python's fractions.Fraction
 * using MPIR so it also builds on Windows
 * removed trailing newlines in __str__ methods
 * modules are now called cdd (uses float) and cddgmp (uses Fraction)
 
-Version 1.0.0:
+Version 1.0.0 (21 July 2010):
 * first release, based on cddlib 0.94f
+
