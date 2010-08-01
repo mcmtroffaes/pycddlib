@@ -675,7 +675,7 @@ cdef _set_set(set_type set_, pset):
 IF GMP:
 
     cdef _get_mytype(mytype target):
-        """Get :class:`fractions.Fraction` or :class:`int` from target."""
+        """Get :class:`~fractions.Fraction` or :class:`int` from target."""
         cdef signed long int num
         cdef unsigned long int den
         cdef char *buf_ptr
@@ -696,9 +696,9 @@ IF GMP:
 
     cdef _set_mytype(mytype target, value):
         """Set target to given value (:class:`str`, :class:`int`,
-        :class:`long`, :class:`float`, or :class:`fractions.Fraction`). A
+        :class:`long`, :class:`float`, or :class:`~fractions.Fraction`). A
         :class:`str` is automatically converted to a
-        :class:`fractions.Fraction` using its constructor.
+        :class:`~fractions.Fraction` using its constructor.
         """
         # convert string to fraction
         if isinstance(value, str):
@@ -732,7 +732,7 @@ cdef class Matrix:
     """A class for working with sets of linear constraints and extreme
     points.
 
-    :param rows: The rows of the matrix. Each element can be an :class:`int`, :class:`float`, :class:`fractions.Fraction`, or :class:`str`. The values are automatically converted to a fraction.
+    :param rows: The rows of the matrix. Each element can be an :class:`int`, :class:`float`, :class:`~fractions.Fraction`, or :class:`str`. The values are automatically converted to a fraction if you use :mod:`cddgmp`, or a float if you use :mod:`cdd`.
     :type rows: :class:`list` of :class:`list`\ s.
     :param linear: Whether to add the rows to the :attr:`lin_set` or not.
     :type linear: :class:`bool`
@@ -750,6 +750,11 @@ cdef class Matrix:
 
        >>> print(Matrix([['1.12']])[0][0])
        28/25
+
+       Of course, this is only relevant for :mod:`cddgmp`; it is not a
+       concern when using :mod:`cdd`, in which case both ``1.12`` and
+       ``'1.12'`` will yield the same result, namely the
+       :class:`float` ``1.12``.
     """
 
     # pointer containing the matrix data
@@ -893,7 +898,7 @@ cdef class Matrix:
 
         :param key: The row number, or slice of row numbers, to get.
         :type key: :class:`int` or :class:`slice`
-        :rtype: :class:`tuple` of :class:`fractions.Fraction`, or :class:`tuple` of :class:`tuple` of :class:`fractions.Fraction`
+        :rtype: :class:`tuple` of :class:`~fractions.Fraction`, or :class:`tuple` of :class:`tuple` of :class:`~fractions.Fraction`
         """
         cdef dd_rowrange rownum
         cdef dd_rowrange j
