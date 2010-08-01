@@ -7,6 +7,7 @@ include cddlib/COPYING
 include cddlib/README
 include cddlib/AUTHORS
 include cddlib/ChangeLog
+include pycddlib.pyx
 include cdd.c
 include cddgmp.c
 recursive-include cddlib/lib-src *.h *.c
