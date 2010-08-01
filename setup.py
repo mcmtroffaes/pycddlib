@@ -86,17 +86,16 @@ cddgmp_headers = cdd_headers + [
     ]
 
 setup(
-    name = "pycddlib",
+    name = "cdd",
     version = version,
     ext_modules= [
-        # old extension which builds without gmp
-        #Extension("pycddlib",
-        #          ["pycddlib.pyx"] + cdd_sources,
-        #          include_dirs = [cdd_dir],
-        #          depends=cdd_headers,
-        #          ),
-        Extension("pycddlib",
-                  ["pycddlib.pyx"] + cddgmp_sources,
+        Extension("cdd",
+                  ["cdd.pyx"] + cdd_sources,
+                  include_dirs = [cdd_dir],
+                  depends=cdd_headers,
+                  ),
+        Extension("cddgmp",
+                  ["cddgmp.pyx"] + cddgmp_sources,
                   include_dirs = [cdd_dir, cddgmp_dir],
                   depends=cddgmp_headers,
                   define_macros = [('GMPRATIONAL', None),

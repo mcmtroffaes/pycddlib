@@ -20,7 +20,8 @@
 cimport python_unicode
 cimport python_bytes
 
-from fractions import Fraction
+IF GMP:
+    from fractions import Fraction
 
 __version__ = "1.0.1"
 __release__ = __version__ + " (beta)"
@@ -43,24 +44,26 @@ cdef extern from "stdio.h" nogil:
 cdef extern from "time.h":
     ctypedef long time_t
 
-# gmp integer functions
-cdef extern from "mpir.h" nogil:
-    ctypedef struct mpz_t:
-        pass
-    signed long int mpz_get_si(mpz_t op)
-    unsigned long int mpz_get_ui(mpz_t op)
-    int mpz_fits_slong_p(mpz_t op)
-    int mpz_fits_ulong_p(mpz_t op)
-    size_t mpz_sizeinbase(mpz_t op, int base)
+IF GMP:
 
-# gmp rational functions
-cdef extern from "mpir.h" nogil:
-    ctypedef struct mpq_t:
-        pass
-    mpz_t mpq_numref(mpq_t op)
-    mpz_t mpq_denref(mpq_t op)
-    char *mpq_get_str(char *str, int base, mpq_t op)
-    int mpq_set_str(mpq_t rop, char *str, int base)
+    # gmp integer functions
+    cdef extern from "mpir.h" nogil:
+        ctypedef struct mpz_t:
+            pass
+        signed long int mpz_get_si(mpz_t op)
+        unsigned long int mpz_get_ui(mpz_t op)
+        int mpz_fits_slong_p(mpz_t op)
+        int mpz_fits_ulong_p(mpz_t op)
+        size_t mpz_sizeinbase(mpz_t op, int base)
+
+    # gmp rational functions
+    cdef extern from "mpir.h" nogil:
+        ctypedef struct mpq_t:
+            pass
+        mpz_t mpq_numref(mpq_t op)
+        mpz_t mpq_denref(mpq_t op)
+        char *mpq_get_str(char *str, int base, mpq_t op)
+        int mpq_set_str(mpq_t rop, char *str, int base)
 
 # get object as file
 cdef extern from "Python.h":
@@ -94,7 +97,10 @@ cdef extern from "setoper.h" nogil:
 cdef extern from "cdd.h":
 
     ctypedef int dd_boolean
-    ctypedef mpq_t mytype
+    IF GMP:
+        ctypedef mpq_t mytype
+    ELSE:
+        ctypedef double mytype[1]
     ctypedef long dd_rowrange
     ctypedef long dd_colrange
     ctypedef long dd_bigrange
@@ -666,46 +672,56 @@ cdef _set_set(set_type set_, pset):
         else:
             set_delelem(set_, elem)
 
-cdef _get_mytype(mytype target):
-    """Get :class:`fractions.Fraction` or :class:`int` from target."""
-    cdef signed long int num
-    cdef unsigned long int den
-    cdef char *buf_ptr
-    if mpz_fits_slong_p(mpq_numref(target)) and mpz_fits_ulong_p(mpq_denref(target)):
-        num = mpz_get_si(mpq_numref(target))
-        den = mpz_get_ui(mpq_denref(target))
-        if den == 1:
-            # calling int() makes that we don't return a long unless needed
-            return int(num)
-        else:
-            return Fraction(num, den)
-    else:
-        buf = python_bytes.PyBytes_FromStringAndSize(NULL, mpz_sizeinbase(mpq_numref(target), 10) + mpz_sizeinbase(mpq_denref(target), 10) + 3)
-        buf_ptr = python_bytes.PyBytes_AsString(buf)
-        mpq_get_str(buf_ptr, 10, target)
-        # trick: bytes(buf_ptr) removes everything after the null
-        return Fraction(bytes(buf_ptr).decode('ascii'))
+IF GMP:
 
-cdef _set_mytype(mytype target, value):
-    """Set target to given value (:class:`str`, :class:`int`,
-    :class:`long`, :class:`float`, or :class:`fractions.Fraction`). A
-    :class:`str` is automatically converted to a
-    :class:`fractions.Fraction` using its constructor.
-    """
-    # convert string to fraction
-    if isinstance(value, str):
-        value = Fraction(value)
-    # set target to value
-    if isinstance(value, float):
-        dd_set_d(target, value)
-    elif isinstance(value, (Fraction, int, long)):
-        try:
-            dd_set_si2(target, value.numerator, value.denominator)
-        except OverflowError:
-            # in case of overflow, set it using mpq_set_str
-            buf = str(value).encode('ascii')
-            if mpq_set_str(target, buf, 10) == -1:
-                raise ValueError('could not convert %s to mpq_t' % value)
+    cdef _get_mytype(mytype target):
+        """Get :class:`fractions.Fraction` or :class:`int` from target."""
+        cdef signed long int num
+        cdef unsigned long int den
+        cdef char *buf_ptr
+        if mpz_fits_slong_p(mpq_numref(target)) and mpz_fits_ulong_p(mpq_denref(target)):
+            num = mpz_get_si(mpq_numref(target))
+            den = mpz_get_ui(mpq_denref(target))
+            if den == 1:
+                # calling int() makes that we don't return a long unless needed
+                return int(num)
+            else:
+                return Fraction(num, den)
+        else:
+            buf = python_bytes.PyBytes_FromStringAndSize(NULL, mpz_sizeinbase(mpq_numref(target), 10) + mpz_sizeinbase(mpq_denref(target), 10) + 3)
+            buf_ptr = python_bytes.PyBytes_AsString(buf)
+            mpq_get_str(buf_ptr, 10, target)
+            # trick: bytes(buf_ptr) removes everything after the null
+            return Fraction(bytes(buf_ptr).decode('ascii'))
+
+    cdef _set_mytype(mytype target, value):
+        """Set target to given value (:class:`str`, :class:`int`,
+        :class:`long`, :class:`float`, or :class:`fractions.Fraction`). A
+        :class:`str` is automatically converted to a
+        :class:`fractions.Fraction` using its constructor.
+        """
+        # convert string to fraction
+        if isinstance(value, str):
+            value = Fraction(value)
+        # set target to value
+        if isinstance(value, float):
+            dd_set_d(target, value)
+        elif isinstance(value, (Fraction, int, long)):
+            try:
+                dd_set_si2(target, value.numerator, value.denominator)
+            except OverflowError:
+                # in case of overflow, set it using mpq_set_str
+                buf = str(value).encode('ascii')
+                if mpq_set_str(target, buf, 10) == -1:
+                    raise ValueError('could not convert %s to mpq_t' % value)
+
+ELSE:
+
+    cdef _get_mytype(mytype target):
+        return target[0]
+
+    cdef _set_mytype(mytype target, value):
+        target[0] = value
 
 # matrix class
 cdef class Matrix:
