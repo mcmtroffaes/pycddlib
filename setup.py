@@ -47,31 +47,43 @@ doclines = open('README').read().split('\n')
 
 cdd_dir = 'cddlib/lib-src'
 cdd_sources = [
-    'cddcore.c',
-    'cddio.c',
-    'cddlib.c',
-    'cddlp.c',
-    'cddmp.c',
-    'cddproj.c',
-    'setoper.c']
+    '{0}/{1}'.format(cdd_dir, srcfile) for srcfile in [
+        'cddcore.c',
+        'cddio.c',
+        'cddlib.c',
+        'cddlp.c',
+        'cddmp.c',
+        'cddproj.c',
+        'setoper.c',
+        ]
+    ]
 cdd_headers = [
-    'cdd.h',
-    'cddmp.h',
-    'cddtypes.h',
-    'setoper.h']
+    '{0}/{1}'.format(cdd_dir, hdrfile) for hdrfile in [
+        'cdd.h',
+        'cddmp.h',
+        'cddtypes.h',
+        'setoper.h',
+        ]
+    ]
 
 cddgmp_dir = 'cddlib/lib-src-gmp'
 cddgmp_sources = cdd_sources + [
-    'cddcore_f.c',
-    'cddio_f.c',
-    'cddlib_f.c',
-    'cddlp_f.c',
-    'cddmp_f.c',
-    'cddproj_f.c']
+    '{0}/{1}'.format(cddgmp_dir, srcfile) for srcfile in [
+        'cddcore_f.c',
+        'cddio_f.c',
+        'cddlib_f.c',
+        'cddlp_f.c',
+        'cddmp_f.c',
+        'cddproj_f.c',
+        ]
+    ]
 cddgmp_headers = cdd_headers + [
-    'cdd_f.h',
-    'cddmp_f.h',
-    'cddtypes_f.h']
+    '{0}/{1}'.format(cddgmp_dir, hdrfile) for hdrfile in [
+        'cdd_f.h',
+        'cddmp_f.h',
+        'cddtypes_f.h',
+        ]
+    ]
 
 setup(
     name = "pycddlib",
@@ -79,18 +91,14 @@ setup(
     ext_modules= [
         # old extension which builds without gmp
         #Extension("pycddlib",
-        #          ["pycddlib.pyx"] + [os.path.join(cdd_dir, srcfile)
-        #                              for srcfile in cdd_sources],
+        #          ["pycddlib.pyx"] + cdd_sources,
         #          include_dirs = [cdd_dir],
-        #          depends=[os.path.join(cdd_dir, hdrfile)
-        #                   for hdrfile in cdd_headers],
+        #          depends=cdd_headers,
         #          ),
         Extension("pycddlib",
-                  ["pycddlib.pyx"] + [os.path.join(cddgmp_dir, srcfile)
-                                      for srcfile in cddgmp_sources],
-                  include_dirs = [cddgmp_dir],
-                  depends=[os.path.join(cddgmp_dir, hdrfile)
-                           for hdrfile in cddgmp_headers],
+                  ["pycddlib.pyx"] + cddgmp_sources,
+                  include_dirs = [cdd_dir, cddgmp_dir],
+                  depends=cddgmp_headers,
                   define_macros = [('GMPRATIONAL', None),
                                    ('MPIR', None)],
                   libraries = ['mpir'],

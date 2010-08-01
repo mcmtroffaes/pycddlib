@@ -9,7 +9,7 @@ include cddlib/AUTHORS
 include cddlib/ChangeLog
 include pycddlib.c
 recursive-include cddlib/lib-src *.h *.c
-recursive-include cddlib/lib-src-gmp *.h *.c
+recursive-include cddlib/lib-src-gmp *_f.h *_f.c
 graft docs/_build/html
 prune docs/_build/html/.git
 exclude docs/_build/html/.nojekyll
