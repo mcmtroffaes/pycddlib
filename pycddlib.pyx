@@ -721,7 +721,11 @@ ELSE:
         return target[0]
 
     cdef _set_mytype(mytype target, value):
-        target[0] = value
+        if isinstance(value, str) and '/' in value:
+            num, den = value.split('/')
+            target[0] = float(num) / float(den)
+        else:
+            target[0] = float(value)
 
 # matrix class
 cdef class Matrix:
