@@ -29,8 +29,19 @@ Programming Language :: C
 Operating System :: OS Independent"""
 
 from distutils.core import setup
+from distutils.ccompiler import new_compiler
 from distutils.extension import Extension
-from Cython.Distutils import build_ext
+from Cython.Distutils import build_ext as _build_ext
+
+# this is a hack around build_ext to force rebuilding
+# regardless of whether files are up-to-date or not
+# we must do this because cdd and cddgmp use the same
+# source files but with different compile arguments
+# and Python's build system does not detect this
+class build_ext(_build_ext):
+    def __init__(self, *args, **kwargs):
+        _build_ext.__init__(self, *args, **kwargs)
+        self.force = 1
 
 import os
 
@@ -86,7 +97,7 @@ cddgmp_headers = cdd_headers + [
     ]
 
 setup(
-    name = "cdd",
+    name = "pycddlib",
     version = version,
     ext_modules= [
         Extension("cdd",

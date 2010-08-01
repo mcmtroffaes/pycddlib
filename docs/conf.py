@@ -13,7 +13,7 @@
 
 import sys, os
 
-from pycddlib import __version__, __release__
+from cddgmp import __version__, __release__
 
 # If extensions (or modules to document with autodoc) are in another directory,
 # add these directories to sys.path here. If the directory is relative to the

@@ -1,7 +1,7 @@
 Constants
 =========
 
-.. currentmodule:: pycddlib
+.. currentmodule:: cddgmp
 
 .. autoclass:: AdjacencyTestType
 .. autoclass:: CompStatus

@@ -1,11 +1,11 @@
 .. testsetup::
 
-   from pycddlib import *
+   from cddgmp import *
 
 Working With Polyhedron Representations
 =======================================
 
-.. currentmodule:: pycddlib
+.. currentmodule:: cddgmp
 
 .. autoclass:: Polyhedron(self, mat)
 
@@ -25,7 +25,7 @@ Examples
 
 Note that the following examples presume:
 
->>> from pycddlib import *
+>>> from cddgmp import *
 
 This is the sampleh1.ine example that comes with cddlib.
 

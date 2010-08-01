@@ -1,11 +1,11 @@
 .. testsetup::
 
-   from pycddlib import *
+   from cddgmp import *
 
 Solving Linear Programs
 =======================
 
-.. currentmodule:: pycddlib
+.. currentmodule:: cddgmp
 
 .. autoclass:: LinProg(self, mat)
 
@@ -29,7 +29,7 @@ Examples
 
 Note that the following examples presume:
 
->>> from pycddlib import *
+>>> from cddgmp import *
 
 This is the testlp2.c example that comes with cddlib.
 

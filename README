@@ -13,6 +13,20 @@ representation of a polyhedron with cdd.  Also, it can solve a linear
 programming problem, i.e. a problem of maximizing and minimizing a
 linear function over a polyhedron.
 
-This module wraps the so-called ``GMPRATIONAL`` build of cddlib, using
-:class:`fractions.Fraction` for the Python representation of rational
-numbers.
+.. module:: cddgmp
+   :synopsis: gmp version of cddlib
+
+The :mod:`cddgmp` module wraps the so-called ``GMPRATIONAL`` build of
+cddlib, using :class:`~fractions.Fraction` for the Python
+representation of numerical values. Unless speed is an issue, it is
+recommended that you use this module.
+
+.. module:: cdd
+   :synopsis: non-gmp version of cddlib
+
+However, if you prefer speed over precision, then the :mod:`cdd`
+module wraps the non-gmp build of cddlib, and uses :class:`float` for
+numerical values.
+
+Both modules have identical interfaces, so they can be used as drop-in
+replacements for one another.

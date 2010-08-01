@@ -1,11 +1,11 @@
 .. testsetup::
 
-   from pycddlib import *
+   from cddgmp import *
 
 Sets of Linear Inequalities and Generators
 ==========================================
 
-.. currentmodule:: pycddlib
+.. currentmodule:: cddgmp
 
 .. autoclass:: Matrix(self, rows, linear=False)
 
@@ -31,7 +31,7 @@ Examples
 
 Note that the following examples presume:
 
->>> from pycddlib import *
+>>> from cddgmp import *
 
 Declaring matrices, and checking some attributes:
 

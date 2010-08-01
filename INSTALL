@@ -38,7 +38,7 @@ On Linux, start a terminal and run::
 Building From Git
 ~~~~~~~~~~~~~~~~~
 
-To compile the *latest* code, clone the project with `Git <http://git-scm.com>`_ by running [#symlinks]_::
+To compile the *latest* code, clone the project with `Git <http://git-scm.com>`_ by running::
 
     git clone --recursive git://github.com/mcmtroffaes/pycddlib
 
@@ -49,7 +49,3 @@ Then simply run the :file:`build.sh` script: this will build the library, instal
 .. [#vc9]
 
    When compiling extension modules, it is easiest to use same compiler that was used to compile Python. For Python 2.6, 2.7, 3.0, and 3.1, this is Microsoft Visual C/C++ 2008 (the `express edition <http://download.microsoft.com/download/A/5/4/A54BADB6-9C3F-478D-8657-93B3FC9FE62D/vcsetup.exe>`_ will do just fine).
-
-.. [#symlinks]
-
-   Git on Windows does not support symbolic links, yet the cddlib repository uses them. You can work around this limitation by copying the contents of :file:`lib-src` to :file:`lib-src-gmp` prior to compiling.
