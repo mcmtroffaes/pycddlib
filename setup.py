@@ -45,8 +45,8 @@ class build_ext(_build_ext):
 
 import os
 
-# get version from pyx file
-for line in open('pycddlib.pyx'):
+# get version from python file (without requiring extensions to be compiled!)
+for line in open('cdd/__init__.py'):
     if line.startswith("__version__"):
        version = line[line.find('"')+1:line.rfind('"')]
        break
@@ -99,19 +99,29 @@ cddgmp_headers = cdd_headers + [
 setup(
     name = "pycddlib",
     version = version,
+    packages = ["cdd"],
     ext_modules= [
-        Extension("cdd",
-                  ["cdd.pyx"] + cdd_sources,
+        Extension("cdd._constants",
+                  ["cdd/_constants.pyx"],
                   include_dirs = [cdd_dir],
                   depends=cdd_headers,
                   ),
-        Extension("cddgmp",
-                  ["cddgmp.pyx"] + cddgmp_sources,
+        Extension("cdd._float",
+                  ["cdd/_float.pyx"] + cdd_sources,
+                  include_dirs = [cdd_dir],
+                  depends=cdd_headers,
+                  ),
+        Extension("cdd._fraction",
+                  ["cdd/_fraction.pyx"] + cddgmp_sources,
                   include_dirs = [cdd_dir, cddgmp_dir],
                   depends=cddgmp_headers,
                   define_macros = [('GMPRATIONAL', None),
                                    ('MPIR', None)],
                   libraries = ['mpir'],
+                  ),
+        Extension("cdd._core",
+                  ["cdd/_core.pyx"],
+                  include_dirs = [cdd_dir, cddgmp_dir],
                   ),
         ],
     author = "Matthias Troffaes",

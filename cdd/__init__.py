@@ -1,4 +1,4 @@
-"""Wrapper of float build of cddlib."""
+"""Python wrapper for cddlib."""
 
 # pycddlib is a Python wrapper for Komei Fukuda's cddlib
 # Copyright (c) 2008, Matthias Troffaes
@@ -17,5 +17,8 @@
 # with this program; if not, write to the Free Software Foundation, Inc.,
 # 51 Franklin Street, Fifth Floor, Boston, MA 02110-1301 USA.
 
-DEF GMP = False
-include "cddlib.pyx"
+from cdd._constants import *
+from cdd._core import NumberTypeable, Matrix, LinProg, Polyhedron
+
+__version__ = "1.0.2"
+__release__ = __version__ + " (beta)"
