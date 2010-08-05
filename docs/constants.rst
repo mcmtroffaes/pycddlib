@@ -11,6 +11,7 @@ Number Types and Constants
 .. automethod:: NumberTypeable.make_number(value)
 .. automethod:: NumberTypeable.number_str(value)
 .. automethod:: NumberTypeable.number_repr(value)
+.. automethod:: NumberTypeable.number_cmp(num1, num2)
 .. autoattribute:: NumberTypeable.number_type
 .. autoattribute:: NumberTypeable.NumberType
 

@@ -171,6 +171,48 @@ cdef class NumberTypeable:
         else:
             _invalid(self._number_type)
 
+    def number_cmp(self, num1, num2):
+        """Compare values.
+
+        >>> a = cdd.NumberTypeable('float')
+        >>> a.number_cmp(0.0, 5.0)
+        -1
+        >>> a.number_cmp(5.0, 0.0)
+        1
+        >>> a.number_cmp(5.0, 5.0)
+        0
+        >>> a.number_cmp(0.0, 1e-30)
+        0
+        >>> a = cdd.NumberTypeable('fraction')
+        >>> a.number_cmp(0, 1)
+        -1
+        >>> a.number_cmp(1, 0)
+        1
+        >>> a.number_cmp(0, 0)
+        0
+        >>> a.number_cmp(0, a.make_number(1e-30))
+        -1
+        """
+        cdef double f1, f2, fdiff
+        if self._number_type == FLOAT:
+            f1 = num1
+            f2 = num2
+            fdiff = num1 - num2
+            if fdiff < -1e-6:
+                return -1
+            elif fdiff > 1e-6:
+                return 1
+            else:
+                return 0
+        elif self._number_type == FRACTION:
+            diff = num1 - num2
+            if diff < 0:
+                return -1
+            elif diff > 0:
+                return 1
+            else:
+                return 0
+
 cdef class Matrix(NumberTypeable):
     """Wrapper class for :class:`cdd._float.Matrix` and
     :class:`cdd._fraction.Matrix`.
