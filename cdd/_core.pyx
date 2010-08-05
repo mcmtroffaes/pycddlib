@@ -40,12 +40,8 @@ cdef class NumberTypeable:
     """Base class for classes that can have different representations
     of numbers.
 
-    >>> class A(NumberTypeable):
-    ...     def __init__(self, number_type):
-    ...         self._number_type = number_type
-    ...     number_type = property(lambda self: self._number_type)
     >>> numbers = ['4', '2/3', '1.6', '9/6', 1.12]
-    >>> a = A('float')
+    >>> a = cdd.NumberTypeable('float')
     >>> a.NumberType
     <type 'float'>
     >>> for number in numbers:
@@ -68,7 +64,7 @@ cdef class NumberTypeable:
     1.1200000000000001
     1.12
     1.1200000000000001
-    >>> a = A('fraction')
+    >>> a = cdd.NumberTypeable('fraction')
     >>> a.NumberType
     <class 'fractions.Fraction'>
     >>> for number in numbers:
@@ -104,10 +100,12 @@ cdef class NumberTypeable:
             raise ValueError("specify 'float' or 'fraction'")
 
     property number_type:
+        """The number type as string."""
         def __get__(self):
             return _if(self._number_type, 'float', 'fraction')
 
     property NumberType:
+        """The number type as class."""
         def __get__(self):
             return _if(self._number_type, float, fractions.Fraction)
 
@@ -153,6 +151,7 @@ cdef class NumberTypeable:
             _invalid(self._number_type)
 
     def number_repr(self, value):
+        """Return representation string for value."""
         if self._number_type == FLOAT:
             if not isinstance(value, float):
                 raise TypeError(
@@ -173,6 +172,10 @@ cdef class NumberTypeable:
             _invalid(self._number_type)
 
 cdef class Matrix(NumberTypeable):
+    """Wrapper class for :class:`cdd._float.Matrix` and
+    :class:`cdd._fraction.Matrix`.
+    """
+
     cdef readonly object data
 
     def __init__(self, rows, linear=False, number_type='float'):
@@ -185,14 +188,18 @@ cdef class Matrix(NumberTypeable):
             _invalid(self._number_type)
 
 cdef class LinProg(NumberTypeable):
+    """Wrapper class for :class:`cdd._float.LinProg` and
+    :class:`cdd._fraction.LinProg`.
+    """
+
     cdef readonly object data
 
     def __init__(self, Matrix mat):
         NumberTypeable.__init__(self, mat.number_type)
         if self._number_type == FLOAT:
-            self.data = _float.LinProg(mat._matrix)
+            self.data = _float.LinProg(mat.data)
         elif self._number_type == FRACTION:
-            self.data = _fraction.LinProg(mat._matrix)
+            self.data = _fraction.LinProg(mat.data)
         else:
             _invalid(self._number_type)
 
@@ -202,8 +209,8 @@ cdef class Polyhedron(NumberTypeable):
     def __init__(self, Matrix mat):
         NumberTypeable.__init__(self, mat.number_type)
         if self._number_type == FLOAT:
-            self.data = _float.Polyhedron(mat._matrix)
+            self.data = _float.Polyhedron(mat.data)
         elif self._number_type == FRACTION:
-            self.data = _fraction.Polyhedron(mat._matrix)
+            self.data = _fraction.Polyhedron(mat.data)
         else:
             _invalid(self._number_type)

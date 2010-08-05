@@ -12,4 +12,3 @@ Welcome to pycddlib's documentation!
    linprog
    polyhedron
    constants
-   cdd

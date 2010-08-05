@@ -110,6 +110,7 @@ setup(
                   ["cdd/_float.pyx"] + cdd_sources,
                   include_dirs = [cdd_dir],
                   depends=cdd_headers,
+                  undef_macros = ['GMPRATIONAL'],
                   ),
         Extension("cdd._fraction",
                   ["cdd/_fraction.pyx"] + cddgmp_sources,

@@ -1,7 +1,18 @@
-Constants
-=========
+.. testsetup::
 
-.. currentmodule:: cddgmp
+   import cdd
+
+Number Types and Constants
+==========================
+
+.. currentmodule:: cdd
+
+.. autoclass:: NumberTypeable(number_type='float')
+.. automethod:: NumberTypeable.make_number(value)
+.. automethod:: NumberTypeable.number_str(value)
+.. automethod:: NumberTypeable.number_repr(value)
+.. autoattribute:: NumberTypeable.number_type
+.. autoattribute:: NumberTypeable.NumberType
 
 .. autoclass:: AdjacencyTestType
 .. autoclass:: CompStatus
