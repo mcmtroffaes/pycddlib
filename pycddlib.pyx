@@ -23,8 +23,8 @@ cimport python_bytes
 IF GMP:
     from fractions import Fraction
 
-__version__ = "1.0.1"
-__release__ = __version__
+__version__ = "1.0.2"
+__release__ = __version__ + " (beta)"
 
 # some of cdd's functions read and write files
 cdef extern from "stdio.h" nogil:
