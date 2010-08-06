@@ -101,8 +101,8 @@ setup(
     version = version,
     packages = ["cdd"],
     ext_modules= [
-        Extension("cdd._constants",
-                  ["cdd/_constants.pyx"],
+        Extension("cdd._common",
+                  ["cdd/_common.pyx"],
                   include_dirs = [cdd_dir],
                   depends=cdd_headers,
                   ),

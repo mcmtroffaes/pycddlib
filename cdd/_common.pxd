@@ -35,13 +35,6 @@ cdef extern from "stdio.h" nogil:
 cdef extern from "time.h":
     ctypedef long time_t
 
-# utility functions
-
-cdef FILE *_tmpfile() except NULL
-cdef _tmpread(FILE *pfile)
-cdef _get_set(set_type set_)
-cdef _set_set(set_type set_, pset)
-
 # actual cddlib imports
 
 # to avoid compilation errors, include this first
@@ -140,3 +133,9 @@ cdef extern from "cdd.h":
         dd_Unbounded
         dd_DualUnbounded
 
+# common utility functions
+
+cdef FILE *_tmpfile() except NULL
+cdef _tmpread(FILE *pfile)
+cdef _get_set(set_type set_)
+cdef _set_set(set_type set_, pset)
