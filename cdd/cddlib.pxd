@@ -18,25 +18,7 @@
 # 51 Franklin Street, Fifth Floor, Boston, MA 02110-1301 USA.
 
 # constants are in a separate module
-from cdd._constants cimport *
-
-# some of cdd's functions read and write files
-cdef extern from "stdio.h" nogil:
-    ctypedef struct FILE
-    ctypedef int size_t
-    FILE *stdout
-    FILE *tmpfile()
-    size_t fread(void *ptr, size_t size, size_t count, FILE *stream)
-    size_t fwrite(void *ptr, size_t size, size_t count, FILE *stream)
-    int SEEK_SET
-    int SEEK_CUR
-    int SEEK_END
-    int fseek(FILE *stream, long int offset, int origin)
-    long int ftell(FILE *stream)
-    int fclose(FILE *stream)
-
-cdef extern from "time.h":
-    ctypedef long time_t
+from cdd._common cimport *
 
 IF GMP:
 
@@ -61,32 +43,9 @@ IF GMP:
 
 # actual cddlib imports
 
-# set operations (need to include this before cdd.h to avoid compile errors)
-cdef extern from "setoper.h" nogil:
-    ctypedef unsigned long *set_type
-    cdef unsigned long set_blocks(long len)
-    cdef void set_initialize(set_type *setp,long len)
-    cdef void set_free(set_type set)
-    cdef void set_emptyset(set_type set)
-    cdef void set_copy(set_type setcopy,set_type set)
-    cdef void set_addelem(set_type set, long elem)
-    cdef void set_delelem(set_type set, long elem)
-    cdef void set_int(set_type set,set_type set1,set_type set2)
-    cdef void set_uni(set_type set,set_type set1,set_type set2)
-    cdef void set_diff(set_type set,set_type set1,set_type set2)
-    cdef void set_compl(set_type set,set_type set1)
-    cdef int set_subset(set_type set1,set_type set2)
-    cdef int set_member(long elem, set_type set)
-    cdef long set_card(set_type set)
-    cdef long set_groundsize(set_type set)
-    cdef void set_write(set_type set)
-    cdef void set_fwrite(FILE *f,set_type set)
-    cdef void set_fwrite_compl(FILE *f,set_type set)
-    cdef void set_binwrite(set_type set)
-    cdef void set_fbinwrite(FILE *f,set_type set)
-
-# now include cdd.h declarations for main implementation
 cdef extern from "cdd.h" nogil:
+
+    # set operations and enums are already imported from _common.pxd
 
     # typedefs
     ###########

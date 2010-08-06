@@ -1,4 +1,4 @@
-"""Enums from cddlib."""
+"""Common declarations for both float and fraction versions of cddlib."""
 
 # pycddlib is a Python wrapper for Komei Fukuda's cddlib
 # Copyright (c) 2008, Matthias Troffaes
@@ -16,6 +16,44 @@
 # You should have received a copy of the GNU General Public License along
 # with this program; if not, write to the Free Software Foundation, Inc.,
 # 51 Franklin Street, Fifth Floor, Boston, MA 02110-1301 USA.
+
+# utility functions
+
+cdef FILE *_tmpfile() except NULL:
+     cdef FILE *result
+     result = tmpfile()
+     if result == NULL:
+         raise RuntimeError("failed to create temporary file")
+     return result
+
+cdef _tmpread(FILE *pfile):
+    cdef char result[1024]
+    cdef size_t num_bytes
+    # read the file
+    fseek(pfile, 0, SEEK_SET)
+    num_bytes = fread(result, 1, 1024, pfile)
+    # close the file
+    fclose(pfile)
+    # return result
+    return python_unicode.PyUnicode_DecodeUTF8(result, num_bytes, 'strict')
+
+cdef _get_set(set_type set_):
+    """Create Python frozenset from given set_type."""
+    cdef long elem
+    return frozenset([elem - 1
+                      for elem from 1 <= elem <= set_[0]
+                      if set_member(elem, set_)])
+
+cdef _set_set(set_type set_, pset):
+    """Set elements of set_type by elements from Python set."""
+    cdef long elem
+    for elem from 1 <= elem <= set_[0]:
+        if elem - 1 in pset:
+            set_addelem(set_, elem)
+        else:
+            set_delelem(set_, elem)
+
+# extension types to wrap the cddlib enums
 
 cdef class AdjacencyTestType:
     """Adjacency test type.

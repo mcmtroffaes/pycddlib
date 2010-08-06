@@ -23,30 +23,6 @@ cimport python_bytes
 IF GMP:
     from fractions import Fraction
 
-# get object as file
-cdef extern from "Python.h":
-    FILE *PyFile_AsFile(object)
-
-# utility functions
-
-cdef FILE *_tmpfile() except NULL:
-     cdef FILE *result
-     result = tmpfile()
-     if result == NULL:
-         raise RuntimeError("failed to create temporary file")
-     return result
-
-cdef _tmpread(FILE *pfile):
-    cdef char result[1024]
-    cdef size_t num_bytes
-    # read the file
-    fseek(pfile, 0, SEEK_SET)
-    num_bytes = fread(result, 1, 1024, pfile)
-    # close the file
-    fclose(pfile)
-    # return result
-    return python_unicode.PyUnicode_DecodeUTF8(result, num_bytes, 'strict')
-
 cdef _raise_error(dd_ErrorType error, msg):
     """Convert error into string and raise it."""
     cdef FILE *pfile
@@ -65,22 +41,6 @@ cdef _make_matrix(dd_MatrixPtr matptr):
     dd_FreeMatrix(mat.thisptr)
     mat.thisptr = matptr
     return mat
-
-cdef _get_set(set_type set_):
-    """Create Python frozenset from given set_type."""
-    cdef long elem
-    return frozenset([elem - 1
-                      for elem from 1 <= elem <= set_[0]
-                      if set_member(elem, set_)])
-
-cdef _set_set(set_type set_, pset):
-    """Set elements of set_type by elements from Python set."""
-    cdef long elem
-    for elem from 1 <= elem <= set_[0]:
-        if elem - 1 in pset:
-            set_addelem(set_, elem)
-        else:
-            set_delelem(set_, elem)
 
 IF GMP:
 

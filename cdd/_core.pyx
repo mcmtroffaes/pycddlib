@@ -28,14 +28,6 @@ DEF FRACTION = 2
 cdef inline _invalid(int number_type):
     raise RuntimeError("invalid number type %i" % number_type)
 
-cdef inline _if(int number_type, if_float, if_fraction):
-    if number_type == FLOAT:
-        return if_float
-    elif number_type == FRACTION:
-        return if_fraction
-    else:
-        _invalid(number_type)
-
 cdef class NumberTypeable:
     """Base class for classes that can have different representations
     of numbers.
@@ -102,12 +94,22 @@ cdef class NumberTypeable:
     property number_type:
         """The number type as string."""
         def __get__(self):
-            return _if(self._number_type, 'float', 'fraction')
+            if self._number_type == FLOAT:
+                return 'float'
+            elif self._number_type == FRACTION:
+                return 'fraction'
+            else:
+                _invalid(self._number_type)
 
     property NumberType:
         """The number type as class."""
         def __get__(self):
-            return _if(self._number_type, float, fractions.Fraction)
+            if self._number_type == FLOAT:
+                return float
+            elif self._number_type == FRACTION:
+                return fractions.Fraction
+            else:
+                _invalid(self._number_type)
 
     def make_number(self, value):
         """Convert value into a number.
