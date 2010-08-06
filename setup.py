@@ -102,7 +102,7 @@ setup(
     packages = ["cdd"],
     ext_modules= [
         Extension("cdd._common",
-                  ["cdd/_common.pyx"],
+                  ["cdd/_common.pyx"] + [cdd_dir + '/setoper.c'],
                   include_dirs = [cdd_dir],
                   depends=cdd_headers,
                   ),
