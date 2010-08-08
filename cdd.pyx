@@ -232,10 +232,10 @@ cdef class NumberTypeable:
     :param number_type: The number type (``'float'`` or ``'fraction'``).
     :type number_type: :class:`str`
 
-    >>> cdd.NumberTypeable('float') # doctest: +ELLIPSIS
-    <cdd._core.NumberTypeable object at ...>
-    >>> cdd.NumberTypeable('fraction') # doctest: +ELLIPSIS
-    <cdd._core.NumberTypeable object at ...>
+    >>> cdd.NumberTypeable(number_type='float') # doctest: +ELLIPSIS
+    <cdd.NumberTypeable object at ...>
+    >>> cdd.NumberTypeable(number_type='fraction') # doctest: +ELLIPSIS
+    <cdd.NumberTypeable object at ...>
     >>> # hyperreals are not supported :-)
     >>> cdd.NumberTypeable('hyperreal') # doctest: +ELLIPSIS
     Traceback (most recent call last):
@@ -245,7 +245,10 @@ cdef class NumberTypeable:
 
     cdef int _number_type
 
-    def __init__(self, number_type='float'):
+    def __cinit__(self, *args, **kwargs):
+        # this is a hack so subclasses can extend arguments at will
+        number_type = kwargs.get('number_type', None)
+        # now set it
         if number_type == 'float':
             self._number_type = FLOAT
         elif number_type == 'fraction':
@@ -256,9 +259,9 @@ cdef class NumberTypeable:
     property number_type:
         """The number type as string.
 
-        >>> cdd.NumberTypeable('float').number_type
+        >>> cdd.NumberTypeable(number_type='float').number_type
         'float'
-        >>> cdd.NumberTypeable('fraction').number_type
+        >>> cdd.NumberTypeable(number_type='fraction').number_type
         'fraction'
         """
         def __get__(self):
@@ -272,9 +275,9 @@ cdef class NumberTypeable:
     property NumberType:
         """The number type as class.
 
-        >>> cdd.NumberTypeable('float').NumberType
+        >>> cdd.NumberTypeable(number_type='float').NumberType
         <type 'float'>
-        >>> cdd.NumberTypeable('fraction').NumberType
+        >>> cdd.NumberTypeable(number_type='fraction').NumberType
         <class 'fractions.Fraction'>
         """
         def __get__(self):
@@ -294,7 +297,7 @@ cdef class NumberTypeable:
         :rtype: :attr:`~cdd.NumberTypeable.NumberType`
 
         >>> numbers = ['4', '2/3', '1.6', '-9/6', 1.12]
-        >>> nt = cdd.NumberTypeable('float')
+        >>> nt = cdd.NumberTypeable(number_type='float')
         >>> for number in numbers:
         ...     x = nt.make_number(number)
         ...     print(repr(x))
@@ -303,7 +306,7 @@ cdef class NumberTypeable:
         1.6000000000000001
         -1.5
         1.1200000000000001
-        >>> nt = cdd.NumberTypeable('fraction')
+        >>> nt = cdd.NumberTypeable(number_type='fraction')
         >>> for number in numbers:
         ...     x = nt.make_number(number)
         ...     print(repr(x))
@@ -337,7 +340,7 @@ cdef class NumberTypeable:
         :rtype: :class:`str`
 
         >>> numbers = ['4', '2/3', '1.6', '-9/6', 1.12]
-        >>> nt = cdd.NumberTypeable('float')
+        >>> nt = cdd.NumberTypeable(number_type='float')
         >>> for number in numbers:
         ...     x = nt.make_number(number)
         ...     print(nt.number_str(x))
@@ -346,7 +349,7 @@ cdef class NumberTypeable:
         1.6
         -1.5
         1.12
-        >>> nt = cdd.NumberTypeable('fraction')
+        >>> nt = cdd.NumberTypeable(number_type='fraction')
         >>> for number in numbers:
         ...     x = nt.make_number(number)
         ...     print(nt.number_str(x))
@@ -380,7 +383,7 @@ cdef class NumberTypeable:
         :rtype: :class:`str`
 
         >>> numbers = ['4', '2/3', '1.6', '-9/6', 1.12]
-        >>> nt = cdd.NumberTypeable('float')
+        >>> nt = cdd.NumberTypeable(number_type='float')
         >>> for number in numbers:
         ...     x = nt.make_number(number)
         ...     print(nt.number_repr(x))
@@ -389,7 +392,7 @@ cdef class NumberTypeable:
         1.6000000000000001
         -1.5
         1.1200000000000001
-        >>> nt = cdd.NumberTypeable('fraction')
+        >>> nt = cdd.NumberTypeable(number_type='fraction')
         >>> for number in numbers:
         ...     x = nt.make_number(number)
         ...     print(nt.number_repr(x))
@@ -428,7 +431,7 @@ cdef class NumberTypeable:
         :param num2: Second value.
         :type num2: :attr:`~cdd.NumberTypeable.NumberType`
 
-        >>> a = cdd.NumberTypeable('float')
+        >>> a = cdd.NumberTypeable(number_type='float')
         >>> a.number_cmp(0.0, 5.0)
         -1
         >>> a.number_cmp(5.0, 0.0)
@@ -437,7 +440,7 @@ cdef class NumberTypeable:
         0
         >>> a.number_cmp(1e-30)
         0
-        >>> a = cdd.NumberTypeable('fraction')
+        >>> a = cdd.NumberTypeable(number_type='fraction')
         >>> a.number_cmp(0, 1)
         -1
         >>> a.number_cmp(1, 0)
@@ -645,9 +648,7 @@ cdef class Matrix(NumberTypeable):
 
     :param rows: The rows of the matrix. Each element can be an
         :class:`int`, :class:`float`, :class:`~fractions.Fraction`, or
-        :class:`str`. The values are automatically converted to a
-        fraction if you use :mod:`cdd._fraction`, and to a float if
-        you use :mod:`cdd._float`.
+        :class:`str`.
     :type rows: :class:`list` of :class:`list`\ s.
     :param linear: Whether to add the rows to the :attr:`lin_set` or not.
     :type linear: :class:`bool`
@@ -656,18 +657,17 @@ cdef class Matrix(NumberTypeable):
 
        With the fraction number type, beware when using floats:
 
-       >>> print(cdd._fraction.Matrix([[1.12]])[0][0])
+       >>> print(cdd.Matrix([[1.12]], number_type='fraction')[0][0])
        1261007895663739/1125899906842624
 
        If the float represents a fraction, it is better to pass it as a
        string, so it gets automatically converted to its exact fraction
        representation:
 
-       >>> print(cdd._fraction.Matrix([['1.12']])[0][0])
+       >>> print(cdd.Matrix([['1.12']], number_type='fraction')[0][0])
        28/25
 
-       Of course, this is only relevant for :mod:`cdd._fraction`; it is not a
-       concern when using :mod:`cdd._float`, in which case both ``1.12`` and
+       Of course, for the float number type, both ``1.12`` and
        ``'1.12'`` will yield the same result, namely the
        :class:`float` ``1.12``.
     """
@@ -678,16 +678,25 @@ cdef class Matrix(NumberTypeable):
     property row_size:
         """Number of rows."""
         def __get__(self):
-            return self.dd_mat.rowsize
+            if self.dd_mat is not NULL:
+                return self.dd_mat.rowsize
+            else:
+                return self.ddf_mat.rowsize
 
     def __len__(self):
         """Number of rows."""
-        return self.dd_mat.rowsize
+        if self.dd_mat is not NULL:
+            return self.dd_mat.rowsize
+        else:
+            return self.ddf_mat.rowsize
 
     property col_size:
         """Number of columns."""
         def __get__(self):
-            return self.dd_mat.colsize
+            if self.dd_mat is not NULL:
+                return self.dd_mat.colsize
+            else:
+                return self.ddf_mat.colsize
 
     property lin_set:
         """A :class:`frozenset` containing the rows of linearity
@@ -695,25 +704,43 @@ cdef class Matrix(NumberTypeable):
         equations for H-representation).
         """
         def __get__(self):
-            return _get_set(self.dd_mat.linset)
+            if self.dd_mat is not NULL:
+                return _get_set(self.dd_mat.linset)
+            else:
+                return _get_set(self.ddf_mat.linset)
         def __set__(self, value):
-            _set_set(self.dd_mat.linset, value)
+            if self.dd_mat is not NULL:
+                _set_set(self.dd_mat.linset, value)
+            else:
+                _set_set(self.ddf_mat.linset, value)
 
     property rep_type:
         """Representation (see :class:`cdd.RepType`)."""
         def __get__(self):
-            return self.dd_mat.representation
+            if self.dd_mat is not NULL:
+                return self.dd_mat.representation
+            else:
+                return self.ddf_mat.representation
         def __set__(self, dd_RepresentationType value):
-            self.dd_mat.representation = value
+            if self.dd_mat is not NULL:
+                self.dd_mat.representation = value
+            else:
+                self.ddf_mat.representation = <ddf_RepresentationType><int>value
 
     property obj_type:
         """Linear programming objective: maximize or minimize (see
         :class:`cdd.LPObjType`).
         """
         def __get__(self):
-            return self.dd_mat.objective
+            if self.dd_mat is not NULL:
+                return self.dd_mat.objective
+            else:
+                return self.ddf_mat.objective
         def __set__(self, dd_LPObjectiveType value):
-            self.dd_mat.objective = value
+            if self.dd_mat is not NULL:
+                self.dd_mat.objective = value
+            else:
+                self.ddf_mat.objective = <ddf_LPObjectiveType><int>value
 
     property obj_func:
         """A :class:`tuple` containing the linear programming objective
@@ -722,28 +749,39 @@ cdef class Matrix(NumberTypeable):
         def __get__(self):
             # return an immutable tuple to prohibit item assignment
             cdef int colindex
-            return tuple([_get_mytype(self.dd_mat.rowvec[colindex])
-                          for 0 <= colindex < self.dd_mat.colsize])
+            if self.dd_mat is not NULL:
+                return tuple([_get_mytype(self.dd_mat.rowvec[colindex])
+                              for 0 <= colindex < self.dd_mat.colsize])
+            else:
+                return tuple([_get_myfloat(self.ddf_mat.rowvec[colindex])
+                              for 0 <= colindex < self.ddf_mat.colsize])
         def __set__(self, obj_func):
             cdef int colindex
-            if len(obj_func) != self.dd_mat.colsize:
+            if len(obj_func) != self.col_size:
                 raise ValueError(
                     "objective function does not match matrix column size")
             for colindex, value in enumerate(obj_func):
-                _set_mytype(self.dd_mat.rowvec[colindex], value)
+                if self.dd_mat is not NULL:
+                    _set_mytype(self.dd_mat.rowvec[colindex], value)
+                else:
+                    _set_myfloat(self.ddf_mat.rowvec[colindex], value)
 
     def __str__(self):
         """Print the matrix data."""
         cdef FILE *pfile
         pfile = _tmpfile()
-        dd_WriteMatrix(pfile, self.dd_mat)
+        if self.dd_mat is not NULL:
+            dd_WriteMatrix(pfile, self.dd_mat)
+        else:
+            ddf_WriteMatrix(pfile, self.ddf_mat)
         return _tmpread(pfile).rstrip('\n')
 
-    def __cinit__(self, rows, linear=False):
+    def __cinit__(self, rows, linear=False, number_type=None):
         """Load matrix data from the rows (which is a list of lists)."""
         cdef int numrows, numcols, rowindex, colindex
-        # reset pointer
+        # reset pointers
         self.dd_mat = NULL
+        self.ddf_mat = NULL
         # determine dimension
         numrows = len(rows)
         if numrows > 0:
@@ -751,28 +789,43 @@ cdef class Matrix(NumberTypeable):
         else:
             numcols = 0
         # create new matrix
-        self.dd_mat = dd_CreateMatrix(numrows, numcols)
+        if self._number_type == FRACTION:
+            self.dd_mat = dd_CreateMatrix(numrows, numcols)
+        else: # must be FLOAT
+            self.ddf_mat = ddf_CreateMatrix(numrows, numcols)
         # load data
         for rowindex, row in enumerate(rows):
             if len(row) != numcols:
                 raise ValueError("rows have different lengths")
             for colindex, value in enumerate(row):
-                _set_mytype(self.dd_mat.matrix[rowindex][colindex], value)
+                if self.dd_mat is not NULL:
+                    _set_mytype(self.dd_mat.matrix[rowindex][colindex], value)
+                else:
+                    _set_myfloat(self.ddf_mat.matrix[rowindex][colindex], value)
         if linear:
             # set all constraints as linear
-            set_compl(self.dd_mat.linset, self.dd_mat.linset)
+            if self.dd_mat is not NULL:
+                set_compl(self.dd_mat.linset, self.dd_mat.linset)
+            else:
+                set_compl(self.ddf_mat.linset, self.ddf_mat.linset)
         # debug
         #dd_WriteMatrix(stdout, self.dd_mat)
 
     def __dealloc__(self):
         """Deallocate matrix."""
-        if self.dd_mat != NULL:
+        if self.dd_mat is not NULL:
             dd_FreeMatrix(self.dd_mat)
         self.dd_mat = NULL
+        if self.ddf_mat is not NULL:
+            ddf_FreeMatrix(self.ddf_mat)
+        self.ddf_mat = NULL
 
     def copy(self):
         """Make a copy of the matrix and return that copy."""
-        return _make_dd_matrix(dd_CopyMatrix(self.dd_mat))
+        if self.dd_mat is not NULL:
+            return _make_dd_matrix(dd_CopyMatrix(self.dd_mat))
+        else:
+            return _make_ddf_matrix(ddf_CopyMatrix(self.ddf_mat))
 
     def extend(self, rows, linear=False):
         """Append rows to self (this corresponds to the dd_MatrixAppendTo
@@ -790,9 +843,12 @@ cdef class Matrix(NumberTypeable):
         cdef Matrix other
         cdef int success
         # create matrix with given rows
-        other = Matrix(rows, linear=linear)
+        other = Matrix(rows, linear=linear, number_type=self.number_type)
         # call dd_AppendToMatrix
-        success = dd_MatrixAppendTo(&self.dd_mat, other.dd_mat)
+        if self.dd_mat is not NULL:
+            success = dd_MatrixAppendTo(&self.dd_mat, other.dd_mat)
+        else:
+            success = ddf_MatrixAppendTo(&self.ddf_mat, other.ddf_mat)
         # check result
         if success != 1:
             raise ValueError(
@@ -818,8 +874,12 @@ cdef class Matrix(NumberTypeable):
             if rownum < 0 or rownum >= self.dd_mat.rowsize:
                 raise IndexError("row index out of range")
             # return an immutable tuple to prohibit item assignment
-            return tuple([_get_mytype(self.dd_mat.matrix[rownum][j])
-                          for 0 <= j < self.dd_mat.colsize])
+            if self.dd_mat is not NULL:
+                return tuple([_get_mytype(self.dd_mat.matrix[rownum][j])
+                              for 0 <= j < self.dd_mat.colsize])
+            else:
+                return tuple([_get_myfloat(self.ddf_mat.matrix[rownum][j])
+                              for 0 <= j < self.ddf_mat.colsize])
 
 cdef class LinProg(NumberTypeable):
     """A class for solving linear programs.
@@ -982,8 +1042,8 @@ cdef class Polyhedron(NumberTypeable):
 # module initialization code comes here
 # initialize module constants
 dd_set_global_constants()
-ddf_set_global_constants()
+#ddf_set_global_constants() # called by dd_set_global_constants
 
-# should call dd(f)_free_global_constants() when module is destroyed
+# should call dd_free_global_constants() when module is destroyed
 # how does python do that?? let's not bother for now...
 

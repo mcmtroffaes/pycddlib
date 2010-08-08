@@ -5,18 +5,17 @@
 Working With Polyhedron Representations
 =======================================
 
-.. class:: cdd._float.Polyhedron(mat)
-.. autoclass:: cdd._fraction.Polyhedron(mat)
+.. autoclass:: cdd.Polyhedron(mat)
 
 Methods and Attributes
 ----------------------
 
-.. automethod:: cdd._fraction.Polyhedron.get_inequalities()
-.. automethod:: cdd._fraction.Polyhedron.get_generators()
+.. automethod:: cdd.Polyhedron.get_inequalities()
+.. automethod:: cdd.Polyhedron.get_generators()
 
-.. autoattribute:: cdd._fraction.Polyhedron.rep_type
+.. autoattribute:: cdd.Polyhedron.rep_type
 
-The :class:`cdd._float.Polyhedron` class has similar methods and
+The :class:`cdd.Polyhedron` class has similar methods and
 attributes.
 
 Examples
@@ -32,18 +31,16 @@ Fractions
 This is the sampleh1.ine example that comes with cddlib.
 
 >>> mat = cdd.Matrix([[2,-1,-1,0],[0,1,0,0],[0,0,1,0]], number_type='fraction')
->>> mat.data.rep_type = cdd.RepType.INEQUALITY
+>>> mat.rep_type = cdd.RepType.INEQUALITY
 >>> poly = cdd.Polyhedron(mat)
->>> type(poly.data)
-<type 'cdd._fraction.Polyhedron'>
->>> print(poly.data)
+>>> print(poly)
 begin
  3 4 rational
  2 -1 -1 0
  0 1 0 0
  0 0 1 0
 end
->>> ext = poly.data.get_generators()
+>>> ext = poly.get_generators()
 >>> print(ext)
 V-representation
 linearity 1  4
@@ -60,8 +57,8 @@ end
 This is the testcdd2.c example that comes with cddlib.
 
 >>> mat = cdd.Matrix([[7,-3,-0],[7,0,-3],[1,1,0],[1,0,1]], number_type='fraction')
->>> mat.data.rep_type = cdd.RepType.INEQUALITY
->>> print(mat.data)
+>>> mat.rep_type = cdd.RepType.INEQUALITY
+>>> print(mat)
 H-representation
 begin
  4 3 rational
@@ -70,7 +67,7 @@ begin
  1 1 0
  1 0 1
 end
->>> print(cdd.Polyhedron(mat).data.get_generators())
+>>> print(cdd.Polyhedron(mat).get_generators())
 V-representation
 begin
  4 3 rational
@@ -80,9 +77,9 @@ begin
  1 7/3 7/3
 end
 >>> # add an equality and an inequality
->>> mat.data.extend([[7, 1, -3]], linear=True)
->>> mat.data.extend([[7, -3, 1]])
->>> print(mat.data)
+>>> mat.extend([[7, 1, -3]], linear=True)
+>>> mat.extend([[7, -3, 1]])
+>>> print(mat)
 H-representation
 linearity 1  5
 begin
@@ -94,7 +91,7 @@ begin
  7 1 -3
  7 -3 1
 end
->>> print(cdd.Polyhedron(mat).data.get_generators())
+>>> print(cdd.Polyhedron(mat).get_generators())
 V-representation
 begin
  2 3 rational
@@ -108,18 +105,16 @@ Floats
 This is the sampleh1.ine example that comes with cddlib.
 
 >>> mat = cdd.Matrix([[2,-1,-1,0],[0,1,0,0],[0,0,1,0]], number_type='float')
->>> mat.data.rep_type = cdd.RepType.INEQUALITY
+>>> mat.rep_type = cdd.RepType.INEQUALITY
 >>> poly = cdd.Polyhedron(mat)
->>> type(poly.data)
-<type 'cdd._float.Polyhedron'>
->>> print(poly.data) # doctest: +NORMALIZE_WHITESPACE
+>>> print(poly) # doctest: +NORMALIZE_WHITESPACE
 begin
  3 4 real
  2 -1 -1 0
  0 1 0 0
  0 0 1 0
 end
->>> ext = poly.data.get_generators()
+>>> ext = poly.get_generators()
 >>> print(ext) # doctest: +NORMALIZE_WHITESPACE
 V-representation
 linearity 1  4
@@ -136,8 +131,8 @@ end
 This is the testcdd2.c example that comes with cddlib.
 
 >>> mat = cdd.Matrix([[7,-3,-0],[7,0,-3],[1,1,0],[1,0,1]], number_type='float')
->>> mat.data.rep_type = cdd.RepType.INEQUALITY
->>> print(mat.data) # doctest: +NORMALIZE_WHITESPACE
+>>> mat.rep_type = cdd.RepType.INEQUALITY
+>>> print(mat) # doctest: +NORMALIZE_WHITESPACE
 H-representation
 begin
  4 3 real
@@ -146,7 +141,7 @@ begin
  1 1 0
  1 0 1
 end
->>> print(cdd.Polyhedron(mat).data.get_generators()) # doctest: +NORMALIZE_WHITESPACE
+>>> print(cdd.Polyhedron(mat).get_generators()) # doctest: +NORMALIZE_WHITESPACE
 V-representation
 begin
  4 3 real
@@ -156,9 +151,9 @@ begin
  1 2.333333333E+00 2.333333333E+00
 end
 >>> # add an equality and an inequality
->>> mat.data.extend([[7, 1, -3]], linear=True)
->>> mat.data.extend([[7, -3, 1]])
->>> print(mat.data) # doctest: +NORMALIZE_WHITESPACE
+>>> mat.extend([[7, 1, -3]], linear=True)
+>>> mat.extend([[7, -3, 1]])
+>>> print(mat) # doctest: +NORMALIZE_WHITESPACE
 H-representation
 linearity 1  5
 begin
@@ -170,7 +165,7 @@ begin
  7 1 -3
  7 -3 1
 end
->>> print(cdd.Polyhedron(mat).data.get_generators()) # doctest: +NORMALIZE_WHITESPACE
+>>> print(cdd.Polyhedron(mat).get_generators()) # doctest: +NORMALIZE_WHITESPACE
 V-representation
 begin
  2 3 real
