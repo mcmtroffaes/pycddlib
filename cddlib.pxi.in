@@ -39,6 +39,80 @@ cdef extern from "@cddhdr@" nogil:
     ctypedef @mytype@ **@dd@_Bmatrix
     ctypedef set_type *@dd@_Aincidence
 
+    # enums
+    ########
+
+    ctypedef enum @dd@_AdjacencyTestType:
+        @dd@_Combinatorial
+        @dd@_Algebraic
+
+    ctypedef enum @dd@_NumberType:
+        @dd@_Unknown
+        @dd@_Real
+        @dd@_Rational
+        @dd@_Integer
+
+    ctypedef enum @dd@_RepresentationType:
+        @dd@_Unspecified
+        @dd@_Inequality
+        @dd@_Generator
+
+    ctypedef enum @dd@_RowOrderType:
+        @dd@_MaxIndex
+        @dd@_MinIndex
+        @dd@_MinCutoff
+        @dd@_MaxCutoff
+        @dd@_MixCutoff
+        @dd@_LexMin
+        @dd@_LexMax
+        @dd@_RandomRow
+
+    # not translated: @dd@_ConversionType, @dd@_IncidenceOutputType, @dd@_AdjacencyOutputType, @dd@_FileInputModeType
+
+    ctypedef enum @dd@_ErrorType:
+        @dd@_DimensionTooLarge
+        @dd@_ImproperInputFormat
+        @dd@_NegativeMatrixSize
+        @dd@_EmptyVrepresentation
+        @dd@_EmptyHrepresentation
+        @dd@_EmptyRepresentation
+        @dd@_IFileNotFound
+        @dd@_OFileNotOpen
+        @dd@_NoLPObjective
+        @dd@_NoRealNumberSupport
+        @dd@_NotAvailForH
+        @dd@_NotAvailForV
+        @dd@_CannotHandleLinearity
+        @dd@_RowIndexOutOfRange
+        @dd@_ColIndexOutOfRange
+        @dd@_LPCycling
+        @dd@_NumericallyInconsistent
+        @dd@_NoError
+
+    ctypedef enum @dd@_CompStatusType:
+        @dd@_InProgress
+        @dd@_AllFound
+        @dd@_RegionEmpty
+
+    ctypedef enum @dd@_LPObjectiveType:
+        @dd@_LPnone
+        @dd@_LPmax
+        @dd@_LPmin
+
+    ctypedef enum @dd@_LPSolverType:
+        @dd@_CrissCross
+        @dd@_DualSimplex
+
+    ctypedef enum @dd@_LPStatusType:
+        @dd@_LPSundecided
+        @dd@_Optimal
+        @dd@_Inconsistent
+        @dd@_DualInconsistent
+        @dd@_StrucInconsistent
+        @dd@_StrucDualInconsistent
+        @dd@_Unbounded
+        @dd@_DualUnbounded
+
     # structures
     #############
 

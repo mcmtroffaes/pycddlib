@@ -31,7 +31,7 @@ Operating System :: OS Independent"""
 from distutils.core import setup
 from distutils.ccompiler import new_compiler
 from distutils.extension import Extension
-from Cython.Distutils import build_ext as _build_ext
+from Cython.Distutils import build_ext
 
 import os
 
