@@ -15,9 +15,6 @@ Methods and Attributes
 
 .. autoattribute:: cdd.Polyhedron.rep_type
 
-The :class:`cdd.Polyhedron` class has similar methods and
-attributes.
-
 Examples
 --------
 

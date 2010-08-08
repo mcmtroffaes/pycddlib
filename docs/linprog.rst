@@ -19,9 +19,6 @@ Methods and Attributes
 .. autoattribute:: cdd.LinProg.solver
 .. autoattribute:: cdd.LinProg.status
 
-The :class:`cdd._float.Matrix` class has similar methods and
-attributes.
-
 Examples
 --------
 
