@@ -260,7 +260,8 @@ cdef class NumberTypeable:
         elif number_type == 'fraction':
             self._number_type = FRACTION
         else:
-            raise ValueError("specify 'float' or 'fraction'")
+            raise ValueError(
+                "specify number_type='float' or number_type='fraction'")
 
     property number_type:
         """The number type as string.
