@@ -35,13 +35,13 @@ from Cython.Distutils import build_ext
 
 import os
 
-# get version from python file (without requiring extensions to be compiled!)
-for line in open('cdd/__init__.py'):
+# get version from Cython file (without requiring extensions to be compiled!)
+for line in open('cdd.pyx'):
     if line.startswith("__version__"):
        version = line[line.find('"')+1:line.rfind('"')]
        break
 else:
-    raise RuntimeError("failed to extract version from pycddlib.pyx")
+    raise RuntimeError("failed to extract version from cdd.pyx")
 
 # get documentation from README file
 doclines = open('README').read().split('\n')

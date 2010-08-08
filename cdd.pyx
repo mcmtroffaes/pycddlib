@@ -23,6 +23,9 @@ cimport python_unicode
 
 from fractions import Fraction
 
+__version__ = '1.0.2'
+__release__ = __version__ + ' (beta)'
+
 # some of cdd's functions read and write files
 cdef extern from "stdio.h" nogil:
     ctypedef struct FILE
@@ -675,16 +678,16 @@ cdef class Matrix(NumberTypeable):
     property row_size:
         """Number of rows."""
         def __get__(self):
-            return self.thisptr.rowsize
+            return self.dd_mat.rowsize
 
     def __len__(self):
         """Number of rows."""
-        return self.thisptr.rowsize
+        return self.dd_mat.rowsize
 
     property col_size:
         """Number of columns."""
         def __get__(self):
-            return self.thisptr.colsize
+            return self.dd_mat.colsize
 
     property lin_set:
         """A :class:`frozenset` containing the rows of linearity
@@ -692,25 +695,25 @@ cdef class Matrix(NumberTypeable):
         equations for H-representation).
         """
         def __get__(self):
-            return _get_set(self.thisptr.linset)
+            return _get_set(self.dd_mat.linset)
         def __set__(self, value):
-            _set_set(self.thisptr.linset, value)
+            _set_set(self.dd_mat.linset, value)
 
     property rep_type:
         """Representation (see :class:`cdd.RepType`)."""
         def __get__(self):
-            return self.thisptr.representation
+            return self.dd_mat.representation
         def __set__(self, dd_RepresentationType value):
-            self.thisptr.representation = value
+            self.dd_mat.representation = value
 
     property obj_type:
         """Linear programming objective: maximize or minimize (see
         :class:`cdd.LPObjType`).
         """
         def __get__(self):
-            return self.thisptr.objective
+            return self.dd_mat.objective
         def __set__(self, dd_LPObjectiveType value):
-            self.thisptr.objective = value
+            self.dd_mat.objective = value
 
     property obj_func:
         """A :class:`tuple` containing the linear programming objective
@@ -719,28 +722,28 @@ cdef class Matrix(NumberTypeable):
         def __get__(self):
             # return an immutable tuple to prohibit item assignment
             cdef int colindex
-            return tuple([_get_mytype(self.thisptr.rowvec[colindex])
-                          for 0 <= colindex < self.thisptr.colsize])
+            return tuple([_get_mytype(self.dd_mat.rowvec[colindex])
+                          for 0 <= colindex < self.dd_mat.colsize])
         def __set__(self, obj_func):
             cdef int colindex
-            if len(obj_func) != self.thisptr.colsize:
+            if len(obj_func) != self.dd_mat.colsize:
                 raise ValueError(
                     "objective function does not match matrix column size")
             for colindex, value in enumerate(obj_func):
-                _set_mytype(self.thisptr.rowvec[colindex], value)
+                _set_mytype(self.dd_mat.rowvec[colindex], value)
 
     def __str__(self):
         """Print the matrix data."""
         cdef FILE *pfile
         pfile = _tmpfile()
-        dd_WriteMatrix(pfile, self.thisptr)
+        dd_WriteMatrix(pfile, self.dd_mat)
         return _tmpread(pfile).rstrip('\n')
 
     def __cinit__(self, rows, linear=False):
         """Load matrix data from the rows (which is a list of lists)."""
         cdef int numrows, numcols, rowindex, colindex
         # reset pointer
-        self.thisptr = NULL
+        self.dd_mat = NULL
         # determine dimension
         numrows = len(rows)
         if numrows > 0:
@@ -748,28 +751,28 @@ cdef class Matrix(NumberTypeable):
         else:
             numcols = 0
         # create new matrix
-        self.thisptr = dd_CreateMatrix(numrows, numcols)
+        self.dd_mat = dd_CreateMatrix(numrows, numcols)
         # load data
         for rowindex, row in enumerate(rows):
             if len(row) != numcols:
                 raise ValueError("rows have different lengths")
             for colindex, value in enumerate(row):
-                _set_mytype(self.thisptr.matrix[rowindex][colindex], value)
+                _set_mytype(self.dd_mat.matrix[rowindex][colindex], value)
         if linear:
             # set all constraints as linear
-            set_compl(self.thisptr.linset, self.thisptr.linset)
+            set_compl(self.dd_mat.linset, self.dd_mat.linset)
         # debug
-        #dd_WriteMatrix(stdout, self.thisptr)
+        #dd_WriteMatrix(stdout, self.dd_mat)
 
     def __dealloc__(self):
         """Deallocate matrix."""
-        if self.thisptr != NULL:
-            dd_FreeMatrix(self.thisptr)
-        self.thisptr = NULL
+        if self.dd_mat != NULL:
+            dd_FreeMatrix(self.dd_mat)
+        self.dd_mat = NULL
 
     def copy(self):
         """Make a copy of the matrix and return that copy."""
-        return _make_matrix(dd_CopyMatrix(self.thisptr))
+        return _make_dd_matrix(dd_CopyMatrix(self.dd_mat))
 
     def extend(self, rows, linear=False):
         """Append rows to self (this corresponds to the dd_MatrixAppendTo
@@ -789,7 +792,7 @@ cdef class Matrix(NumberTypeable):
         # create matrix with given rows
         other = Matrix(rows, linear=linear)
         # call dd_AppendToMatrix
-        success = dd_MatrixAppendTo(&self.thisptr, other.thisptr)
+        success = dd_MatrixAppendTo(&self.dd_mat, other.dd_mat)
         # check result
         if success != 1:
             raise ValueError(
@@ -812,11 +815,11 @@ cdef class Matrix(NumberTypeable):
             return tuple([self.__getitem__(i) for i in xrange(*indices)])
         else:
             rownum = key
-            if rownum < 0 or rownum >= self.thisptr.rowsize:
+            if rownum < 0 or rownum >= self.dd_mat.rowsize:
                 raise IndexError("row index out of range")
             # return an immutable tuple to prohibit item assignment
-            return tuple([_get_mytype(self.thisptr.matrix[rownum][j])
-                          for 0 <= j < self.thisptr.colsize])
+            return tuple([_get_mytype(self.dd_mat.matrix[rownum][j])
+                          for 0 <= j < self.dd_mat.colsize])
 
 cdef class LinProg(NumberTypeable):
     """A class for solving linear programs.
@@ -833,42 +836,42 @@ cdef class LinProg(NumberTypeable):
     property solver:
         """The type of solver to use (see :class:`cdd.LPSolverType`)."""
         def __get__(self):
-            return self.thisptr.solver
+            return self.dd_lp.solver
 
     property obj_type:
         """Whether we are minimizing or maximizing (see
         :class:`cdd.LPObjType`).
         """
         def __get__(self):
-            return self.thisptr.objective
+            return self.dd_lp.objective
         def __set__(self, dd_LPObjectiveType value):
-            self.thisptr.objective = value
+            self.dd_lp.objective = value
 
     property status:
         """The status of the linear program (see
         :class:`cdd.LPStatusType`).
         """
         def __get__(self):
-            return self.thisptr.LPS
+            return self.dd_lp.LPS
 
     property obj_value:
         """The optimal value of the objective function."""
         def __get__(self):
-            return _get_mytype(self.thisptr.optvalue)
+            return _get_mytype(self.dd_lp.optvalue)
 
     property primal_solution:
         """A :class:`tuple` containing the primal solution."""
         def __get__(self):
             cdef int colindex
-            return tuple([_get_mytype(self.thisptr.sol[colindex])
-                          for 1 <= colindex < self.thisptr.d])
+            return tuple([_get_mytype(self.dd_lp.sol[colindex])
+                          for 1 <= colindex < self.dd_lp.d])
 
     property dual_solution:
         """A :class:`tuple` containing the dual solution."""
         def __get__(self):
             cdef int colindex
-            return tuple([_get_mytype(self.thisptr.dsol[colindex])
-                          for 1 <= colindex < self.thisptr.d])
+            return tuple([_get_mytype(self.dd_lp.dsol[colindex])
+                          for 1 <= colindex < self.dd_lp.d])
 
     def __str__(self):
         """Print the linear program data."""
@@ -877,7 +880,7 @@ cdef class LinProg(NumberTypeable):
         pfile = _tmpfile()
         # note: if lp has an error, then exception is raised
         # so pass dd_NoError
-        dd_WriteLPResult(pfile, self.thisptr, dd_NoError)
+        dd_WriteLPResult(pfile, self.dd_lp, dd_NoError)
         return _tmpread(pfile).rstrip('\n')
 
     def __cinit__(self, Matrix mat):
@@ -886,21 +889,21 @@ cdef class LinProg(NumberTypeable):
         """
         cdef dd_ErrorType error
         error = dd_NoError
-        self.thisptr = NULL
+        self.dd_lp = NULL
         # read matrix
-        self.thisptr = dd_Matrix2LP(mat.thisptr, &error)
-        if self.thisptr == NULL or error != dd_NoError:
-            if self.thisptr != NULL:
-                dd_FreeLPData(self.thisptr)
+        self.dd_lp = dd_Matrix2LP(mat.dd_mat, &error)
+        if self.dd_lp == NULL or error != dd_NoError:
+            if self.dd_lp != NULL:
+                dd_FreeLPData(self.dd_lp)
             _raise_error(error, "failed to load linear program")
         # debug
-        #dd_WriteLP(stdout, self.thisptr)
+        #dd_WriteLP(stdout, self.dd_lp)
 
     def __dealloc__(self):
         """Deallocate solution memory."""
-        if self.thisptr != NULL:
-            dd_FreeLPData(self.thisptr)
-        self.thisptr = NULL
+        if self.dd_lp != NULL:
+            dd_FreeLPData(self.dd_lp)
+        self.dd_lp = NULL
 
     def solve(self, dd_LPSolverType solver=dd_DualSimplex):
         """Solve linear program.
@@ -910,7 +913,7 @@ cdef class LinProg(NumberTypeable):
         """
         cdef dd_ErrorType error
         error = dd_NoError
-        dd_LPSolve(self.thisptr, solver, &error)
+        dd_LPSolve(self.dd_lp, solver, &error)
         if error != dd_NoError:
             _raise_error(error, "failed to solve linear program")
 
@@ -929,36 +932,36 @@ cdef class Polyhedron(NumberTypeable):
     property rep_type:
         """Representation (see :class:`cdd.RepType`)."""
         def __get__(self):
-            return self.thisptr.representation
+            return self.dd_poly.representation
         def __set__(self, dd_RepresentationType value):
-            self.thisptr.representation = value
+            self.dd_poly.representation = value
 
     def __str__(self):
         """Print the polyhedra data."""
         cdef FILE *pfile
         pfile = _tmpfile()
-        dd_WritePolyFile(pfile, self.thisptr)
+        dd_WritePolyFile(pfile, self.dd_poly)
         return _tmpread(pfile).rstrip('\n')
 
     def __cinit__(self, Matrix mat):
         """Initialize polyhedra from given matrix."""
         cdef dd_ErrorType error
         error = dd_NoError
-        self.thisptr = NULL
+        self.dd_poly = NULL
         # read matrix
-        self.thisptr = dd_DDMatrix2Poly(mat.thisptr, &error)
-        if self.thisptr == NULL or error != dd_NoError:
-            if self.thisptr != NULL:
-                dd_FreePolyhedra(self.thisptr)
+        self.dd_poly = dd_DDMatrix2Poly(mat.dd_mat, &error)
+        if self.dd_poly == NULL or error != dd_NoError:
+            if self.dd_poly != NULL:
+                dd_FreePolyhedra(self.dd_poly)
             _raise_error(error, "failed to load polyhedra")
         # debug
-        #dd_WritePolyFile(stdout, self.thisptr)
+        #dd_WritePolyFile(stdout, self.dd_poly)
 
     def __dealloc__(self):
         """Deallocate matrix."""
-        if self.thisptr != NULL:
-            dd_FreePolyhedra(self.thisptr)
-        self.thisptr = NULL
+        if self.dd_poly != NULL:
+            dd_FreePolyhedra(self.dd_poly)
+        self.dd_poly = NULL
 
     def get_inequalities(self):
         """Get all inequalities.
@@ -966,7 +969,7 @@ cdef class Polyhedron(NumberTypeable):
         :returns: H-representation.
         :rtype: :class:`Matrix`
         """
-        return _make_matrix(dd_CopyInequalities(self.thisptr))
+        return _make_dd_matrix(dd_CopyInequalities(self.dd_poly))
 
     def get_generators(self):
         """Get all generators.
@@ -974,7 +977,7 @@ cdef class Polyhedron(NumberTypeable):
         :returns: V-representation.
         :rtype: :class:`Matrix`
         """
-        return _make_matrix(dd_CopyGenerators(self.thisptr))
+        return _make_dd_matrix(dd_CopyGenerators(self.dd_poly))
 
 # module initialization code comes here
 # initialize module constants
