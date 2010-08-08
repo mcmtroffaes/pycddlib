@@ -677,14 +677,14 @@ cdef class Matrix(NumberTypeable):
 
     cdef int _get_row_size(self):
         """Quick implementation of row_size property, for Cython use."""
-        if self.dd_mat is not NULL:
+        if self.dd_mat:
             return self.dd_mat.rowsize
         else:
             return self.ddf_mat.rowsize
 
     cdef int _get_col_size(self):
         """Quick implementation of col_size property, for Cython use."""
-        if self.dd_mat is not NULL:
+        if self.dd_mat:
             return self.dd_mat.colsize
         else:
             return self.ddf_mat.colsize
@@ -710,12 +710,12 @@ cdef class Matrix(NumberTypeable):
         equations for H-representation).
         """
         def __get__(self):
-            if self.dd_mat is not NULL:
+            if self.dd_mat:
                 return _get_set(self.dd_mat.linset)
             else:
                 return _get_set(self.ddf_mat.linset)
         def __set__(self, value):
-            if self.dd_mat is not NULL:
+            if self.dd_mat:
                 _set_set(self.dd_mat.linset, value)
             else:
                 _set_set(self.ddf_mat.linset, value)
@@ -723,12 +723,12 @@ cdef class Matrix(NumberTypeable):
     property rep_type:
         """Representation (see :class:`cdd.RepType`)."""
         def __get__(self):
-            if self.dd_mat is not NULL:
+            if self.dd_mat:
                 return self.dd_mat.representation
             else:
                 return self.ddf_mat.representation
         def __set__(self, dd_RepresentationType value):
-            if self.dd_mat is not NULL:
+            if self.dd_mat:
                 self.dd_mat.representation = value
             else:
                 self.ddf_mat.representation = <ddf_RepresentationType><int>value
@@ -738,12 +738,12 @@ cdef class Matrix(NumberTypeable):
         :class:`cdd.LPObjType`).
         """
         def __get__(self):
-            if self.dd_mat is not NULL:
+            if self.dd_mat:
                 return self.dd_mat.objective
             else:
                 return self.ddf_mat.objective
         def __set__(self, dd_LPObjectiveType value):
-            if self.dd_mat is not NULL:
+            if self.dd_mat:
                 self.dd_mat.objective = value
             else:
                 self.ddf_mat.objective = <ddf_LPObjectiveType><int>value
@@ -755,7 +755,7 @@ cdef class Matrix(NumberTypeable):
         def __get__(self):
             # return an immutable tuple to prohibit item assignment
             cdef int colindex
-            if self.dd_mat is not NULL:
+            if self.dd_mat:
                 return tuple([_get_mytype(self.dd_mat.rowvec[colindex])
                               for 0 <= colindex < self.dd_mat.colsize])
             else:
@@ -767,7 +767,7 @@ cdef class Matrix(NumberTypeable):
                 raise ValueError(
                     "objective function does not match matrix column size")
             for colindex, value in enumerate(obj_func):
-                if self.dd_mat is not NULL:
+                if self.dd_mat:
                     _set_mytype(self.dd_mat.rowvec[colindex], value)
                 else:
                     _set_myfloat(self.ddf_mat.rowvec[colindex], value)
@@ -776,7 +776,7 @@ cdef class Matrix(NumberTypeable):
         """Print the matrix data."""
         cdef FILE *pfile
         pfile = _tmpfile()
-        if self.dd_mat is not NULL:
+        if self.dd_mat:
             dd_WriteMatrix(pfile, self.dd_mat)
         else:
             ddf_WriteMatrix(pfile, self.ddf_mat)
@@ -804,13 +804,13 @@ cdef class Matrix(NumberTypeable):
             if len(row) != numcols:
                 raise ValueError("rows have different lengths")
             for colindex, value in enumerate(row):
-                if self.dd_mat is not NULL:
+                if self.dd_mat:
                     _set_mytype(self.dd_mat.matrix[rowindex][colindex], value)
                 else:
                     _set_myfloat(self.ddf_mat.matrix[rowindex][colindex], value)
         if linear:
             # set all constraints as linear
-            if self.dd_mat is not NULL:
+            if self.dd_mat:
                 set_compl(self.dd_mat.linset, self.dd_mat.linset)
             else:
                 set_compl(self.ddf_mat.linset, self.ddf_mat.linset)
@@ -819,16 +819,16 @@ cdef class Matrix(NumberTypeable):
 
     def __dealloc__(self):
         """Deallocate matrix."""
-        if self.dd_mat is not NULL:
+        if self.dd_mat:
             dd_FreeMatrix(self.dd_mat)
         self.dd_mat = NULL
-        if self.ddf_mat is not NULL:
+        if self.ddf_mat:
             ddf_FreeMatrix(self.ddf_mat)
         self.ddf_mat = NULL
 
     def copy(self):
         """Make a copy of the matrix and return that copy."""
-        if self.dd_mat is not NULL:
+        if self.dd_mat:
             return _make_dd_matrix(dd_CopyMatrix(self.dd_mat))
         else:
             return _make_ddf_matrix(ddf_CopyMatrix(self.ddf_mat))
@@ -851,7 +851,7 @@ cdef class Matrix(NumberTypeable):
         # create matrix with given rows
         other = Matrix(rows, linear=linear, number_type=self.number_type)
         # call dd_AppendToMatrix
-        if self.dd_mat is not NULL:
+        if self.dd_mat:
             success = dd_MatrixAppendTo(&self.dd_mat, other.dd_mat)
         else:
             success = ddf_MatrixAppendTo(&self.ddf_mat, other.ddf_mat)
@@ -880,7 +880,7 @@ cdef class Matrix(NumberTypeable):
             if rownum < 0 or rownum >= self._get_row_size():
                 raise IndexError("row index out of range")
             # return an immutable tuple to prohibit item assignment
-            if self.dd_mat is not NULL:
+            if self.dd_mat:
                 return tuple([_get_mytype(self.dd_mat.matrix[rownum][j])
                               for 0 <= j < self.dd_mat.colsize])
             else:
