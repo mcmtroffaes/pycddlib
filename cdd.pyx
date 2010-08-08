@@ -23,8 +23,8 @@ cimport python_unicode
 
 from fractions import Fraction
 
-__version__ = '1.0.2'
-__release__ = __version__ + ' (beta)'
+__version__ = "1.0.2"
+__release__ = __version__ + " (beta)"
 
 # some of cdd's functions read and write files
 cdef extern from "stdio.h" nogil:
@@ -247,7 +247,13 @@ cdef class NumberTypeable:
 
     def __cinit__(self, *args, **kwargs):
         # this is a hack so subclasses can extend arguments at will
+        # first check keyword argument
         number_type = kwargs.get('number_type', None)
+        # no keyword argument: check first argument
+        if ((number_type is None)
+            and args
+            and isinstance(args[0], NumberTypeable)):
+                number_type = args[0].number_type
         # now set it
         if number_type == 'float':
             self._number_type = FLOAT
@@ -731,7 +737,7 @@ cdef class Matrix(NumberTypeable):
             if self.dd_mat:
                 self.dd_mat.representation = value
             else:
-                self.ddf_mat.representation = <ddf_RepresentationType><int>value
+                self.ddf_mat.representation = <ddf_RepresentationType>value
 
     property obj_type:
         """Linear programming objective: maximize or minimize (see
@@ -746,7 +752,7 @@ cdef class Matrix(NumberTypeable):
             if self.dd_mat:
                 self.dd_mat.objective = value
             else:
-                self.ddf_mat.objective = <ddf_LPObjectiveType><int>value
+                self.ddf_mat.objective = <ddf_LPObjectiveType>value
 
     property obj_func:
         """A :class:`tuple` containing the linear programming objective
@@ -918,26 +924,40 @@ cdef class LinProg(NumberTypeable):
         :class:`cdd.LPStatusType`).
         """
         def __get__(self):
-            return self.dd_lp.LPS
+            if self.dd_lp:
+                return self.dd_lp.LPS
+            else:
+                return self.ddf_lp.LPS
 
     property obj_value:
         """The optimal value of the objective function."""
         def __get__(self):
-            return _get_mytype(self.dd_lp.optvalue)
+            if self.dd_lp:
+                return _get_mytype(self.dd_lp.optvalue)
+            else:
+                return _get_myfloat(self.ddf_lp.optvalue)
 
     property primal_solution:
         """A :class:`tuple` containing the primal solution."""
         def __get__(self):
             cdef int colindex
-            return tuple([_get_mytype(self.dd_lp.sol[colindex])
-                          for 1 <= colindex < self.dd_lp.d])
+            if self.dd_lp:
+                return tuple([_get_mytype(self.dd_lp.sol[colindex])
+                              for 1 <= colindex < self.dd_lp.d])
+            else:
+                return tuple([_get_myfloat(self.ddf_lp.sol[colindex])
+                              for 1 <= colindex < self.ddf_lp.d])
 
     property dual_solution:
         """A :class:`tuple` containing the dual solution."""
         def __get__(self):
             cdef int colindex
-            return tuple([_get_mytype(self.dd_lp.dsol[colindex])
-                          for 1 <= colindex < self.dd_lp.d])
+            if self.dd_lp:
+                return tuple([_get_mytype(self.dd_lp.dsol[colindex])
+                              for 1 <= colindex < self.dd_lp.d])
+            else:
+                return tuple([_get_myfloat(self.ddf_lp.dsol[colindex])
+                              for 1 <= colindex < self.ddf_lp.d])
 
     def __str__(self):
         """Print the linear program data."""
@@ -946,29 +966,42 @@ cdef class LinProg(NumberTypeable):
         pfile = _tmpfile()
         # note: if lp has an error, then exception is raised
         # so pass dd_NoError
-        dd_WriteLPResult(pfile, self.dd_lp, dd_NoError)
+        if self.dd_lp:
+            dd_WriteLPResult(pfile, self.dd_lp, dd_NoError)
+        else:
+            ddf_WriteLPResult(pfile, self.ddf_lp, ddf_NoError)
         return _tmpread(pfile).rstrip('\n')
 
     def __cinit__(self, Matrix mat):
         """Initialize linear program solution from solved linear program in
         the given matrix.
         """
-        cdef dd_ErrorType error
-        error = dd_NoError
+        cdef dd_ErrorType error = dd_NoError
         self.dd_lp = NULL
+        self.ddf_lp = NULL
         # read matrix
-        self.dd_lp = dd_Matrix2LP(mat.dd_mat, &error)
-        if self.dd_lp == NULL or error != dd_NoError:
-            if self.dd_lp != NULL:
-                dd_FreeLPData(self.dd_lp)
-            _raise_error(error, "failed to load linear program")
+        if mat.dd_mat:
+            self.dd_lp = dd_Matrix2LP(mat.dd_mat, &error)
+            if self.dd_lp == NULL or error != dd_NoError:
+                if self.dd_lp != NULL:
+                    dd_FreeLPData(self.dd_lp)
+                _raise_error(error, "failed to load linear program")
+        else:
+            self.ddf_lp = ddf_Matrix2LP(mat.ddf_mat, <ddf_ErrorType *>(&error))
+            if self.ddf_lp == NULL or error != dd_NoError:
+                if self.ddf_lp != NULL:
+                    ddf_FreeLPData(self.ddf_lp)
+                _raise_error(error, "failed to load linear program")
         # debug
         #dd_WriteLP(stdout, self.dd_lp)
 
     def __dealloc__(self):
         """Deallocate solution memory."""
-        if self.dd_lp != NULL:
+        if self.dd_lp:
             dd_FreeLPData(self.dd_lp)
+        self.dd_lp = NULL
+        if self.ddf_lp:
+            ddf_FreeLPData(self.ddf_lp)
         self.dd_lp = NULL
 
     def solve(self, dd_LPSolverType solver=dd_DualSimplex):
@@ -977,9 +1010,11 @@ cdef class LinProg(NumberTypeable):
         :param solver: The method of solution (see :class:`cdd.LPSolverType`).
         :type solver: :class:`int`
         """
-        cdef dd_ErrorType error
-        error = dd_NoError
-        dd_LPSolve(self.dd_lp, solver, &error)
+        cdef dd_ErrorType error = dd_NoError
+        if self.dd_lp:
+            dd_LPSolve(self.dd_lp, solver, &error)
+        else:
+            ddf_LPSolve(self.ddf_lp, <ddf_LPSolverType>solver, <ddf_ErrorType *>(&error))
         if error != dd_NoError:
             _raise_error(error, "failed to solve linear program")
 
@@ -998,7 +1033,10 @@ cdef class Polyhedron(NumberTypeable):
     property rep_type:
         """Representation (see :class:`cdd.RepType`)."""
         def __get__(self):
-            return self.dd_poly.representation
+            if self.dd_poly:
+                return self.dd_poly.representation
+            else:
+                return self.ddf_poly.representation
         def __set__(self, dd_RepresentationType value):
             self.dd_poly.representation = value
 
@@ -1006,7 +1044,10 @@ cdef class Polyhedron(NumberTypeable):
         """Print the polyhedra data."""
         cdef FILE *pfile
         pfile = _tmpfile()
-        dd_WritePolyFile(pfile, self.dd_poly)
+        if self.dd_poly:
+            dd_WritePolyFile(pfile, self.dd_poly)
+        else:
+            ddf_WritePolyFile(pfile, self.ddf_poly)
         return _tmpread(pfile).rstrip('\n')
 
     def __cinit__(self, Matrix mat):
@@ -1014,20 +1055,31 @@ cdef class Polyhedron(NumberTypeable):
         cdef dd_ErrorType error
         error = dd_NoError
         self.dd_poly = NULL
+        self.ddf_poly = NULL
         # read matrix
-        self.dd_poly = dd_DDMatrix2Poly(mat.dd_mat, &error)
-        if self.dd_poly == NULL or error != dd_NoError:
-            if self.dd_poly != NULL:
-                dd_FreePolyhedra(self.dd_poly)
-            _raise_error(error, "failed to load polyhedra")
+        if mat.dd_mat:
+            self.dd_poly = dd_DDMatrix2Poly(mat.dd_mat, &error)
+            if self.dd_poly == NULL or error != dd_NoError:
+                if self.dd_poly != NULL:
+                    dd_FreePolyhedra(self.dd_poly)
+                _raise_error(error, "failed to load polyhedra")
+        else:
+            self.ddf_poly = ddf_DDMatrix2Poly(mat.ddf_mat, <ddf_ErrorType *>(&error))
+            if self.ddf_poly == NULL or error != dd_NoError:
+                if self.ddf_poly != NULL:
+                    ddf_FreePolyhedra(self.ddf_poly)
+                _raise_error(error, "failed to load polyhedra")
         # debug
         #dd_WritePolyFile(stdout, self.dd_poly)
 
     def __dealloc__(self):
         """Deallocate matrix."""
-        if self.dd_poly != NULL:
+        if self.dd_poly:
             dd_FreePolyhedra(self.dd_poly)
         self.dd_poly = NULL
+        if self.ddf_poly:
+            ddf_FreePolyhedra(self.ddf_poly)
+        self.ddf_poly = NULL
 
     def get_inequalities(self):
         """Get all inequalities.
@@ -1035,7 +1087,10 @@ cdef class Polyhedron(NumberTypeable):
         :returns: H-representation.
         :rtype: :class:`Matrix`
         """
-        return _make_dd_matrix(dd_CopyInequalities(self.dd_poly))
+        if self.dd_poly:
+            return _make_dd_matrix(dd_CopyInequalities(self.dd_poly))
+        else:
+            return _make_ddf_matrix(ddf_CopyInequalities(self.ddf_poly))
 
     def get_generators(self):
         """Get all generators.
@@ -1043,7 +1098,10 @@ cdef class Polyhedron(NumberTypeable):
         :returns: V-representation.
         :rtype: :class:`Matrix`
         """
-        return _make_dd_matrix(dd_CopyGenerators(self.dd_poly))
+        if self.dd_poly:
+            return _make_dd_matrix(dd_CopyGenerators(self.dd_poly))
+        else:
+            return _make_ddf_matrix(ddf_CopyGenerators(self.ddf_poly))
 
 # module initialization code comes here
 # initialize module constants
