@@ -8,7 +8,7 @@ Welcome to pycddlib's documentation!
    :maxdepth: 2
 
    quickstart
+   introduction
    matrix
    linprog
    polyhedron
-   constants

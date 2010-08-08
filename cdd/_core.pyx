@@ -32,53 +32,18 @@ cdef class NumberTypeable:
     """Base class for classes that can have different representations
     of numbers.
 
-    >>> numbers = ['4', '2/3', '1.6', '9/6', 1.12]
-    >>> a = cdd.NumberTypeable('float')
-    >>> a.NumberType
-    <type 'float'>
-    >>> for number in numbers:
-    ...     x = a.make_number(number)
-    ...     print(repr(x))
-    ...     print(a.number_str(x))
-    ...     print(a.number_repr(x))
-    4.0
-    4.0
-    4.0
-    0.66666666666666663
-    0.666666666667
-    0.66666666666666663
-    1.6000000000000001
-    1.6
-    1.6000000000000001
-    1.5
-    1.5
-    1.5
-    1.1200000000000001
-    1.12
-    1.1200000000000001
-    >>> a = cdd.NumberTypeable('fraction')
-    >>> a.NumberType
-    <class 'fractions.Fraction'>
-    >>> for number in numbers:
-    ...     x = a.make_number(number)
-    ...     print(repr(x))
-    ...     print(a.number_str(x))
-    ...     print(a.number_repr(x))
-    Fraction(4, 1)
-    4
-    4
-    Fraction(2, 3)
-    2/3
-    '2/3'
-    Fraction(8, 5)
-    8/5
-    '8/5'
-    Fraction(3, 2)
-    3/2
-    '3/2'
-    Fraction(1261007895663739, 1125899906842624)
-    1261007895663739/1125899906842624
-    '1261007895663739/1125899906842624'
+    :param number_type: The number type (``'float'`` or ``'fraction'``).
+    :type number_type: :class:`str`
+
+    >>> cdd.NumberTypeable('float') # doctest: +ELLIPSIS
+    <cdd._core.NumberTypeable object at ...>
+    >>> cdd.NumberTypeable('fraction') # doctest: +ELLIPSIS
+    <cdd._core.NumberTypeable object at ...>
+    >>> # hyperreals are not supported :-)
+    >>> cdd.NumberTypeable('hyperreal') # doctest: +ELLIPSIS
+    Traceback (most recent call last):
+        ...
+    ValueError: ...
     """
 
     cdef int _number_type
@@ -92,7 +57,13 @@ cdef class NumberTypeable:
             raise ValueError("specify 'float' or 'fraction'")
 
     property number_type:
-        """The number type as string."""
+        """The number type as string.
+
+        >>> cdd.NumberTypeable('float').number_type
+        'float'
+        >>> cdd.NumberTypeable('fraction').number_type
+        'fraction'
+        """
         def __get__(self):
             if self._number_type == FLOAT:
                 return 'float'
@@ -102,7 +73,13 @@ cdef class NumberTypeable:
                 _invalid(self._number_type)
 
     property NumberType:
-        """The number type as class."""
+        """The number type as class.
+
+        >>> cdd.NumberTypeable('float').NumberType
+        <type 'float'>
+        >>> cdd.NumberTypeable('fraction').NumberType
+        <class 'fractions.Fraction'>
+        """
         def __get__(self):
             if self._number_type == FLOAT:
                 return float
@@ -115,10 +92,29 @@ cdef class NumberTypeable:
         """Convert value into a number.
 
         :param value: The value to convert.
-        :type value: Anything that can be converted (see examples).
+        :type value: :class:`int`, :class:`float`, or :class:`str`
         :returns: The converted value.
-        :rtype: :class:`float` or :class:`~fractions.Fraction`,
-            depending on :attr:`number_type`.
+        :rtype: :attr:`~cdd.NumberTypeable.NumberType`
+
+        >>> numbers = ['4', '2/3', '1.6', '-9/6', 1.12]
+        >>> nt = cdd.NumberTypeable('float')
+        >>> for number in numbers:
+        ...     x = nt.make_number(number)
+        ...     print(repr(x))
+        4.0
+        0.66666666666666663
+        1.6000000000000001
+        -1.5
+        1.1200000000000001
+        >>> nt = cdd.NumberTypeable('fraction')
+        >>> for number in numbers:
+        ...     x = nt.make_number(number)
+        ...     print(repr(x))
+        Fraction(4, 1)
+        Fraction(2, 3)
+        Fraction(8, 5)
+        Fraction(-3, 2)
+        Fraction(1261007895663739, 1125899906842624)
         """
         if self._number_type == FLOAT:
             if isinstance(value, str) and '/' in value:
@@ -136,7 +132,33 @@ cdef class NumberTypeable:
             _invalid(self._number_type)
 
     def number_str(self, value):
-        """Convert value into a string."""
+        """Convert value into a string.
+
+        :param value: The value.
+        :type value: :attr:`~cdd.NumberTypeable.NumberType`
+        :returns: A string for the value.
+        :rtype: :class:`str`
+
+        >>> numbers = ['4', '2/3', '1.6', '-9/6', 1.12]
+        >>> nt = cdd.NumberTypeable('float')
+        >>> for number in numbers:
+        ...     x = nt.make_number(number)
+        ...     print(nt.number_str(x))
+        4.0
+        0.666666666667
+        1.6
+        -1.5
+        1.12
+        >>> nt = cdd.NumberTypeable('fraction')
+        >>> for number in numbers:
+        ...     x = nt.make_number(number)
+        ...     print(nt.number_str(x))
+        4
+        2/3
+        8/5
+        -3/2
+        1261007895663739/1125899906842624
+        """
         if self._number_type == FLOAT:
             if not isinstance(value, float):
                 raise TypeError(
@@ -153,7 +175,33 @@ cdef class NumberTypeable:
             _invalid(self._number_type)
 
     def number_repr(self, value):
-        """Return representation string for value."""
+        """Return representation string for value.
+
+        :param value: The value.
+        :type value: :attr:`~cdd.NumberTypeable.NumberType`
+        :returns: A string for the value.
+        :rtype: :class:`str`
+
+        >>> numbers = ['4', '2/3', '1.6', '-9/6', 1.12]
+        >>> nt = cdd.NumberTypeable('float')
+        >>> for number in numbers:
+        ...     x = nt.make_number(number)
+        ...     print(nt.number_repr(x))
+        4.0
+        0.66666666666666663
+        1.6000000000000001
+        -1.5
+        1.1200000000000001
+        >>> nt = cdd.NumberTypeable('fraction')
+        >>> for number in numbers:
+        ...     x = nt.make_number(number)
+        ...     print(nt.number_repr(x))
+        4
+        '2/3'
+        '8/5'
+        '-3/2'
+        '1261007895663739/1125899906842624'
+        """
         if self._number_type == FLOAT:
             if not isinstance(value, float):
                 raise TypeError(
@@ -173,8 +221,15 @@ cdef class NumberTypeable:
         else:
             _invalid(self._number_type)
 
-    def number_cmp(self, num1, num2):
-        """Compare values.
+    def number_cmp(self, num1, num2=None):
+        """Compare values. Type checking may not be performed, for
+        speed. If *num2* is not specified, then *num1* is compared
+        against zero.
+
+        :param num1: First value.
+        :type num1: :attr:`~cdd.NumberTypeable.NumberType`
+        :param num2: Second value.
+        :type num2: :attr:`~cdd.NumberTypeable.NumberType`
 
         >>> a = cdd.NumberTypeable('float')
         >>> a.number_cmp(0.0, 5.0)
@@ -183,7 +238,7 @@ cdef class NumberTypeable:
         1
         >>> a.number_cmp(5.0, 5.0)
         0
-        >>> a.number_cmp(0.0, 1e-30)
+        >>> a.number_cmp(1e-30)
         0
         >>> a = cdd.NumberTypeable('fraction')
         >>> a.number_cmp(0, 1)
@@ -192,14 +247,18 @@ cdef class NumberTypeable:
         1
         >>> a.number_cmp(0, 0)
         0
-        >>> a.number_cmp(0, a.make_number(1e-30))
-        -1
+        >>> a.number_cmp(a.make_number(1e-30))
+        1
         """
         cdef double f1, f2, fdiff
         if self._number_type == FLOAT:
-            f1 = num1
-            f2 = num2
-            fdiff = num1 - num2
+            if num2 is not None:
+                # converting to double first, so substraction is faster
+                f1 = num1
+                f2 = num2
+                fdiff = num1 - num2
+            else:
+                fdiff = num1
             if fdiff < -1e-6:
                 return -1
             elif fdiff > 1e-6:
@@ -207,7 +266,11 @@ cdef class NumberTypeable:
             else:
                 return 0
         elif self._number_type == FRACTION:
-            diff = num1 - num2
+            # XXX no type checking, for speed!!
+            if num2 is not None:
+                diff = num1 - num2
+            else:
+                diff = num1
             if diff < 0:
                 return -1
             elif diff > 0:
@@ -216,9 +279,7 @@ cdef class NumberTypeable:
                 return 0
 
 cdef class Matrix(NumberTypeable):
-    """Wrapper class for :class:`cdd._float.Matrix` and
-    :class:`cdd._fraction.Matrix`.
-    """
+    """Bases: :class:`cdd.NumberTypeable`"""
 
     cdef readonly object data
 
@@ -232,9 +293,7 @@ cdef class Matrix(NumberTypeable):
             _invalid(self._number_type)
 
 cdef class LinProg(NumberTypeable):
-    """Wrapper class for :class:`cdd._float.LinProg` and
-    :class:`cdd._fraction.LinProg`.
-    """
+    """Bases: :class:`cdd.NumberTypeable`"""
 
     cdef readonly object data
 
@@ -248,6 +307,8 @@ cdef class LinProg(NumberTypeable):
             _invalid(self._number_type)
 
 cdef class Polyhedron(NumberTypeable):
+    """Bases: :class:`cdd.NumberTypeable`"""
+
     cdef readonly object data
 
     def __init__(self, Matrix mat):

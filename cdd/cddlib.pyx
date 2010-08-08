@@ -103,14 +103,18 @@ cdef class Matrix:
     """A class for working with sets of linear constraints and extreme
     points.
 
-    :param rows: The rows of the matrix. Each element can be an :class:`int`, :class:`float`, :class:`~fractions.Fraction`, or :class:`str`. The values are automatically converted to a fraction if you use :mod:`cddgmp`, or a float if you use :mod:`cdd`.
+    :param rows: The rows of the matrix. Each element can be an
+        :class:`int`, :class:`float`, :class:`~fractions.Fraction`, or
+        :class:`str`. The values are automatically converted to a
+        fraction if you use :mod:`cdd._fraction`, and to a float if
+        you use :mod:`cdd._float`.
     :type rows: :class:`list` of :class:`list`\ s.
     :param linear: Whether to add the rows to the :attr:`lin_set` or not.
     :type linear: :class:`bool`
 
     .. warning::
 
-       Beware when using floats:
+       With the fraction number type, beware when using floats:
 
        >>> print(cdd._fraction.Matrix([[1.12]])[0][0])
        1261007895663739/1125899906842624
@@ -122,8 +126,8 @@ cdef class Matrix:
        >>> print(cdd._fraction.Matrix([['1.12']])[0][0])
        28/25
 
-       Of course, this is only relevant for :mod:`cddgmp`; it is not a
-       concern when using :mod:`cdd`, in which case both ``1.12`` and
+       Of course, this is only relevant for :mod:`cdd._fraction`; it is not a
+       concern when using :mod:`cdd._float`, in which case both ``1.12`` and
        ``'1.12'`` will yield the same result, namely the
        :class:`float` ``1.12``.
     """
@@ -156,7 +160,7 @@ cdef class Matrix:
             _set_set(self.thisptr.linset, value)
 
     property rep_type:
-        """Representation (see :class:`RepType`)."""
+        """Representation (see :class:`cdd.RepType`)."""
         def __get__(self):
             return self.thisptr.representation
         def __set__(self, dd_RepresentationType value):
@@ -164,7 +168,7 @@ cdef class Matrix:
 
     property obj_type:
         """Linear programming objective: maximize or minimize (see
-        :class:`LPObjType`).
+        :class:`cdd.LPObjType`).
         """
         def __get__(self):
             return self.thisptr.objective
@@ -297,13 +301,13 @@ cdef class LinProg:
     #cdef dd_LPPtr thisptr ### defined in pxd
 
     property solver:
-        """The type of solver to use (see :class:`LPSolverType`)."""
+        """The type of solver to use (see :class:`cdd.LPSolverType`)."""
         def __get__(self):
             return self.thisptr.solver
 
     property obj_type:
         """Whether we are minimizing or maximizing (see
-        :class:`LPObjType`).
+        :class:`cdd.LPObjType`).
         """
         def __get__(self):
             return self.thisptr.objective
@@ -312,7 +316,7 @@ cdef class LinProg:
 
     property status:
         """The status of the linear program (see
-        :class:`LPStatusType`).
+        :class:`cdd.LPStatusType`).
         """
         def __get__(self):
             return self.thisptr.LPS
@@ -371,7 +375,7 @@ cdef class LinProg:
     def solve(self, dd_LPSolverType solver=dd_DualSimplex):
         """Solve linear program.
 
-        :param solver: The method of solution (see :class:`LPSolverType`).
+        :param solver: The method of solution (see :class:`cdd.LPSolverType`).
         :type solver: :class:`int`
         """
         cdef dd_ErrorType error
@@ -391,7 +395,7 @@ cdef class Polyhedron:
     #cdef dd_PolyhedraPtr thisptr ### defined in pxd
 
     property rep_type:
-        """Representation (see :class:`RepType`)."""
+        """Representation (see :class:`cdd.RepType`)."""
         def __get__(self):
             return self.thisptr.representation
         def __set__(self, dd_RepresentationType value):

@@ -12,27 +12,3 @@ inequality representation and a generator (i.e. vertex and ray)
 representation of a polyhedron with cdd.  Also, it can solve a linear
 programming problem, i.e. a problem of maximizing and minimizing a
 linear function over a polyhedron.
-
-.. module:: cdd._fraction
-   :synopsis: gmp version of cddlib
-
-The :mod:`cdd._fraction` module wraps the so-called ``GMPRATIONAL`` build of
-cddlib, using :class:`~fractions.Fraction` for the Python
-representation of numerical values. Unless speed is an issue, it is
-recommended that you use this module.
-
-.. module:: cdd._float
-   :synopsis: non-gmp version of cddlib
-
-However, if you prefer speed over precision, then the :mod:`cdd._float`
-module wraps the non-gmp build of cddlib, and uses :class:`float` for
-numerical values.
-
-Both modules have identical interfaces, so they can be used as drop-in
-replacements for one another.
-
-.. module:: cdd
-
-Finally, the :mod:`cdd` module has wrapper classes which supports both
-modules at once, and delegates the choice of representation to the
-constructor.
