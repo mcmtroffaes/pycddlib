@@ -42,7 +42,7 @@ Next, the :mod:`cdd` module defines three wrapper classes. Depending
 on the value of the *number_type* argument, which is passed on through
 the constructor, the wrappers have their *data* attribute set from the
 corresponding class from either the :mod:`cdd._float` or
-:mod:`cdd._fraction` class.
+:mod:`cdd._fraction` module.
 
 .. autoclass:: cdd.Matrix(rows, linear=False, number_type='float')
 
