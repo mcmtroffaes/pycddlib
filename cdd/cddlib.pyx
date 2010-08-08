@@ -258,16 +258,6 @@ cdef class Matrix:
             raise ValueError(
                 "cannot append because column sizes differ")
 
-    def __delitem__(self, dd_rowrange rownum):
-        """Remove a row. Raises ValueError on failure."""
-        cdef int success
-        # remove the row
-        success = dd_MatrixRowRemove(&self.thisptr, rownum)
-        # check the result
-        if success != 1:
-            raise ValueError(
-                "cannot remove row %i" % rownum)
-
     def __getitem__(self, key):
         """Return a row, or a slice of rows, of the matrix.
 
