@@ -1,9 +1,5 @@
-"""Core functionality."""
+"""Python wrapper for Komei Fukuda's cddlib."""
 
-import fractions
-
-cimport cdd._float as _float
-cimport cdd._fraction as _fraction
 
 # pycddlib is a Python wrapper for Komei Fukuda's cddlib
 # Copyright (c) 2008, Matthias Troffaes
@@ -21,6 +17,31 @@ cimport cdd._fraction as _fraction
 # You should have received a copy of the GNU General Public License along
 # with this program; if not, write to the Free Software Foundation, Inc.,
 # 51 Franklin Street, Fifth Floor, Boston, MA 02110-1301 USA.
+
+import fractions
+
+# generated files with type specific cddlib header declarations
+include "cddlib.pxi"
+include "cddlib_f.pxi"
+
+# gmp integer functions
+cdef extern from "mpir.h" nogil:
+    ctypedef struct mpz_t:
+        pass
+    signed long int mpz_get_si(mpz_t op)
+    unsigned long int mpz_get_ui(mpz_t op)
+    int mpz_fits_slong_p(mpz_t op)
+    int mpz_fits_ulong_p(mpz_t op)
+    size_t mpz_sizeinbase(mpz_t op, int base)
+
+# gmp rational functions
+cdef extern from "mpir.h" nogil:
+    ctypedef struct mpq_t:
+        pass
+    mpz_t mpq_numref(mpq_t op)
+    mpz_t mpq_denref(mpq_t op)
+    char *mpq_get_str(char *str, int base, mpq_t op)
+    int mpq_set_str(mpq_t rop, char *str, int base)
 
 DEF FLOAT = 1
 DEF FRACTION = 2

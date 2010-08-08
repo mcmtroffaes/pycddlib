@@ -1,4 +1,4 @@
-"""Python wrapper for Komei Fukuda's cddlib."""
+# this is an include file for both cdd.h and cdd_f.h
 
 # pycddlib is a Python wrapper for Komei Fukuda's cddlib
 # Copyright (c) 2008, Matthias Troffaes
@@ -17,227 +17,197 @@
 # with this program; if not, write to the Free Software Foundation, Inc.,
 # 51 Franklin Street, Fifth Floor, Boston, MA 02110-1301 USA.
 
-# constants are in a separate module
-from cdd._common cimport *
-
-IF GMP:
-
-    # gmp integer functions
-    cdef extern from "mpir.h" nogil:
-        ctypedef struct mpz_t:
-            pass
-        signed long int mpz_get_si(mpz_t op)
-        unsigned long int mpz_get_ui(mpz_t op)
-        int mpz_fits_slong_p(mpz_t op)
-        int mpz_fits_ulong_p(mpz_t op)
-        size_t mpz_sizeinbase(mpz_t op, int base)
-
-    # gmp rational functions
-    cdef extern from "mpir.h" nogil:
-        ctypedef struct mpq_t:
-            pass
-        mpz_t mpq_numref(mpq_t op)
-        mpz_t mpq_denref(mpq_t op)
-        char *mpq_get_str(char *str, int base, mpq_t op)
-        int mpq_set_str(mpq_t rop, char *str, int base)
-
-# actual cddlib imports
-
-cdef extern from "cdd.h" nogil:
+cdef extern from "@cddhdr@" nogil:
 
     # set operations and enums are already imported from _common.pxd
 
     # typedefs
     ###########
 
-    ctypedef int dd_boolean
-    IF GMP:
-        ctypedef mpq_t mytype
-    ELSE:
-        ctypedef double mytype[1]
-    ctypedef long dd_rowrange
-    ctypedef long dd_colrange
-    ctypedef long dd_bigrange
-    ctypedef set_type dd_rowset
-    ctypedef set_type dd_colset
-    ctypedef long *dd_rowindex
-    ctypedef int *dd_rowflag
-    ctypedef long *dd_colindex
-    ctypedef mytype **dd_Amatrix
-    ctypedef mytype *dd_Arow
-    ctypedef set_type *dd_SetVector
-    ctypedef mytype **dd_Bmatrix
-    ctypedef set_type *dd_Aincidence
+    ctypedef int @dd@_boolean
+    ctypedef long @dd@_rowrange
+    ctypedef long @dd@_colrange
+    ctypedef long @dd@_bigrange
+    ctypedef set_type @dd@_rowset
+    ctypedef set_type @dd@_colset
+    ctypedef long *@dd@_rowindex
+    ctypedef int *@dd@_rowflag
+    ctypedef long *@dd@_colindex
+    ctypedef @mytype@ **@dd@_Amatrix
+    ctypedef @mytype@ *@dd@_Arow
+    ctypedef set_type *@dd@_SetVector
+    ctypedef @mytype@ **@dd@_Bmatrix
+    ctypedef set_type *@dd@_Aincidence
 
     # structures
     #############
 
     # forward, pointer, and alias declarations
-    ctypedef struct dd_raydata
-    ctypedef dd_raydata *dd_RayPtr
-    ctypedef struct dd_adjacencydata
-    ctypedef dd_adjacencydata *dd_AdjacencyPtr
-    ctypedef dd_adjacencydata dd_AdjacencyType
-    ctypedef struct dd_lpsolution
-    ctypedef dd_lpsolution *dd_LPSolutionPtr
-    ctypedef struct dd_lpdata
-    ctypedef dd_lpdata *dd_LPPtr
+    ctypedef struct @dd@_raydata
+    ctypedef @dd@_raydata *@dd@_RayPtr
+    ctypedef struct @dd@_adjacencydata
+    ctypedef @dd@_adjacencydata *@dd@_AdjacencyPtr
+    ctypedef @dd@_adjacencydata @dd@_AdjacencyType
+    ctypedef struct @dd@_lpsolution
+    ctypedef @dd@_lpsolution *@dd@_LPSolutionPtr
+    ctypedef struct @dd@_lpdata
+    ctypedef @dd@_lpdata *@dd@_LPPtr
     ctypedef struct matrixdata
-    ctypedef matrixdata *dd_MatrixPtr
-    ctypedef struct dd_setfamily
-    ctypedef dd_setfamily *dd_SetFamilyPtr
-    ctypedef struct dd_nodedata
-    ctypedef dd_nodedata *dd_NodePtr
-    ctypedef struct dd_graphdata
-    ctypedef dd_graphdata *dd_GraphPtr
-    ctypedef struct dd_polyhedradata
-    ctypedef dd_polyhedradata *dd_PolyhedraPtr
-    ctypedef struct dd_conedata
-    ctypedef dd_conedata *dd_ConePtr
+    ctypedef matrixdata *@dd@_MatrixPtr
+    ctypedef struct @dd@_setfamily
+    ctypedef @dd@_setfamily *@dd@_SetFamilyPtr
+    ctypedef struct @dd@_nodedata
+    ctypedef @dd@_nodedata *@dd@_NodePtr
+    ctypedef struct @dd@_graphdata
+    ctypedef @dd@_graphdata *@dd@_GraphPtr
+    ctypedef struct @dd@_polyhedradata
+    ctypedef @dd@_polyhedradata *@dd@_PolyhedraPtr
+    ctypedef struct @dd@_conedata
+    ctypedef @dd@_conedata *@dd@_ConePtr
 
-    ctypedef struct dd_raydata:
-        mytype *Ray
-        dd_rowset ZeroSet
-        dd_rowrange FirstInfeasIndex
-        dd_boolean feasible
-        mytype ARay
-        dd_RayPtr Next
+    ctypedef struct @dd@_raydata:
+        @mytype@ *Ray
+        @dd@_rowset ZeroSet
+        @dd@_rowrange FirstInfeasIndex
+        @dd@_boolean feasible
+        @mytype@ ARay
+        @dd@_RayPtr Next
 
-    ctypedef struct dd_adjacencydata:
-        dd_RayPtr Ray1, Ray2
-        dd_AdjacencyPtr Next
+    ctypedef struct @dd@_adjacencydata:
+        @dd@_RayPtr Ray1, Ray2
+        @dd@_AdjacencyPtr Next
 
-    ctypedef struct dd_lpsolution:
-        #dd_DataFileType filename
-        dd_LPObjectiveType objective
-        dd_LPSolverType solver
-        dd_rowrange m
-        dd_colrange d
-        dd_NumberType numbtype
-        dd_LPStatusType LPS
-        mytype optvalue
-        dd_Arow sol
-        dd_Arow dsol
-        dd_colindex nbindex
-        dd_rowrange re
-        dd_colrange se
+    ctypedef struct @dd@_lpsolution:
+        #@dd@_DataFileType filename
+        @dd@_LPObjectiveType objective
+        @dd@_LPSolverType solver
+        @dd@_rowrange m
+        @dd@_colrange d
+        @dd@_NumberType numbtype
+        @dd@_LPStatusType LPS
+        @mytype@ optvalue
+        @dd@_Arow sol
+        @dd@_Arow dsol
+        @dd@_colindex nbindex
+        @dd@_rowrange re
+        @dd@_colrange se
         long pivots[5]
         long total_pivots
 
-    ctypedef struct dd_lpdata:
-        dd_LPObjectiveType objective
-        dd_LPSolverType solver
-        dd_boolean Homogeneous
-        dd_rowrange m
-        dd_colrange d
-        dd_Amatrix A
-        dd_Bmatrix B
-        dd_rowrange objrow
-        dd_colrange rhscol
-        dd_NumberType numbtype
-        dd_rowrange eqnumber # number of equalities
-        dd_rowset equalityset
-        dd_boolean redcheck_extensive
-        dd_rowrange ired
-        dd_rowset redset_extra
-        dd_rowset redset_accum
-        dd_rowset posset_extra
-        dd_boolean lexicopivot
-        dd_LPStatusType LPS
-        dd_rowrange m_alloc
-        dd_colrange d_alloc
-        mytype optvalue
-        dd_Arow sol
-        dd_Arow dsol
-        dd_colindex nbindex
-        dd_rowrange re
-        dd_colrange se
+    ctypedef struct @dd@_lpdata:
+        @dd@_LPObjectiveType objective
+        @dd@_LPSolverType solver
+        @dd@_boolean Homogeneous
+        @dd@_rowrange m
+        @dd@_colrange d
+        @dd@_Amatrix A
+        @dd@_Bmatrix B
+        @dd@_rowrange objrow
+        @dd@_colrange rhscol
+        @dd@_NumberType numbtype
+        @dd@_rowrange eqnumber # number of equalities
+        @dd@_rowset equalityset
+        @dd@_boolean redcheck_extensive
+        @dd@_rowrange ired
+        @dd@_rowset redset_extra
+        @dd@_rowset redset_accum
+        @dd@_rowset posset_extra
+        @dd@_boolean lexicopivot
+        @dd@_LPStatusType LPS
+        @dd@_rowrange m_alloc
+        @dd@_colrange d_alloc
+        @mytype@ optvalue
+        @dd@_Arow sol
+        @dd@_Arow dsol
+        @dd@_colindex nbindex
+        @dd@_rowrange re
+        @dd@_colrange se
         long pivots[5]
         long total_pivots
         int use_given_basis
-        dd_colindex given_nbindex
+        @dd@_colindex given_nbindex
         time_t starttime
         time_t endtime
 
     ctypedef struct matrixdata:
-        dd_rowrange rowsize
-        dd_rowset linset
-        dd_colrange colsize
-        dd_RepresentationType representation
-        dd_NumberType numbtype
-        dd_Amatrix matrix
-        dd_LPObjectiveType objective
-        dd_Arow rowvec
+        @dd@_rowrange rowsize
+        @dd@_rowset linset
+        @dd@_colrange colsize
+        @dd@_RepresentationType representation
+        @dd@_NumberType numbtype
+        @dd@_Amatrix matrix
+        @dd@_LPObjectiveType objective
+        @dd@_Arow rowvec
 
-    ctypedef struct dd_setfamily:
-        dd_bigrange famsize
-        dd_bigrange setsize
-        dd_SetVector set
+    ctypedef struct @dd@_setfamily:
+        @dd@_bigrange famsize
+        @dd@_bigrange setsize
+        @dd@_SetVector set
 
-    ctypedef struct dd_nodedata:
-        dd_bigrange key
-        dd_NodePtr next
+    ctypedef struct @dd@_nodedata:
+        @dd@_bigrange key
+        @dd@_NodePtr next
 
-    ctypedef struct dd_graphdata:
-        dd_bigrange vsize
-        dd_NodePtr *adjlist
+    ctypedef struct @dd@_graphdata:
+        @dd@_bigrange vsize
+        @dd@_NodePtr *adjlist
 
-    ctypedef struct dd_polyhedradata:
-        dd_RepresentationType representation
-        dd_boolean homogeneous
-        dd_colrange d
-        dd_rowrange m
-        dd_Amatrix A
-        dd_NumberType numbtype
-        dd_ConePtr child
-        dd_rowrange m_alloc
-        dd_colrange d_alloc
-        dd_Arow c
-        dd_rowflag EqualityIndex
-        dd_boolean IsEmpty
-        dd_boolean NondegAssumed
-        dd_boolean InitBasisAtBottom
-        dd_boolean RestrictedEnumeration
-        dd_boolean RelaxedEnumeration
-        dd_rowrange m1
-        dd_boolean AincGenerated
-        dd_colrange ldim
-        dd_bigrange n
-        dd_Aincidence Ainc
-        dd_rowset Ared
-        dd_rowset Adom
+    ctypedef struct @dd@_polyhedradata:
+        @dd@_RepresentationType representation
+        @dd@_boolean homogeneous
+        @dd@_colrange d
+        @dd@_rowrange m
+        @dd@_Amatrix A
+        @dd@_NumberType numbtype
+        @dd@_ConePtr child
+        @dd@_rowrange m_alloc
+        @dd@_colrange d_alloc
+        @dd@_Arow c
+        @dd@_rowflag EqualityIndex
+        @dd@_boolean IsEmpty
+        @dd@_boolean NondegAssumed
+        @dd@_boolean InitBasisAtBottom
+        @dd@_boolean RestrictedEnumeration
+        @dd@_boolean RelaxedEnumeration
+        @dd@_rowrange m1
+        @dd@_boolean AincGenerated
+        @dd@_colrange ldim
+        @dd@_bigrange n
+        @dd@_Aincidence Ainc
+        @dd@_rowset Ared
+        @dd@_rowset Adom
 
-    ctypedef struct dd_conedata:
-        dd_RepresentationType representation
-        dd_rowrange m
-        dd_colrange d
-        dd_Amatrix A
-        dd_NumberType numbtype
-        dd_PolyhedraPtr parent
-        dd_rowrange m_alloc
-        dd_colrange d_alloc
-        dd_rowrange Iteration
-        dd_RowOrderType HalfspaceOrder
-        dd_RayPtr FirstRay, LastRay, ArtificialRay
-        dd_RayPtr PosHead, ZeroHead, NegHead, PosLast, ZeroLast, NegLast
-        dd_AdjacencyType **Edges
+    ctypedef struct @dd@_conedata:
+        @dd@_RepresentationType representation
+        @dd@_rowrange m
+        @dd@_colrange d
+        @dd@_Amatrix A
+        @dd@_NumberType numbtype
+        @dd@_PolyhedraPtr parent
+        @dd@_rowrange m_alloc
+        @dd@_colrange d_alloc
+        @dd@_rowrange Iteration
+        @dd@_RowOrderType HalfspaceOrder
+        @dd@_RayPtr FirstRay, LastRay, ArtificialRay
+        @dd@_RayPtr PosHead, ZeroHead, NegHead, PosLast, ZeroLast, NegLast
+        @dd@_AdjacencyType **Edges
         unsigned int rseed
-        dd_boolean ColReduced
-        dd_bigrange LinearityDim 
-        dd_colrange d_orig
-        dd_colindex newcol
-        dd_colindex InitialRayIndex
-        dd_rowindex OrderVector
-        dd_boolean RecomputeRowOrder
-        dd_boolean PreOrderedRun
-        dd_rowset GroundSet, EqualitySet, NonequalitySet, AddedHalfspaces, WeaklyAddedHalfspaces, InitialHalfspaces
+        @dd@_boolean ColReduced
+        @dd@_bigrange LinearityDim 
+        @dd@_colrange d_orig
+        @dd@_colindex newcol
+        @dd@_colindex InitialRayIndex
+        @dd@_rowindex OrderVector
+        @dd@_boolean RecomputeRowOrder
+        @dd@_boolean PreOrderedRun
+        @dd@_rowset GroundSet, EqualitySet, NonequalitySet, AddedHalfspaces, WeaklyAddedHalfspaces, InitialHalfspaces
         long RayCount, FeasibleRayCount, WeaklyFeasibleRayCount, TotalRayCount, ZeroRayCount
         long EdgeCount, TotalEdgeCount
         long count_int, count_int_good, count_int_bad
-        dd_Bmatrix B
-        dd_Bmatrix Bsave
-        dd_ErrorType Error
-        dd_CompStatusType CompStatus
+        @dd@_Bmatrix B
+        @dd@_Bmatrix Bsave
+        @dd@_ErrorType Error
+        @dd@_CompStatusType CompStatus
         time_t starttime, endtime
 
     # functions
@@ -246,101 +216,90 @@ cdef extern from "cdd.h" nogil:
     # not everything is defined here, just most common operations
     # add more as needed...
 
-    cdef void dd_set_d(mytype, double)
-    cdef void dd_set_si(mytype, signed long int)
-    cdef void dd_set_si2(mytype, signed long int, unsigned long int)
-    cdef double dd_get_d(mytype)
+    cdef void @dd@_set_d(@mytype@, double)
+    cdef void @dd@_set_si(@mytype@, signed long int)
+    cdef void @dd@_set_si2(@mytype@, signed long int, unsigned long int)
+    cdef double @dd@_get_d(@mytype@)
 
-    cdef void dd_set_global_constants()
-    cdef void dd_free_global_constants()
+    cdef void @dd@_set_global_constants()
+    cdef void @dd@_free_global_constants()
 
-    cdef void dd_WriteErrorMessages(FILE *, dd_ErrorType)
+    cdef void @dd@_WriteErrorMessages(FILE *, @dd@_ErrorType)
 
-    cdef void dd_InitializeArow(dd_colrange,dd_Arow *)
-    cdef void dd_InitializeAmatrix(dd_rowrange,dd_colrange,dd_Amatrix *)
-    cdef void dd_InitializeBmatrix(dd_colrange, dd_Bmatrix *)
-    cdef dd_SetFamilyPtr dd_CreateSetFamily(dd_bigrange,dd_bigrange)
-    cdef void dd_FreeSetFamily(dd_SetFamilyPtr)
-    cdef dd_MatrixPtr dd_CreateMatrix(dd_rowrange,dd_colrange)
-    cdef void dd_FreeAmatrix(dd_rowrange,dd_colrange,dd_Amatrix)
-    cdef void dd_FreeArow(dd_colrange, dd_Arow)
-    cdef void dd_FreeBmatrix(dd_colrange,dd_Bmatrix)
-    cdef void dd_FreeDDMemory(dd_PolyhedraPtr)
-    cdef void dd_FreePolyhedra(dd_PolyhedraPtr)
-    cdef void dd_FreeMatrix(dd_MatrixPtr)
-    cdef void dd_SetToIdentity(dd_colrange, dd_Bmatrix)
+    cdef void @dd@_InitializeArow(@dd@_colrange,@dd@_Arow *)
+    cdef void @dd@_InitializeAmatrix(@dd@_rowrange,@dd@_colrange,@dd@_Amatrix *)
+    cdef void @dd@_InitializeBmatrix(@dd@_colrange, @dd@_Bmatrix *)
+    cdef @dd@_SetFamilyPtr @dd@_CreateSetFamily(@dd@_bigrange,@dd@_bigrange)
+    cdef void @dd@_FreeSetFamily(@dd@_SetFamilyPtr)
+    cdef @dd@_MatrixPtr @dd@_CreateMatrix(@dd@_rowrange,@dd@_colrange)
+    cdef void @dd@_FreeAmatrix(@dd@_rowrange,@dd@_colrange,@dd@_Amatrix)
+    cdef void @dd@_FreeArow(@dd@_colrange, @dd@_Arow)
+    cdef void @dd@_FreeBmatrix(@dd@_colrange,@dd@_Bmatrix)
+    cdef void @dd@_FreeDDMemory(@dd@_PolyhedraPtr)
+    cdef void @dd@_FreePolyhedra(@dd@_PolyhedraPtr)
+    cdef void @dd@_FreeMatrix(@dd@_MatrixPtr)
+    cdef void @dd@_SetToIdentity(@dd@_colrange, @dd@_Bmatrix)
 
-    cdef dd_MatrixPtr dd_CopyInput(dd_PolyhedraPtr)
-    cdef dd_MatrixPtr dd_CopyOutput(dd_PolyhedraPtr)
-    cdef dd_MatrixPtr dd_CopyInequalities(dd_PolyhedraPtr)
-    cdef dd_MatrixPtr dd_CopyGenerators(dd_PolyhedraPtr)
-    cdef dd_SetFamilyPtr dd_CopyIncidence(dd_PolyhedraPtr)
-    cdef dd_SetFamilyPtr dd_CopyAdjacency(dd_PolyhedraPtr)
-    cdef dd_SetFamilyPtr dd_CopyInputIncidence(dd_PolyhedraPtr)
-    cdef dd_SetFamilyPtr dd_CopyInputAdjacency(dd_PolyhedraPtr)
-    cdef dd_boolean dd_DDFile2File(char *ifile, char *ofile, dd_ErrorType *err)
-    cdef dd_boolean dd_DDInputAppend(dd_PolyhedraPtr*, dd_MatrixPtr, dd_ErrorType*)
-    cdef dd_MatrixPtr dd_PolyFile2Matrix(FILE *f, dd_ErrorType *)
+    cdef @dd@_MatrixPtr @dd@_CopyInput(@dd@_PolyhedraPtr)
+    cdef @dd@_MatrixPtr @dd@_CopyOutput(@dd@_PolyhedraPtr)
+    cdef @dd@_MatrixPtr @dd@_CopyInequalities(@dd@_PolyhedraPtr)
+    cdef @dd@_MatrixPtr @dd@_CopyGenerators(@dd@_PolyhedraPtr)
+    cdef @dd@_SetFamilyPtr @dd@_CopyIncidence(@dd@_PolyhedraPtr)
+    cdef @dd@_SetFamilyPtr @dd@_CopyAdjacency(@dd@_PolyhedraPtr)
+    cdef @dd@_SetFamilyPtr @dd@_CopyInputIncidence(@dd@_PolyhedraPtr)
+    cdef @dd@_SetFamilyPtr @dd@_CopyInputAdjacency(@dd@_PolyhedraPtr)
+    cdef @dd@_boolean @dd@_DDFile2File(char *ifile, char *ofile, @dd@_ErrorType *err)
+    cdef @dd@_boolean @dd@_DDInputAppend(@dd@_PolyhedraPtr*, @dd@_MatrixPtr, @dd@_ErrorType*)
+    cdef @dd@_MatrixPtr @dd@_PolyFile2Matrix(FILE *f, @dd@_ErrorType *)
     
-    cdef dd_PolyhedraPtr dd_DDMatrix2Poly(dd_MatrixPtr, dd_ErrorType *)
-    cdef dd_PolyhedraPtr dd_DDMatrix2Poly2(dd_MatrixPtr, dd_RowOrderType, dd_ErrorType *)
-    cdef dd_boolean dd_Redundant(dd_MatrixPtr, dd_rowrange, dd_Arow, dd_ErrorType *)
-    cdef dd_rowset dd_RedundantRows(dd_MatrixPtr, dd_ErrorType *)
-    cdef dd_boolean dd_SRedundant(dd_MatrixPtr, dd_rowrange, dd_Arow, dd_ErrorType *)
-    cdef dd_rowset dd_SRedundantRows(dd_MatrixPtr, dd_ErrorType *)
-    cdef dd_rowset dd_RedundantRowsViaShooting(dd_MatrixPtr, dd_ErrorType *)
-    cdef dd_rowrange dd_RayShooting(dd_MatrixPtr, dd_Arow intpt, dd_Arow direction)
-    cdef dd_boolean dd_ImplicitLinearity(dd_MatrixPtr, dd_rowrange, dd_Arow, dd_ErrorType *)
-    cdef dd_rowset dd_ImplicitLinearityRows(dd_MatrixPtr, dd_ErrorType *)
-    cdef int dd_FreeOfImplicitLinearity(dd_MatrixPtr, dd_Arow, dd_rowset *, dd_ErrorType *)
-    cdef dd_boolean dd_MatrixCanonicalizeLinearity(dd_MatrixPtr *, dd_rowset *,dd_rowindex *, dd_ErrorType *)
-    cdef dd_boolean dd_MatrixCanonicalize(dd_MatrixPtr *, dd_rowset *, dd_rowset *, dd_rowindex *, dd_ErrorType *)
-    cdef dd_boolean dd_MatrixRedundancyRemove(dd_MatrixPtr *M, dd_rowset *redset,dd_rowindex *newpos, dd_ErrorType *)
-    cdef dd_boolean dd_FindRelativeInterior(dd_MatrixPtr, dd_rowset *, dd_rowset *, dd_LPSolutionPtr *, dd_ErrorType *)
-    cdef dd_boolean dd_ExistsRestrictedFace(dd_MatrixPtr, dd_rowset, dd_rowset, dd_ErrorType *)
-    cdef dd_boolean dd_ExistsRestrictedFace2(dd_MatrixPtr, dd_rowset, dd_rowset, dd_LPSolutionPtr *, dd_ErrorType *)
+    cdef @dd@_PolyhedraPtr @dd@_DDMatrix2Poly(@dd@_MatrixPtr, @dd@_ErrorType *)
+    cdef @dd@_PolyhedraPtr @dd@_DDMatrix2Poly2(@dd@_MatrixPtr, @dd@_RowOrderType, @dd@_ErrorType *)
+    cdef @dd@_boolean @dd@_Redundant(@dd@_MatrixPtr, @dd@_rowrange, @dd@_Arow, @dd@_ErrorType *)
+    cdef @dd@_rowset @dd@_RedundantRows(@dd@_MatrixPtr, @dd@_ErrorType *)
+    cdef @dd@_boolean @dd@_SRedundant(@dd@_MatrixPtr, @dd@_rowrange, @dd@_Arow, @dd@_ErrorType *)
+    cdef @dd@_rowset @dd@_SRedundantRows(@dd@_MatrixPtr, @dd@_ErrorType *)
+    cdef @dd@_rowset @dd@_RedundantRowsViaShooting(@dd@_MatrixPtr, @dd@_ErrorType *)
+    cdef @dd@_rowrange @dd@_RayShooting(@dd@_MatrixPtr, @dd@_Arow intpt, @dd@_Arow direction)
+    cdef @dd@_boolean @dd@_ImplicitLinearity(@dd@_MatrixPtr, @dd@_rowrange, @dd@_Arow, @dd@_ErrorType *)
+    cdef @dd@_rowset @dd@_ImplicitLinearityRows(@dd@_MatrixPtr, @dd@_ErrorType *)
+    cdef int @dd@_FreeOfImplicitLinearity(@dd@_MatrixPtr, @dd@_Arow, @dd@_rowset *, @dd@_ErrorType *)
+    cdef @dd@_boolean @dd@_MatrixCanonicalizeLinearity(@dd@_MatrixPtr *, @dd@_rowset *,@dd@_rowindex *, @dd@_ErrorType *)
+    cdef @dd@_boolean @dd@_MatrixCanonicalize(@dd@_MatrixPtr *, @dd@_rowset *, @dd@_rowset *, @dd@_rowindex *, @dd@_ErrorType *)
+    cdef @dd@_boolean @dd@_MatrixRedundancyRemove(@dd@_MatrixPtr *M, @dd@_rowset *redset,@dd@_rowindex *newpos, @dd@_ErrorType *)
+    cdef @dd@_boolean @dd@_FindRelativeInterior(@dd@_MatrixPtr, @dd@_rowset *, @dd@_rowset *, @dd@_LPSolutionPtr *, @dd@_ErrorType *)
+    cdef @dd@_boolean @dd@_ExistsRestrictedFace(@dd@_MatrixPtr, @dd@_rowset, @dd@_rowset, @dd@_ErrorType *)
+    cdef @dd@_boolean @dd@_ExistsRestrictedFace2(@dd@_MatrixPtr, @dd@_rowset, @dd@_rowset, @dd@_LPSolutionPtr *, @dd@_ErrorType *)
     
-    cdef dd_SetFamilyPtr dd_Matrix2Adjacency(dd_MatrixPtr, dd_ErrorType *)
-    cdef dd_SetFamilyPtr dd_Matrix2WeakAdjacency(dd_MatrixPtr, dd_ErrorType *)
-    cdef long dd_MatrixRank(dd_MatrixPtr, dd_rowset, dd_colset, dd_rowset *, dd_colset *)
+    cdef @dd@_SetFamilyPtr @dd@_Matrix2Adjacency(@dd@_MatrixPtr, @dd@_ErrorType *)
+    cdef @dd@_SetFamilyPtr @dd@_Matrix2WeakAdjacency(@dd@_MatrixPtr, @dd@_ErrorType *)
+    cdef long @dd@_MatrixRank(@dd@_MatrixPtr, @dd@_rowset, @dd@_colset, @dd@_rowset *, @dd@_colset *)
 
-    cdef dd_MatrixPtr dd_CopyMatrix(dd_MatrixPtr)
-    cdef int dd_MatrixAppendTo(dd_MatrixPtr*, dd_MatrixPtr)
-    cdef int dd_MatrixRowRemove(dd_MatrixPtr *M, dd_rowrange r)
+    cdef @dd@_MatrixPtr @dd@_CopyMatrix(@dd@_MatrixPtr)
+    cdef int @dd@_MatrixAppendTo(@dd@_MatrixPtr*, @dd@_MatrixPtr)
+    cdef int @dd@_MatrixRowRemove(@dd@_MatrixPtr *M, @dd@_rowrange r)
 
-    cdef void dd_WriteAmatrix(FILE *, dd_Amatrix, dd_rowrange, dd_colrange)
-    cdef void dd_WriteArow(FILE *f, dd_Arow a, dd_colrange)
-    cdef void dd_WriteBmatrix(FILE *, dd_colrange, dd_Bmatrix T)
-    cdef void dd_WriteMatrix(FILE *, dd_MatrixPtr)
-    cdef void dd_MatrixIntegerFilter(dd_MatrixPtr)
-    cdef void dd_WriteReal(FILE *, mytype)
-    cdef void dd_WriteNumber(FILE *f, mytype x)
-    cdef void dd_WritePolyFile(FILE *, dd_PolyhedraPtr)
-    cdef void dd_WriteRunningMode(FILE *, dd_PolyhedraPtr)
-    cdef void dd_WriteErrorMessages(FILE *, dd_ErrorType)
-    cdef void dd_WriteSetFamily(FILE *, dd_SetFamilyPtr)
-    cdef void dd_WriteSetFamilyCompressed(FILE *, dd_SetFamilyPtr)
-    cdef void dd_WriteProgramDescription(FILE *)
-    cdef void dd_WriteDDTimes(FILE *, dd_PolyhedraPtr)
-    cdef void dd_WriteTimes(FILE *, time_t, time_t)
-    cdef void dd_WriteIncidence(FILE *, dd_PolyhedraPtr)
-    cdef void dd_WriteAdjacency(FILE *, dd_PolyhedraPtr)
-    cdef void dd_WriteInputAdjacency(FILE *, dd_PolyhedraPtr)
-    cdef void dd_WriteInputIncidence(FILE *, dd_PolyhedraPtr)
+    cdef void @dd@_WriteAmatrix(FILE *, @dd@_Amatrix, @dd@_rowrange, @dd@_colrange)
+    cdef void @dd@_WriteArow(FILE *f, @dd@_Arow a, @dd@_colrange)
+    cdef void @dd@_WriteBmatrix(FILE *, @dd@_colrange, @dd@_Bmatrix T)
+    cdef void @dd@_WriteMatrix(FILE *, @dd@_MatrixPtr)
+    cdef void @dd@_MatrixIntegerFilter(@dd@_MatrixPtr)
+    cdef void @dd@_WriteReal(FILE *, @mytype@)
+    cdef void @dd@_WriteNumber(FILE *f, @mytype@ x)
+    cdef void @dd@_WritePolyFile(FILE *, @dd@_PolyhedraPtr)
+    cdef void @dd@_WriteRunningMode(FILE *, @dd@_PolyhedraPtr)
+    cdef void @dd@_WriteErrorMessages(FILE *, @dd@_ErrorType)
+    cdef void @dd@_WriteSetFamily(FILE *, @dd@_SetFamilyPtr)
+    cdef void @dd@_WriteSetFamilyCompressed(FILE *, @dd@_SetFamilyPtr)
+    cdef void @dd@_WriteProgramDescription(FILE *)
+    cdef void @dd@_WriteDDTimes(FILE *, @dd@_PolyhedraPtr)
+    cdef void @dd@_WriteTimes(FILE *, time_t, time_t)
+    cdef void @dd@_WriteIncidence(FILE *, @dd@_PolyhedraPtr)
+    cdef void @dd@_WriteAdjacency(FILE *, @dd@_PolyhedraPtr)
+    cdef void @dd@_WriteInputAdjacency(FILE *, @dd@_PolyhedraPtr)
+    cdef void @dd@_WriteInputIncidence(FILE *, @dd@_PolyhedraPtr)
 
-    cdef dd_LPPtr dd_Matrix2LP(dd_MatrixPtr, dd_ErrorType *)
-    cdef dd_boolean dd_LPSolve(dd_LPPtr, dd_LPSolverType, dd_ErrorType *)
-    cdef void dd_FreeLPData(dd_LPPtr)
-    cdef void dd_WriteLP(FILE *f, dd_LPPtr lp)
-    cdef void dd_WriteLPResult(FILE *f, dd_LPPtr lp, dd_ErrorType err)
-
-# actual cddlib wrappers
-
-cdef class Matrix:
-    cdef dd_MatrixPtr thisptr
-
-cdef class LinProg:
-    cdef dd_LPPtr thisptr
-
-cdef class Polyhedron:
-    cdef dd_PolyhedraPtr thisptr
+    cdef @dd@_LPPtr @dd@_Matrix2LP(@dd@_MatrixPtr, @dd@_ErrorType *)
+    cdef @dd@_boolean @dd@_LPSolve(@dd@_LPPtr, @dd@_LPSolverType, @dd@_ErrorType *)
+    cdef void @dd@_FreeLPData(@dd@_LPPtr)
+    cdef void @dd@_WriteLP(FILE *f, @dd@_LPPtr lp)
+    cdef void @dd@_WriteLPResult(FILE *f, @dd@_LPPtr lp, @dd@_ErrorType err)

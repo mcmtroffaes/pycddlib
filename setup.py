@@ -33,16 +33,6 @@ from distutils.ccompiler import new_compiler
 from distutils.extension import Extension
 from Cython.Distutils import build_ext as _build_ext
 
-# this is a hack around build_ext to force rebuilding
-# regardless of whether files are up-to-date or not
-# we must do this because cdd and cddgmp use the same
-# source files but with different compile arguments
-# and Python's build system does not detect this
-class build_ext(_build_ext):
-    def __init__(self, *args, **kwargs):
-        _build_ext.__init__(self, *args, **kwargs)
-        self.force = 1
-
 import os
 
 # get version from python file (without requiring extensions to be compiled!)
@@ -96,33 +86,34 @@ cddgmp_headers = cdd_headers + [
         ]
     ]
 
+# generate include files from template
+cddlib_pxi_in = open("cddlib.pxi.in", "r").read()
+cddlib_pxi = open("cddlib.pxi", "w")
+cddlib_pxi.write(
+    cddlib_pxi_in
+    .replace("@cddhdr@", "cdd.h")
+    .replace("@dd@", "dd")
+    .replace("@mytype@", "mytype"))
+cddlib_pxi.close()
+cddlib_f_pxi = open("cddlib_f.pxi", "w")
+cddlib_f_pxi.write(
+    cddlib_pxi_in
+    .replace("@cddhdr@", "cdd_f.h")
+    .replace("@dd@", "ddf")
+    .replace("@mytype@", "myfloat"))
+cddlib_f_pxi.close()
+
 setup(
     name = "pycddlib",
     version = version,
-    packages = ["cdd"],
     ext_modules= [
-        Extension("cdd._common",
-                  ["cdd/_common.pyx"] + [cdd_dir + '/setoper.c'],
-                  include_dirs = [cdd_dir],
-                  depends=cdd_headers,
-                  ),
-        Extension("cdd._float",
-                  ["cdd/_float.pyx"] + cdd_sources,
-                  include_dirs = [cdd_dir],
-                  depends=cdd_headers,
-                  undef_macros = ['GMPRATIONAL'],
-                  ),
-        Extension("cdd._fraction",
-                  ["cdd/_fraction.pyx"] + cddgmp_sources,
+        Extension("cdd",
+                  ["cdd.pyx"] + cddgmp_sources,
                   include_dirs = [cdd_dir, cddgmp_dir],
                   depends=cddgmp_headers,
                   define_macros = [('GMPRATIONAL', None),
                                    ('MPIR', None)],
                   libraries = ['mpir'],
-                  ),
-        Extension("cdd._core",
-                  ["cdd/_core.pyx"],
-                  include_dirs = [cdd_dir, cddgmp_dir],
                   ),
         ],
     author = "Matthias Troffaes",
