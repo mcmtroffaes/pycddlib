@@ -126,8 +126,8 @@ cdef extern from "@cddhdr@" nogil:
     ctypedef @dd@_lpsolution *@dd@_LPSolutionPtr
     ctypedef struct @dd@_lpdata
     ctypedef @dd@_lpdata *@dd@_LPPtr
-    ctypedef struct matrixdata
-    ctypedef matrixdata *@dd@_MatrixPtr
+    ctypedef struct @dd@_matrixdata
+    ctypedef @dd@_matrixdata *@dd@_MatrixPtr
     ctypedef struct @dd@_setfamily
     ctypedef @dd@_setfamily *@dd@_SetFamilyPtr
     ctypedef struct @dd@_nodedata
@@ -203,7 +203,7 @@ cdef extern from "@cddhdr@" nogil:
         time_t starttime
         time_t endtime
 
-    ctypedef struct matrixdata:
+    ctypedef struct @dd@_matrixdata:
         @dd@_rowrange rowsize
         @dd@_rowset linset
         @dd@_colrange colsize
