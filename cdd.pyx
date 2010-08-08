@@ -651,3 +651,12 @@ cdef class Polyhedron(NumberTypeable):
 
     cdef dd_PolyhedraPtr dd_poly
     cdef ddf_PolyhedraPtr ddf_poly
+
+# module initialization code comes here
+# initialize module constants
+dd_set_global_constants()
+ddf_set_global_constants()
+
+# should call dd(f)_free_global_constants() when module is destroyed
+# how does python do that?? let's not bother for now...
+

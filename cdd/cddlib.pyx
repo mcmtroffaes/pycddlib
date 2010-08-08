@@ -354,12 +354,3 @@ cdef class Polyhedron:
         :rtype: :class:`Matrix`
         """
         return _make_matrix(dd_CopyGenerators(self.thisptr))
-
-# module initialization code comes here
-# initialize module constants
-dd_set_global_constants()
-
-# should call dd_free_global_constants() when module is destroyed
-# how does python do that?? let's not bother for now...
-
-
