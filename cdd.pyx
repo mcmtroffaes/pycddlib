@@ -675,28 +675,34 @@ cdef class Matrix(NumberTypeable):
     cdef dd_MatrixPtr dd_mat
     cdef ddf_MatrixPtr ddf_mat
 
-    property row_size:
-        """Number of rows."""
-        def __get__(self):
-            if self.dd_mat is not NULL:
-                return self.dd_mat.rowsize
-            else:
-                return self.ddf_mat.rowsize
-
-    def __len__(self):
-        """Number of rows."""
+    cdef int _get_row_size(self):
+        """Quick implementation of row_size property, for Cython use."""
         if self.dd_mat is not NULL:
             return self.dd_mat.rowsize
         else:
             return self.ddf_mat.rowsize
 
+    cdef int _get_col_size(self):
+        """Quick implementation of col_size property, for Cython use."""
+        if self.dd_mat is not NULL:
+            return self.dd_mat.colsize
+        else:
+            return self.ddf_mat.colsize
+
+    property row_size:
+        """Number of rows."""
+        def __get__(self):
+            return self._get_row_size()
+
+    def __len__(self):
+        """Number of rows."""
+        return self._get_row_size()
+
+
     property col_size:
         """Number of columns."""
         def __get__(self):
-            if self.dd_mat is not NULL:
-                return self.dd_mat.colsize
-            else:
-                return self.ddf_mat.colsize
+            return self._get_col_size()
 
     property lin_set:
         """A :class:`frozenset` containing the rows of linearity
@@ -757,7 +763,7 @@ cdef class Matrix(NumberTypeable):
                               for 0 <= colindex < self.ddf_mat.colsize])
         def __set__(self, obj_func):
             cdef int colindex
-            if len(obj_func) != self.col_size:
+            if len(obj_func) != self._get_col_size():
                 raise ValueError(
                     "objective function does not match matrix column size")
             for colindex, value in enumerate(obj_func):
@@ -871,7 +877,7 @@ cdef class Matrix(NumberTypeable):
             return tuple([self.__getitem__(i) for i in xrange(*indices)])
         else:
             rownum = key
-            if rownum < 0 or rownum >= self.dd_mat.rowsize:
+            if rownum < 0 or rownum >= self._get_row_size():
                 raise IndexError("row index out of range")
             # return an immutable tuple to prohibit item assignment
             if self.dd_mat is not NULL:
