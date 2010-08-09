@@ -673,7 +673,7 @@ cdef class Matrix(NumberTypeable):
         :class:`int`, :class:`float`, :class:`~fractions.Fraction`, or
         :class:`str`.
     :type rows: :class:`list` of :class:`list`\ s.
-    :param linear: Whether to add the rows to the :attr:`lin_set` or not.
+    :param linear: Whether to add the rows to the :attr:`~cdd.Matrix.lin_set` or not.
     :type linear: :class:`bool`
 
     .. warning::
@@ -866,7 +866,7 @@ cdef class Matrix(NumberTypeable):
 
         :param rows: The rows to append.
         :type rows: :class:`list` of :class:`list`\ s
-        :param linear: Whether to add the rows to the :attr:`lin_set` or not.
+        :param linear: Whether to add the rows to the :attr:`~cdd.Matrix.lin_set` or not.
         :type linear: :class:`bool`
         """
         cdef Matrix other
@@ -888,7 +888,7 @@ cdef class Matrix(NumberTypeable):
 
         :param key: The row number, or slice of row numbers, to get.
         :type key: :class:`int` or :class:`slice`
-        :rtype: :class:`tuple` of :class:`~fractions.Fraction`, or :class:`tuple` of :class:`tuple` of :class:`~fractions.Fraction`
+        :rtype: :class:`tuple` of :attr:`~cdd.NumberTypeable.NumberType`, or :class:`tuple` of :class:`tuple` of :attr:`~cdd.NumberTypeable.NumberType`
         """
         cdef dd_rowrange rownum
         cdef dd_rowrange j
