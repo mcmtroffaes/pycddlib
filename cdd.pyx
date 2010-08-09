@@ -651,7 +651,7 @@ cdef class Matrix(NumberTypeable):
     """A class for working with sets of linear constraints and extreme
     points.
 
-    Bases: :class:`cdd.NumberTypeable`
+    Bases: :class:`~cdd.NumberTypeable`
 
     :param rows: The rows of the matrix. Each element can be an
         :class:`int`, :class:`float`, :class:`~fractions.Fraction`, or
@@ -728,7 +728,7 @@ cdef class Matrix(NumberTypeable):
                 _set_set(self.ddf_mat.linset, value)
 
     property rep_type:
-        """Representation (see :class:`cdd.RepType`)."""
+        """Representation (see :class:`~cdd.RepType`)."""
         def __get__(self):
             if self.dd_mat:
                 return self.dd_mat.representation
@@ -742,7 +742,7 @@ cdef class Matrix(NumberTypeable):
 
     property obj_type:
         """Linear programming objective: maximize or minimize (see
-        :class:`cdd.LPObjType`).
+        :class:`~cdd.LPObjType`).
         """
         def __get__(self):
             if self.dd_mat:
@@ -897,23 +897,23 @@ cdef class Matrix(NumberTypeable):
 cdef class LinProg(NumberTypeable):
     """A class for solving linear programs.
 
-    Bases: :class:`cdd.NumberTypeable`
+    Bases: :class:`~cdd.NumberTypeable`
 
     :param mat: The matrix to load the linear program from.
-    :type mat: :class:`Matrix`
+    :type mat: :class:`~cdd.Matrix`
     """
 
     cdef dd_LPPtr dd_lp
     cdef ddf_LPPtr ddf_lp
 
     property solver:
-        """The type of solver to use (see :class:`cdd.LPSolverType`)."""
+        """The type of solver to use (see :class:`~cdd.LPSolverType`)."""
         def __get__(self):
             return self.dd_lp.solver
 
     property obj_type:
         """Whether we are minimizing or maximizing (see
-        :class:`cdd.LPObjType`).
+        :class:`~cdd.LPObjType`).
         """
         def __get__(self):
             return self.dd_lp.objective
@@ -922,7 +922,7 @@ cdef class LinProg(NumberTypeable):
 
     property status:
         """The status of the linear program (see
-        :class:`cdd.LPStatusType`).
+        :class:`~cdd.LPStatusType`).
         """
         def __get__(self):
             if self.dd_lp:
@@ -1008,7 +1008,7 @@ cdef class LinProg(NumberTypeable):
     def solve(self, dd_LPSolverType solver=dd_DualSimplex):
         """Solve linear program.
 
-        :param solver: The method of solution (see :class:`cdd.LPSolverType`).
+        :param solver: The method of solution (see :class:`~cdd.LPSolverType`).
         :type solver: :class:`int`
         """
         cdef dd_ErrorType error = dd_NoError
@@ -1022,17 +1022,17 @@ cdef class LinProg(NumberTypeable):
 cdef class Polyhedron(NumberTypeable):
     """A class for converting between representations of a polyhedron.
 
-    Bases: :class:`cdd.NumberTypeable`
+    Bases: :class:`~cdd.NumberTypeable`
 
     :param mat: The matrix to load the polyhedron from.
-    :type mat: :class:`Matrix`
+    :type mat: :class:`~cdd.Matrix`
     """
 
     cdef dd_PolyhedraPtr dd_poly
     cdef ddf_PolyhedraPtr ddf_poly
 
     property rep_type:
-        """Representation (see :class:`cdd.RepType`)."""
+        """Representation (see :class:`~cdd.RepType`)."""
         def __get__(self):
             if self.dd_poly:
                 return self.dd_poly.representation
@@ -1086,7 +1086,7 @@ cdef class Polyhedron(NumberTypeable):
         """Get all inequalities.
 
         :returns: H-representation.
-        :rtype: :class:`Matrix`
+        :rtype: :class:`~cdd.Matrix`
         """
         if self.dd_poly:
             return _make_dd_matrix(dd_CopyInequalities(self.dd_poly))
@@ -1097,7 +1097,7 @@ cdef class Polyhedron(NumberTypeable):
         """Get all generators.
 
         :returns: V-representation.
-        :rtype: :class:`Matrix`
+        :rtype: :class:`~cdd.Matrix`
         """
         if self.dd_poly:
             return _make_dd_matrix(dd_CopyGenerators(self.dd_poly))
