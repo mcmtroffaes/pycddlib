@@ -4,9 +4,9 @@ Getting Started
 Overview
 --------
 
-.. include:: ../README
+.. include:: ../README.rst
 
 Installation
 ------------
 
-.. include:: ../INSTALL
+.. include:: ../INSTALL.rst

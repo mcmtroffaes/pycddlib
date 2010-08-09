@@ -43,8 +43,8 @@ for line in open('cdd.pyx'):
 else:
     raise RuntimeError("failed to extract version from cdd.pyx")
 
-# get documentation from README file
-doclines = open('README').read().split('\n')
+# get documentation from README.rst file
+doclines = open('README.rst').read().split('\n')
 
 cdd_dir = 'cddlib/lib-src'
 cdd_sources = [
