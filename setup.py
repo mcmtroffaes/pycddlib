@@ -122,4 +122,6 @@ setup(
     description = doclines[0],
     long_description = "\n".join(doclines[2:]),
     url = "http://mcmtroffaes.github.com/pycddlib/",
-    cmdclass = {'build_ext': build_ext})
+    classifiers = classifiers.split('\n'),
+    cmdclass = {'build_ext': build_ext},
+)

@@ -12,3 +12,9 @@ inequality representation and a generator (i.e. vertex and ray)
 representation of a polyhedron with cdd.  Also, it can solve a linear
 programming problem, i.e. a problem of maximizing and minimizing a
 linear function over a polyhedron.
+
+* Download: http://pypi.python.org/pypi/pycddlib/#downloads
+
+* Documentation: http://packages.python.org/pycddlib/
+
+* Development: http://github.com/mcmtroffaes/pycddlib/
