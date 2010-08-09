@@ -1,7 +1,7 @@
 Automatic Installer
 ~~~~~~~~~~~~~~~~~~~
 
-The simplest way to install pycddlib, is to `download <http://github.com/mcmtroffaes/pycddlib/downloads/>`_ an installer and run it.
+The simplest way to install pycddlib, is to `download <http://pypi.python.org/pypi/pycddlib/#downloads>`_ an installer matching your version of Python, and run it.
 
 Building From Source
 ~~~~~~~~~~~~~~~~~~~~
