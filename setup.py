@@ -20,12 +20,10 @@
 classifiers = """\
 Development Status :: 4 - Beta
 License :: OSI Approved :: GNU General Public License (GPL)
-Intended Audience :: Developers
-Intended Audience :: End Users/Desktop
 Intended Audience :: Science/Research
 Topic :: Scientific/Engineering :: Mathematics
-Programming Language :: Python
 Programming Language :: C
+Programming Language :: Cython
 Operating System :: OS Independent"""
 
 from distutils.core import setup
