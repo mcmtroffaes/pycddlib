@@ -24,7 +24,7 @@ cimport python_unicode
 from fractions import Fraction
 
 __version__ = "1.0.2"
-__release__ = __version__ + " (beta)"
+__release__ = __version__
 
 # some of cdd's functions read and write files
 cdef extern from "stdio.h" nogil:
@@ -245,10 +245,12 @@ cdef class NumberTypeable:
     :param number_type: The number type (``'float'`` or ``'fraction'``).
     :type number_type: :class:`str`
 
-    >>> x = cdd.NumberTypeable(number_type='float') # doctest: +ELLIPSIS
-    <cdd.NumberTypeable object at ...>
+    >>> x = cdd.NumberTypeable(number_type='float')
+    >>> x.number_type
+    'float'
     >>> y = cdd.NumberTypeable(number_type='fraction') # doctest: +ELLIPSIS
-    <cdd.NumberTypeable object at ...>
+    >>> y.number_type
+    'fraction'
     >>> # hyperreals are not supported :-)
     >>> cdd.NumberTypeable('hyperreal') # doctest: +ELLIPSIS
     Traceback (most recent call last):

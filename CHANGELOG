@@ -1,4 +1,4 @@
-Version 1.0.2 (in development)
+Version 1.0.2 (9 August 2010)
 * new NumberTypeable base class to allow different representations to be
   delegated to construction
 * everything is now contained in the cdd module
