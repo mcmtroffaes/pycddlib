@@ -226,21 +226,37 @@ cdef inline _invalid_number_type(int number_type):
     raise RuntimeError("invalid number type %i" % number_type)
 
 cdef class NumberTypeable:
-    """Base class for classes that can have different representations
-    of numbers.
+    """Base class for any class which admits different numerical
+    representations. Instances of this class must **always** be
+    constructed with either
 
+    - a *number_type* keyword argument, or
+
+    - a :class:`~cdd.NumberTypeable` instance as first (non-keyword) argument;
+
+    When subclassing :class:`~cdd.NumberTypeable`, there is no need to
+    explicitely call ``NumberTypeable.__init__(self)`` in your
+    constructor---the :class:`~cdd.NumberTypeable` constructor is
+    always called automatically, and looks for the argument as
+    described above.
+
+    :param arg: Any :class:`~cdd.NumberTypeable` instance.
+    :type arg: :class:`~cdd.NumberTypeable`
     :param number_type: The number type (``'float'`` or ``'fraction'``).
     :type number_type: :class:`str`
 
-    >>> cdd.NumberTypeable(number_type='float') # doctest: +ELLIPSIS
+    >>> x = cdd.NumberTypeable(number_type='float') # doctest: +ELLIPSIS
     <cdd.NumberTypeable object at ...>
-    >>> cdd.NumberTypeable(number_type='fraction') # doctest: +ELLIPSIS
+    >>> y = cdd.NumberTypeable(number_type='fraction') # doctest: +ELLIPSIS
     <cdd.NumberTypeable object at ...>
     >>> # hyperreals are not supported :-)
     >>> cdd.NumberTypeable('hyperreal') # doctest: +ELLIPSIS
     Traceback (most recent call last):
         ...
     ValueError: ...
+    >>> z = cdd.NumberTypeable(x)
+    >>> z.number_type
+    'float'
     """
 
     cdef int _number_type
