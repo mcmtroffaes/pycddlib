@@ -24,14 +24,30 @@ Intended Audience :: Science/Research
 Topic :: Scientific/Engineering :: Mathematics
 Programming Language :: C
 Programming Language :: Cython
+Programming Language :: Python
+Programming Language :: Python :: 2
+Programming Language :: Python :: 3
 Operating System :: OS Independent"""
 
-from distutils.core import setup
-from distutils.ccompiler import new_compiler
-from distutils.extension import Extension
-from Cython.Distutils import build_ext
+import os.path
 
-import os
+# at the moment, cython and setuptools don't work well together, so
+# only one of these should be True
+USE_CYTHON = not os.path.exists('cdd.c')
+USE_SETUPTOOLS = not USE_CYTHON
+
+if USE_SETUPTOOLS:
+    from setuptools import setup
+    from setuptools.extension import Extension
+else:
+    from distutils.core import setup
+    from distutils.extension import Extension
+
+if USE_CYTHON:
+    from Cython.Distutils import build_ext
+    cmdclass = {'build_ext': build_ext}
+else:
+    cmdclass = {}
 
 # get version from Cython file (without requiring extensions to be compiled!)
 for line in open('cdd.pyx'):
@@ -121,7 +137,7 @@ setup(
     platforms = "any",
     description = doclines[0],
     long_description = "\n".join(doclines[2:]),
-    url = "http://mcmtroffaes.github.com/pycddlib/",
+    url = "http://pypi.python.org/pypi/pycddlib",
     classifiers = classifiers.split('\n'),
-    cmdclass = {'build_ext': build_ext},
+    cmdclass = cmdclass,
 )
