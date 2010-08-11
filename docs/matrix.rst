@@ -12,6 +12,7 @@ Methods and Attributes
 ----------------------
 
 .. automethod:: cdd.Matrix.__getitem__(key)
+.. automethod:: cdd.Matrix.canonicalize()
 .. automethod:: cdd.Matrix.copy()
 .. automethod:: cdd.Matrix.extend(rows, linear=False)
 
@@ -76,6 +77,19 @@ end
 ((3, 4), (5, 6))
 >>> mat1[:-1]
 ((1, 2), (3, 4))
+
+Canonicalizing:
+
+>>> mat = cdd.Matrix([[2, 1, 2, 3], [0, 1, 2, 3], [3, 0, 1, 2], [0, -2, -4, -6]], number_type='fraction')
+>>> mat.canonicalize()
+(frozenset([1, 3]), frozenset([0]))
+>>> print(mat)
+linearity 1  1
+begin
+ 2 4 rational
+ 0 1 2 3
+ 3 0 1 2
+end
 
 Some regression tests:
 
@@ -153,6 +167,19 @@ end
 ((3.0, 4.0), (5.0, 6.0))
 >>> mat1[:-1]
 ((1.0, 2.0), (3.0, 4.0))
+
+Canonicalizing:
+
+>>> mat = cdd.Matrix([[2, 1, 2, 3], [0, 1, 2, 3], [3, 0, 1, 2], [0, -2, -4, -6]], number_type='float')
+>>> mat.canonicalize()
+(frozenset([1, 3]), frozenset([0]))
+>>> print(mat) # doctest: +NORMALIZE_WHITESPACE
+linearity 1  1
+begin
+ 2 4 real
+ 0 1 2 3
+ 3 0 1 2
+end
 
 Some regression tests:
 

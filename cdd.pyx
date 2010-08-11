@@ -41,6 +41,9 @@ cdef extern from "stdio.h" nogil:
     long int ftell(FILE *stream)
     int fclose(FILE *stream)
 
+cdef extern from "stdlib.h" nogil:
+    void free(void *ptr)
+
 # also need time_t
 cdef extern from "time.h":
     ctypedef long time_t
@@ -910,6 +913,31 @@ cdef class Matrix(NumberTypeable):
             else:
                 return tuple([_get_myfloat(self.ddf_mat.matrix[rownum][j])
                               for 0 <= j < self.ddf_mat.colsize])
+
+    def canonicalize(self):
+        """Transform to canonical representation by recognizing all
+        implicit linearities and all redundancies. These are returned
+        as a pair of sets of row indices.
+        """
+        cdef dd_rowset impl_linset
+        cdef dd_rowset redset
+        cdef dd_rowindex newpos
+        cdef dd_ErrorType error = dd_NoError
+        cdef int m
+        cdef dd_boolean success
+        if self.dd_mat:
+            m = self.dd_mat.rowsize
+            success = dd_MatrixCanonicalize(&self.dd_mat, &impl_linset, &redset, &newpos, &error)
+        else:
+            m = self.ddf_mat.rowsize
+            ddf_MatrixCanonicalize(&self.ddf_mat, &impl_linset, &redset, &newpos, <ddf_ErrorType *>(&error))
+        result = (_get_set(impl_linset), _get_set(redset))
+        set_free(impl_linset)
+        set_free(redset)
+        free(newpos)
+        if not success or error != dd_NoError:
+            _raise_error(error, "failed to canonicalize matrix")
+        return result
 
 cdef class LinProg(NumberTypeable):
     """A class for solving linear programs.
