@@ -29,12 +29,14 @@ Programming Language :: Python :: 2
 Programming Language :: Python :: 3
 Operating System :: OS Independent"""
 
+import sys
 import os.path
 
 # at the moment, cython and setuptools don't work well together, so
 # only one of these should be True
 USE_CYTHON = not os.path.exists('cdd.c')
 USE_SETUPTOOLS = not USE_CYTHON
+USE_MPIR = (sys.platform == 'win32') # mpir or gmp?
 
 if USE_SETUPTOOLS:
     from setuptools import setup
@@ -48,6 +50,14 @@ if USE_CYTHON:
     cmdclass = {'build_ext': build_ext}
 else:
     cmdclass = {}
+
+define_macros = [('GMPRATIONAL', None)]
+libraries = []
+if USE_MPIR:
+    define_macros += [('MPIR', None)]
+    libraries += ['mpir']
+else:
+    libraries += ['gmp']
 
 # get version from Cython file (without requiring extensions to be compiled!)
 for line in open('cdd.pyx'):
@@ -125,9 +135,8 @@ setup(
                   ["cdd.pyx"] + cddgmp_sources,
                   include_dirs = [cdd_dir, cddgmp_dir],
                   depends=cddgmp_headers,
-                  define_macros = [('GMPRATIONAL', None),
-                                   ('MPIR', None)],
-                  libraries = ['mpir'],
+                  define_macros = define_macros,
+                  libraries = libraries,
                   ),
         ],
     author = "Matthias Troffaes",

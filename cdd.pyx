@@ -45,8 +45,9 @@ cdef extern from "stdio.h" nogil:
 cdef extern from "time.h":
     ctypedef long time_t
 
-# gmp integer functions
-cdef extern from "mpir.h" nogil:
+# gmp integer and rational functions
+# note: mpir.h/gmp.h will be included via cdd.h later, so use from * form
+cdef extern from * nogil:
     ctypedef struct mpz_t:
         pass
     signed long int mpz_get_si(mpz_t op)
@@ -55,8 +56,6 @@ cdef extern from "mpir.h" nogil:
     int mpz_fits_ulong_p(mpz_t op)
     size_t mpz_sizeinbase(mpz_t op, int base)
 
-# gmp rational functions
-cdef extern from "mpir.h" nogil:
     ctypedef struct mpq_t:
         pass
     mpz_t mpq_numref(mpq_t op)
