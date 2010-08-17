@@ -110,12 +110,14 @@ cdef FILE *_tmpfile() except NULL:
          raise RuntimeError("failed to create temporary file")
      return result
 
+DEF MAX_STR_LEN = 20000
+
 cdef _tmpread(FILE *pfile):
-    cdef char result[1024]
+    cdef char result[MAX_STR_LEN]
     cdef size_t num_bytes
     # read the file
     fseek(pfile, 0, SEEK_SET)
-    num_bytes = fread(result, 1, 1024, pfile)
+    num_bytes = fread(result, 1, MAX_STR_LEN, pfile)
     # close the file
     fclose(pfile)
     # return result
