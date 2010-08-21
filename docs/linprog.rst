@@ -84,7 +84,7 @@ Floats
 
 This is the testlp2.c example that comes with cddlib.
 
->>> mat = cdd.Matrix([['4/3',-2,-1],['2/3',0,-1],[0,1,0],[0,0,1]], number_type='float')
+>>> mat = cdd.Matrix([['4/3',-2,-1],['2/3',0,-1],[0,1,0],[0,0,1]])
 >>> mat.obj_type = cdd.LPObjType.MAX
 >>> mat.obj_func = (0,3,4)
 >>> print(mat) # doctest: +NORMALIZE_WHITESPACE
@@ -112,7 +112,7 @@ True
 
 Another example.
 
->>> mat = cdd.Matrix([[1,-1,-1,-1],[-1,1,1,1],[0,1,0,0],[0,0,1,0],[0,0,0,1]], number_type='float')
+>>> mat = cdd.Matrix([[1,-1,-1,-1],[-1,1,1,1],[0,1,0,0],[0,0,1,0],[0,0,0,1]])
 >>> mat.obj_type = cdd.LPObjType.MIN
 >>> mat.obj_func = (0,1,2,3)
 >>> lp = cdd.LinProg(mat)

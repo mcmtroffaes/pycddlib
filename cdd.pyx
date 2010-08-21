@@ -235,6 +235,32 @@ cdef int _get_number_type(str number_type) except -1:
         raise ValueError(
             "number type must be 'float' or 'fraction' (got %s)" % repr(number_type))
 
+def get_number_type_from_value(value):
+    """Determine number type from a value.
+
+    :return: ``'fraction'`` if the value is
+        :class:`~fractions.Fraction` or :class:`str`, otherwise
+        ``'float'``.
+    :rtype: :class:`str`
+    """
+    if isinstance(value, (Fraction, str)):
+        return 'fraction'
+    else:
+        return 'float'
+
+def get_number_type_from_sequences(*data):
+    """Determine number type from sequences.
+
+    :return: ``'fraction'`` if all elements are
+        :class:`~fractions.Fraction` or :class:`str`, otherwise
+        ``'float'``.
+    :rtype: :class:`str`
+    """
+    for row in data:
+        for elem in row:
+            if not isinstance(elem, (Fraction, str)):
+                return 'float'
+    return 'fraction'
 
 cdef inline _invalid_number_type(int number_type):
     raise RuntimeError("invalid number type %i" % number_type)
@@ -471,7 +497,7 @@ cdef class NumberTypeable:
                 # converting to double first, so substraction is faster
                 f1 = num1
                 f2 = num2
-                fdiff = num1 - num2
+                fdiff = f1 - f2
             else:
                 fdiff = num1
             if fdiff < -1e-6:
@@ -669,8 +695,9 @@ cdef class Matrix(NumberTypeable):
         :attr:`~cdd.Matrix.lin_set` or not.
     :type linear: :class:`bool`
     :param number_type: The number type (``'float'`` or
-        ``'fraction'``). Optional: when omitted, defaults to
-        ``'float'``.
+        ``'fraction'``). If omitted,
+        :func:`~cdd.get_number_type_from_sequences` is used to
+        determine the number type.
     :type number_type: :class:`str`
 
     .. warning::
@@ -684,7 +711,7 @@ cdef class Matrix(NumberTypeable):
        string, so it gets automatically converted to its exact fraction
        representation:
 
-       >>> print(cdd.Matrix([['1.12']], number_type='fraction')[0][0])
+       >>> print(cdd.Matrix([['1.12']])[0][0])
        28/25
 
        Of course, for the float number type, both ``1.12`` and
@@ -806,11 +833,14 @@ cdef class Matrix(NumberTypeable):
         # overriding this to prevent base class constructor to be called
         pass
 
-    def __cinit__(self, rows, bool linear=False, str number_type='float'):
+    def __cinit__(self, rows, bool linear=False, str number_type=None):
         """Load matrix data from the rows (which is a list of lists)."""
         cdef int numrows, numcols, rowindex, colindex
         # set number type
-        self._number_type = _get_number_type(number_type)
+        if number_type is not None:
+            self._number_type = _get_number_type(number_type)
+        else:
+            self._number_type = _get_number_type(get_number_type_from_sequences(*rows))
         # reset pointers
         self.dd_mat = NULL
         self.ddf_mat = NULL

@@ -6,7 +6,7 @@
 Sets of Linear Inequalities and Generators
 ==========================================
 
-.. autoclass:: cdd.Matrix(rows, linear=False, number_type='float')
+.. autoclass:: cdd.Matrix(rows, linear=False, number_type=None)
 
 Methods and Attributes
 ----------------------
@@ -31,12 +31,26 @@ Note that the following examples presume:
 >>> import cdd
 >>> from fractions import Fraction
 
+Number Types
+~~~~~~~~~~~~
+
+>>> cdd.Matrix([[1.5,2]]).number_type
+'float'
+>>> cdd.Matrix([['1.5',2]]).number_type
+'float'
+>>> cdd.Matrix([[Fraction(3, 2),2]]).number_type
+'float'
+>>> cdd.Matrix([['1.5','2']]).number_type
+'fraction'
+>>> cdd.Matrix([[Fraction(3, 2), Fraction(2, 1)]]).number_type
+'fraction'
+
 Fractions
 ~~~~~~~~~
 
 Declaring matrices, and checking some attributes:
 
->>> mat1 = cdd.Matrix([[1,2],[3,4]], number_type='fraction')
+>>> mat1 = cdd.Matrix([['1','2'],['3','4']])
 >>> mat1.NumberType
 <class 'fractions.Fraction'>
 >>> print(mat1)
@@ -57,7 +71,7 @@ end
 Traceback (most recent call last):
   ...
 IndexError: row index out of range
->>> mat1.extend([[5,6]])
+>>> mat1.extend([[5,6]]) # keeps number type!
 >>> mat1.row_size
 3
 >>> print(mat1)
@@ -91,19 +105,6 @@ begin
  3 0 1 2
 end
 
-Some regression tests:
-
->>> cdd.Matrix([[1], [1, 2]], number_type='fraction') # doctest: +ELLIPSIS
-Traceback (most recent call last):
-    ...
-ValueError: rows have different lengths
-
->>> mat = cdd.Matrix([[1], [2]], number_type='fraction')
->>> mat.obj_func = (0, 0) # doctest: +ELLIPSIS
-Traceback (most recent call last):
-    ...
-ValueError: objective function does not match matrix column size
-
 Large number tests:
 
 >>> print(cdd.Matrix([[10 ** 100]], number_type='fraction'))
@@ -126,7 +127,7 @@ Floats
 
 Declaring matrices, and checking some attributes:
 
->>> mat1 = cdd.Matrix([[1,2],[3,4]], number_type='float')
+>>> mat1 = cdd.Matrix([[1,2],[3,4]])
 >>> mat1.NumberType
 <type 'float'>
 >>> print(mat1) # doctest: +NORMALIZE_WHITESPACE
@@ -170,7 +171,7 @@ end
 
 Canonicalizing:
 
->>> mat = cdd.Matrix([[2, 1, 2, 3], [0, 1, 2, 3], [3, 0, 1, 2], [0, -2, -4, -6]], number_type='float')
+>>> mat = cdd.Matrix([[2, 1, 2, 3], [0, 1, 2, 3], [3, 0, 1, 2], [0, -2, -4, -6]])
 >>> mat.canonicalize()
 (frozenset([1, 3]), frozenset([0]))
 >>> print(mat) # doctest: +NORMALIZE_WHITESPACE
@@ -181,22 +182,9 @@ begin
  3 0 1 2
 end
 
-Some regression tests:
-
->>> cdd.Matrix([[1], [1, 2]], number_type='float') # doctest: +ELLIPSIS
-Traceback (most recent call last):
-    ...
-ValueError: rows have different lengths
-
->>> mat = cdd.Matrix([[1], [2]], number_type='float')
->>> mat.obj_func = (0, 0) # doctest: +ELLIPSIS
-Traceback (most recent call last):
-    ...
-ValueError: objective function does not match matrix column size
-
 Large number tests:
 
->>> print(cdd.Matrix([[10 ** 100]], number_type='float')) # doctest: +NORMALIZE_WHITESPACE
+>>> print(cdd.Matrix([[10 ** 100]])) # doctest: +NORMALIZE_WHITESPACE
 begin
  1 1 real
  1.000000000E+100
@@ -211,4 +199,19 @@ end
 >>> cdd.Matrix([['10000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000/17984638288961211871838956989189665890197130672912829203311075745019255958028927299020895173379216649']], number_type='float')[0][0] # doctest: +ELLIPSIS
 0.55603...
 
+Other
+~~~~~
+
+Some regression tests:
+
+>>> cdd.Matrix([[1], [1, 2]]) # doctest: +ELLIPSIS
+Traceback (most recent call last):
+    ...
+ValueError: rows have different lengths
+
+>>> mat = cdd.Matrix([[1], [2]])
+>>> mat.obj_func = (0, 0) # doctest: +ELLIPSIS
+Traceback (most recent call last):
+    ...
+ValueError: objective function does not match matrix column size
 

@@ -101,7 +101,7 @@ Floats
 
 This is the sampleh1.ine example that comes with cddlib.
 
->>> mat = cdd.Matrix([[2,-1,-1,0],[0,1,0,0],[0,0,1,0]], number_type='float')
+>>> mat = cdd.Matrix([[2,-1,-1,0],[0,1,0,0],[0,0,1,0]])
 >>> mat.rep_type = cdd.RepType.INEQUALITY
 >>> poly = cdd.Polyhedron(mat)
 >>> print(poly) # doctest: +NORMALIZE_WHITESPACE
@@ -127,7 +127,7 @@ end
 
 This is the testcdd2.c example that comes with cddlib.
 
->>> mat = cdd.Matrix([[7,-3,-0],[7,0,-3],[1,1,0],[1,0,1]], number_type='float')
+>>> mat = cdd.Matrix([[7,-3,-0],[7,0,-3],[1,1,0],[1,0,1]])
 >>> mat.rep_type = cdd.RepType.INEQUALITY
 >>> print(mat) # doctest: +NORMALIZE_WHITESPACE
 H-representation

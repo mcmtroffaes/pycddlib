@@ -1,9 +1,13 @@
 Version 1.0.3 (in development)
 * added Matrix.canonicalize method
-* sanitized NumberTypeable class:
-  - default is float (so no need to always pass number_type argument)
-  - no more __cinit__ magic: derived classes can decide to call
-    __init__ or not
+* sanitized NumberTypeable class: no more __cinit__ magic: derived
+  classes can decide to call __init__ or not
+* improved Matrix constructor: number type is derived from the type of
+  the elements passed to the constructor, so in general, there is no
+  need any more to pass a number_type argument (although this still
+  remains supported)
+* added get_number_type_from_value and get_number_type_from_sequences
+  functions to aid subclasses to determine their number type.
 
 Version 1.0.2 (9 August 2010)
 * new NumberTypeable base class to allow different representations to be
