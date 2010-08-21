@@ -6,7 +6,7 @@
 Sets of Linear Inequalities and Generators
 ==========================================
 
-.. autoclass:: cdd.Matrix(rows, linear=False)
+.. autoclass:: cdd.Matrix(rows, linear=False, number_type='float')
 
 Methods and Attributes
 ----------------------

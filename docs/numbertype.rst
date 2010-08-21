@@ -5,7 +5,7 @@
 Numerical Representations
 =========================
 
-.. autoclass:: cdd.NumberTypeable([arg, ] ..., [number_type=None, ] ...)
+.. autoclass:: cdd.NumberTypeable(number_type='float')
 .. automethod:: cdd.NumberTypeable.make_number(value)
 .. automethod:: cdd.NumberTypeable.number_str(value)
 .. automethod:: cdd.NumberTypeable.number_repr(value)

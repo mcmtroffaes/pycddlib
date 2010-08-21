@@ -246,10 +246,13 @@ cdef class NumberTypeable:
     :param number_type: The number type (``'float'`` or ``'fraction'``).
     :type number_type: :class:`str`
 
-    >>> x = cdd.NumberTypeable(number_type='float')
+    >>> x = cdd.NumberTypeable()
     >>> x.number_type
     'float'
-    >>> y = cdd.NumberTypeable(number_type='fraction') # doctest: +ELLIPSIS
+    >>> x = cdd.NumberTypeable('float')
+    >>> x.number_type
+    'float'
+    >>> y = cdd.NumberTypeable('fraction') # doctest: +ELLIPSIS
     >>> y.number_type
     'fraction'
     >>> # hyperreals are not supported :-)
@@ -662,8 +665,13 @@ cdef class Matrix(NumberTypeable):
         :class:`int`, :class:`float`, :class:`~fractions.Fraction`, or
         :class:`str`.
     :type rows: :class:`list` of :class:`list`\ s.
-    :param linear: Whether to add the rows to the :attr:`~cdd.Matrix.lin_set` or not.
+    :param linear: Whether to add the rows to the
+        :attr:`~cdd.Matrix.lin_set` or not.
     :type linear: :class:`bool`
+    :param number_type: The number type (``'float'`` or
+        ``'fraction'``). Optional: when omitted, defaults to
+        ``'float'``.
+    :type number_type: :class:`str`
 
     .. warning::
 
