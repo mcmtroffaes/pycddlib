@@ -76,6 +76,8 @@ Another example.
 >>> lp.solve()
 >>> print(lp.obj_value) # 28/25 is 1.12
 28/25
+>>> print(lp.primal_solution) # extreme point in simplex
+(1, 0, 0)
 
 Floats
 ~~~~~~
