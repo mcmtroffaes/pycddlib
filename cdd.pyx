@@ -226,26 +226,23 @@ cdef _set_myfloat(myfloat target, value):
 DEF FLOAT = 1
 DEF FRACTION = 2
 
+cdef int _get_number_type(str number_type) except -1:
+    if number_type == 'float':
+        return FLOAT
+    elif number_type == 'fraction':
+        return FRACTION
+    else:
+        raise ValueError(
+            "number type must be 'float' or 'fraction' (got %s)" % repr(number_type))
+
+
 cdef inline _invalid_number_type(int number_type):
     raise RuntimeError("invalid number type %i" % number_type)
 
 cdef class NumberTypeable:
     """Base class for any class which admits different numerical
-    representations. Instances of this class must **always** be
-    constructed with either
+    representations.
 
-    - a *number_type* keyword argument, or
-
-    - a :class:`~cdd.NumberTypeable` instance as first (non-keyword) argument;
-
-    When subclassing :class:`~cdd.NumberTypeable`, there is no need to
-    explicitely call ``NumberTypeable.__init__(self)`` in your
-    constructor---the :class:`~cdd.NumberTypeable` constructor is
-    always called automatically, and looks for the argument as
-    described above.
-
-    :param arg: Any :class:`~cdd.NumberTypeable` instance.
-    :type arg: :class:`~cdd.NumberTypeable`
     :param number_type: The number type (``'float'`` or ``'fraction'``).
     :type number_type: :class:`str`
 
@@ -260,37 +257,21 @@ cdef class NumberTypeable:
     Traceback (most recent call last):
         ...
     ValueError: ...
-    >>> z = cdd.NumberTypeable(x)
-    >>> z.number_type
-    'float'
     """
 
     cdef int _number_type
 
-    def __cinit__(self, *args, **kwargs):
-        # this is a hack so subclasses can extend arguments at will
-        # first check keyword argument
-        number_type = kwargs.get('number_type', None)
-        # no keyword argument: check first argument
-        if ((number_type is None)
-            and args
-            and isinstance(args[0], NumberTypeable)):
-                number_type = args[0].number_type
-        # now set it
-        if number_type == 'float':
-            self._number_type = FLOAT
-        elif number_type == 'fraction':
-            self._number_type = FRACTION
-        else:
-            raise ValueError(
-                "specify number_type='float' or number_type='fraction'")
+    def __init__(self, str number_type='float'):
+        self._number_type = _get_number_type(number_type)
 
     property number_type:
         """The number type as string.
 
-        >>> cdd.NumberTypeable(number_type='float').number_type
+        >>> cdd.NumberTypeable().number_type
         'float'
-        >>> cdd.NumberTypeable(number_type='fraction').number_type
+        >>> cdd.NumberTypeable('float').number_type
+        'float'
+        >>> cdd.NumberTypeable('fraction').number_type
         'fraction'
         """
         def __get__(self):
@@ -304,9 +285,11 @@ cdef class NumberTypeable:
     property NumberType:
         """The number type as class.
 
-        >>> cdd.NumberTypeable(number_type='float').NumberType
+        >>> cdd.NumberTypeable().NumberType
         <type 'float'>
-        >>> cdd.NumberTypeable(number_type='fraction').NumberType
+        >>> cdd.NumberTypeable('float').NumberType
+        <type 'float'>
+        >>> cdd.NumberTypeable('fraction').NumberType
         <class 'fractions.Fraction'>
         """
         def __get__(self):
@@ -326,7 +309,7 @@ cdef class NumberTypeable:
         :rtype: :attr:`~cdd.NumberTypeable.NumberType`
 
         >>> numbers = ['4', '2/3', '1.6', '-9/6', 1.12]
-        >>> nt = cdd.NumberTypeable(number_type='float')
+        >>> nt = cdd.NumberTypeable('float')
         >>> for number in numbers:
         ...     x = nt.make_number(number)
         ...     print(repr(x))
@@ -335,7 +318,7 @@ cdef class NumberTypeable:
         1.6000000000000001
         -1.5
         1.1200000000000001
-        >>> nt = cdd.NumberTypeable(number_type='fraction')
+        >>> nt = cdd.NumberTypeable('fraction')
         >>> for number in numbers:
         ...     x = nt.make_number(number)
         ...     print(repr(x))
@@ -369,7 +352,7 @@ cdef class NumberTypeable:
         :rtype: :class:`str`
 
         >>> numbers = ['4', '2/3', '1.6', '-9/6', 1.12]
-        >>> nt = cdd.NumberTypeable(number_type='float')
+        >>> nt = cdd.NumberTypeable('float')
         >>> for number in numbers:
         ...     x = nt.make_number(number)
         ...     print(nt.number_str(x))
@@ -378,7 +361,7 @@ cdef class NumberTypeable:
         1.6
         -1.5
         1.12
-        >>> nt = cdd.NumberTypeable(number_type='fraction')
+        >>> nt = cdd.NumberTypeable('fraction')
         >>> for number in numbers:
         ...     x = nt.make_number(number)
         ...     print(nt.number_str(x))
@@ -412,7 +395,7 @@ cdef class NumberTypeable:
         :rtype: :class:`str`
 
         >>> numbers = ['4', '2/3', '1.6', '-9/6', 1.12]
-        >>> nt = cdd.NumberTypeable(number_type='float')
+        >>> nt = cdd.NumberTypeable('float')
         >>> for number in numbers:
         ...     x = nt.make_number(number)
         ...     print(nt.number_repr(x))
@@ -421,7 +404,7 @@ cdef class NumberTypeable:
         1.6000000000000001
         -1.5
         1.1200000000000001
-        >>> nt = cdd.NumberTypeable(number_type='fraction')
+        >>> nt = cdd.NumberTypeable('fraction')
         >>> for number in numbers:
         ...     x = nt.make_number(number)
         ...     print(nt.number_repr(x))
@@ -460,7 +443,7 @@ cdef class NumberTypeable:
         :param num2: Second value.
         :type num2: :attr:`~cdd.NumberTypeable.NumberType`
 
-        >>> a = cdd.NumberTypeable(number_type='float')
+        >>> a = cdd.NumberTypeable('float')
         >>> a.number_cmp(0.0, 5.0)
         -1
         >>> a.number_cmp(5.0, 0.0)
@@ -469,7 +452,7 @@ cdef class NumberTypeable:
         0
         >>> a.number_cmp(1e-30)
         0
-        >>> a = cdd.NumberTypeable(number_type='fraction')
+        >>> a = cdd.NumberTypeable('fraction')
         >>> a.number_cmp(0, 1)
         -1
         >>> a.number_cmp(1, 0)
@@ -811,9 +794,15 @@ cdef class Matrix(NumberTypeable):
             ddf_WriteMatrix(pfile, self.ddf_mat)
         return _tmpread(pfile).rstrip('\n')
 
-    def __cinit__(self, rows, linear=False, number_type=None):
+    def __init__(self, *args, **kwargs):
+        # overriding this to prevent base class constructor to be called
+        pass
+
+    def __cinit__(self, rows, bool linear=False, str number_type='float'):
         """Load matrix data from the rows (which is a list of lists)."""
         cdef int numrows, numcols, rowindex, colindex
+        # set number type
+        self._number_type = _get_number_type(number_type)
         # reset pointers
         self.dd_mat = NULL
         self.ddf_mat = NULL
@@ -1020,6 +1009,10 @@ cdef class LinProg(NumberTypeable):
             ddf_WriteLPResult(pfile, self.ddf_lp, ddf_NoError)
         return _tmpread(pfile).rstrip('\n')
 
+    def __init__(self, *args, **kwargs):
+        # overriding this to prevent base class constructor to be called
+        pass
+
     def __cinit__(self, Matrix mat):
         """Initialize linear program solution from solved linear program in
         the given matrix.
@@ -1027,6 +1020,8 @@ cdef class LinProg(NumberTypeable):
         cdef dd_ErrorType error = dd_NoError
         self.dd_lp = NULL
         self.ddf_lp = NULL
+        # set number type
+        self._number_type = mat._number_type
         # read matrix
         if mat.dd_mat:
             self.dd_lp = dd_Matrix2LP(mat.dd_mat, &error)
@@ -1098,10 +1093,16 @@ cdef class Polyhedron(NumberTypeable):
             ddf_WritePolyFile(pfile, self.ddf_poly)
         return _tmpread(pfile).rstrip('\n')
 
+    def __init__(self, *args, **kwargs):
+        # overriding this to prevent base class constructor to be called
+        pass
+
     def __cinit__(self, Matrix mat):
         """Initialize polyhedra from given matrix."""
-        cdef dd_ErrorType error
-        error = dd_NoError
+        cdef dd_ErrorType error = dd_NoError
+        # set number type
+        self._number_type = mat._number_type
+        # initialize pointers
         self.dd_poly = NULL
         self.ddf_poly = NULL
         # read matrix
