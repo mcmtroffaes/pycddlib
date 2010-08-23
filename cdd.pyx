@@ -959,7 +959,7 @@ cdef class Matrix(NumberTypeable):
             success = dd_MatrixCanonicalize(&self.dd_mat, &impl_linset, &redset, &newpos, &error)
         else:
             m = self.ddf_mat.rowsize
-            ddf_MatrixCanonicalize(&self.ddf_mat, &impl_linset, &redset, &newpos, <ddf_ErrorType *>(&error))
+            success = ddf_MatrixCanonicalize(&self.ddf_mat, &impl_linset, &redset, &newpos, <ddf_ErrorType *>(&error))
         result = (_get_set(impl_linset), _get_set(redset))
         set_free(impl_linset)
         set_free(redset)
