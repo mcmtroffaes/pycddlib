@@ -24,7 +24,7 @@ cimport python_unicode
 from fractions import Fraction
 
 __version__ = "1.0.3"
-__release__ = __version__ + " (beta)"
+__release__ = __version__
 
 # some of cdd's functions read and write files
 cdef extern from "stdio.h" nogil:
