@@ -833,7 +833,7 @@ cdef class Matrix(NumberTypeable):
         # overriding this to prevent base class constructor to be called
         pass
 
-    def __cinit__(self, rows, bool linear=False, str number_type=None):
+    def __cinit__(self, rows, linear=False, str number_type=None):
         """Load matrix data from the rows (which is a list of lists)."""
         cdef int numrows, numcols, rowindex, colindex
         # set number type
