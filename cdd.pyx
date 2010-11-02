@@ -18,8 +18,8 @@
 # with this program; if not, write to the Free Software Foundation, Inc.,
 # 51 Franklin Street, Fifth Floor, Boston, MA 02110-1301 USA.
 
-cimport python_bytes
-cimport python_unicode
+cimport cpython.bytes
+cimport cpython.unicode
 
 from fractions import Fraction
 
@@ -121,7 +121,7 @@ cdef _tmpread(FILE *pfile):
     # close the file
     fclose(pfile)
     # return result
-    return python_unicode.PyUnicode_DecodeUTF8(result, num_bytes, 'strict')
+    return cpython.unicode.PyUnicode_DecodeUTF8(result, num_bytes, 'strict')
 
 cdef _get_set(set_type set_):
     """Create Python frozenset from given set_type."""
@@ -184,8 +184,8 @@ cdef _get_mytype(mytype target):
         else:
             return Fraction(num, den)
     else:
-        buf = python_bytes.PyBytes_FromStringAndSize(NULL, mpz_sizeinbase(mpq_numref(target), 10) + mpz_sizeinbase(mpq_denref(target), 10) + 3)
-        buf_ptr = python_bytes.PyBytes_AsString(buf)
+        buf = cpython.bytes.PyBytes_FromStringAndSize(NULL, mpz_sizeinbase(mpq_numref(target), 10) + mpz_sizeinbase(mpq_denref(target), 10) + 3)
+        buf_ptr = cpython.bytes.PyBytes_AsString(buf)
         mpq_get_str(buf_ptr, 10, target)
         # trick: bytes(buf_ptr) removes everything after the null
         return Fraction(bytes(buf_ptr).decode('ascii'))
