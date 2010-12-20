@@ -46,10 +46,9 @@ else:
     from distutils.extension import Extension
 
 if USE_CYTHON:
-    from Cython.Distutils import build_ext
-    cmdclass = {'build_ext': build_ext}
+    from Cython.Build import cythonize
 else:
-    cmdclass = {}
+    cythonize = lambda x: [x]
 
 define_macros = [('GMPRATIONAL', None)]
 libraries = []
@@ -130,15 +129,15 @@ cddlib_f_pxi.close()
 setup(
     name = "pycddlib",
     version = version,
-    ext_modules= [
+    ext_modules = cythonize(
         Extension("cdd",
                   ["cdd.pyx"] + cddgmp_sources,
                   include_dirs = [cdd_dir, cddgmp_dir],
                   depends=cddgmp_headers,
                   define_macros = define_macros,
                   libraries = libraries,
-                  ),
-        ],
+                  )
+        ),
     author = "Matthias Troffaes",
     author_email = "matthias.troffaes@gmail.com",
     license = "GPL",
@@ -148,5 +147,4 @@ setup(
     long_description = "\n".join(doclines[2:]),
     url = "http://pypi.python.org/pypi/pycddlib",
     classifiers = classifiers.split('\n'),
-    cmdclass = cmdclass,
 )
