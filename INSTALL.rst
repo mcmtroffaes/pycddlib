@@ -9,11 +9,7 @@ Building From Source
 MPIR
 ''''
 
-To compile pycddlib, you need `MPIR <http://www.mpir.org/>`_. On Linux, your distributions probably has a pre-built package for it. For example, on Fedora, install it by running::
-
-    yum install mpir-devel
-
-On Windows, download the latest MPIR source tarball (decompress the ``mpir-x.x.x.tar.bz2`` file with `7-Zip <http://www.7-zip.org/>`_), and follow the instructions in :file:`mpir-x.x.x\\build.vc9\\readme.txt`. [#vc9]_ For pycddlib, you only need to build the **lib_mpir_gc** project. Once built, go to the :file:`build.vc9\\lib\\win32\\release` folder, and copy :file:`mpir.h` to::
+To compile pycddlib on Windows, you need `MPIR <http://www.mpir.org/>`_. Download the latest MPIR source tarball (decompress the ``mpir-x.x.x.tar.bz2`` file with `7-Zip <http://www.7-zip.org/>`_), and follow the instructions in :file:`mpir-x.x.x\\build.vc9\\readme.txt`. [#vc9]_ For pycddlib, you only need to build the **lib_mpir_gc** project. Once built, go to the :file:`build.vc9\\lib\\win32\\release` folder, and copy :file:`mpir.h` to::
 
     C:\Program Files (x86)\Microsoft Visual Studio 9.0\VC\include
 
@@ -21,10 +17,14 @@ and :file:`mpir.lib` and :file:`mpir.pdb` to::
 
     C:\Program Files (x86)\Microsoft Visual Studio 9.0\VC\lib
 
+On Linux, you need `GMP <http://gmplib.org/>`_ (although you can also use MPIR if you desire so, by tweaking the ``setup.py`` file). Your distribution probably has a pre-built package for it. For example, on Fedora, install it by running::
+
+    yum install gmp-devel
+
 pycddlib
 ''''''''
 
-Once MPIR is installed, `download <http://pypi.python.org/pypi/pycddlib/#downloads>`_ and extract the source ``.zip``. On Windows, start the MSVC command line, and run the setup script from within the extracted folder::
+Once MPIR/GMP is installed, `download <http://pypi.python.org/pypi/pycddlib/#downloads>`_ and extract the source ``.zip``. On Windows, start the MSVC command line, and run the setup script from within the extracted folder::
 
     cd ....\pycddlib-x.x.x
     C:\PythonXX\python.exe setup.py install
