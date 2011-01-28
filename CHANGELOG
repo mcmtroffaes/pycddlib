@@ -1,3 +1,7 @@
+Version 1.0.4 (in development)
+* updated for Cython 0.14
+* various fixes in documentation
+
 Version 1.0.3 (24 August 2010)
 * added Matrix.canonicalize method
 * sanitized NumberTypeable class: no more __cinit__ magic: derived
