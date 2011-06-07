@@ -59,8 +59,12 @@ cdef extern from * nogil:
     int mpz_fits_ulong_p(mpz_t op)
     size_t mpz_sizeinbase(mpz_t op, int base)
 
-    ctypedef struct mpq_t:
+    # note: need to add this internal detail to the header (compilation
+    # fails otherwise)
+    ctypedef struct __mpq_struct:
         pass
+    ctypedef __mpq_struct mpq_t[1]
+
     mpz_t mpq_numref(mpq_t op)
     mpz_t mpq_denref(mpq_t op)
     char *mpq_get_str(char *str, int base, mpq_t op)
