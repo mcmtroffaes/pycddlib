@@ -677,11 +677,11 @@ cdef class LPStatusType:
     UNDECIDED             = dd_LPSundecided
     OPTIMAL               = dd_Optimal
     INCONSISTENT          = dd_Inconsistent
-    DUALINCONSISTENT      = dd_DualInconsistent
-    STRUCINCONSISTENT     = dd_StrucInconsistent
-    STRUCDUALINCONSISTENT = dd_StrucDualInconsistent
+    DUAL_INCONSISTENT      = dd_DualInconsistent
+    STRUC_INCONSISTENT     = dd_StrucInconsistent
+    STRUC_DUAL_INCONSISTENT = dd_StrucDualInconsistent
     UNBOUNDED             = dd_Unbounded
-    DUALUNBOUNDED         = dd_DualUnbounded
+    DUAL_UNBOUNDED         = dd_DualUnbounded
 
 # extension classes to wrap matrix, linear program, and polyhedron
 
