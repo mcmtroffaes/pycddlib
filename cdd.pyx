@@ -21,14 +21,12 @@
 cimport cpython.bytes
 cimport cpython.unicode
 cimport libc.stdio
+cimport libc.stdlib
 
 from fractions import Fraction
 
 __version__ = "1.0.4"
 __release__ = __version__ + " (beta)"
-
-cdef extern from "stdlib.h" nogil:
-    void free(void *ptr)
 
 # also need time_t
 cdef extern from "time.h":
@@ -953,7 +951,7 @@ cdef class Matrix(NumberTypeable):
         result = (_get_set(impl_linset), _get_set(redset))
         set_free(impl_linset)
         set_free(redset)
-        free(newpos)
+        libc.stdlib.free(newpos)
         if not success or error != dd_NoError:
             _raise_error(error, "failed to canonicalize matrix")
         return result
