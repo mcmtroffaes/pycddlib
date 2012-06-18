@@ -91,9 +91,32 @@ include "cddlib_f.pxi"
 
 # helper functions
 
+### begin windows hack (broken libc.stdio.tmpfile)
+cdef extern from *:
+     cdef void _emit_ifdef_msc_ver "#ifdef _MSC_VER //" ()
+     cdef void _emit_else "#else //" ()
+     cdef void _emit_endif "#endif //" ()
+cdef extern from "stdio.h":
+    char *_tempnam(char *dir, char *prefix)
+cdef libc.stdio.FILE *libc_stdio_tmpfile() except NULL:
+     _emit_ifdef_msc_ver()
+     cdef libc.stdio.FILE *result
+     cdef char *name
+     name = _tempnam(NULL, NULL)
+     if name == NULL:
+         raise RuntimeError("failed to create temporary file name")
+     result = libc.stdio.fopen(name, "wb+TD");
+     libc.stdlib.free(name)
+     _emit_else()
+     result = libc.stdio.tmpfile()
+     _emit_endif()
+     return result
+### end windows hack (broken libc.stdio.tmpfile)
+
 cdef libc.stdio.FILE *_tmpfile() except NULL:
      cdef libc.stdio.FILE *result
-     result = libc.stdio.tmpfile()
+     # libc.stdio.tmpfile() is broken on windows
+     result = libc_stdio_tmpfile()
      if result == NULL:
          raise RuntimeError("failed to create temporary file")
      return result
