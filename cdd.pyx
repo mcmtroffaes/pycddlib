@@ -20,26 +20,12 @@
 
 cimport cpython.bytes
 cimport cpython.unicode
+cimport libc.stdio
 
 from fractions import Fraction
 
 __version__ = "1.0.4"
 __release__ = __version__ + " (beta)"
-
-# some of cdd's functions read and write files
-cdef extern from "stdio.h" nogil:
-    ctypedef struct FILE
-    ctypedef int size_t
-    FILE *stdout
-    FILE *tmpfile()
-    size_t fread(void *ptr, size_t size, size_t count, FILE *stream)
-    size_t fwrite(void *ptr, size_t size, size_t count, FILE *stream)
-    int SEEK_SET
-    int SEEK_CUR
-    int SEEK_END
-    int fseek(FILE *stream, long int offset, int origin)
-    long int ftell(FILE *stream)
-    int fclose(FILE *stream)
 
 cdef extern from "stdlib.h" nogil:
     void free(void *ptr)
@@ -90,10 +76,10 @@ cdef extern from "setoper.h":
     cdef long set_card(set_type set)
     cdef long set_groundsize(set_type set)
     cdef void set_write(set_type set)
-    cdef void set_fwrite(FILE *f,set_type set)
-    cdef void set_fwrite_compl(FILE *f,set_type set)
+    cdef void set_fwrite(libc.stdio.FILE *f,set_type set)
+    cdef void set_fwrite_compl(libc.stdio.FILE *f,set_type set)
     cdef void set_binwrite(set_type set)
-    cdef void set_fbinwrite(FILE *f,set_type set)
+    cdef void set_fbinwrite(libc.stdio.FILE *f,set_type set)
 
 cdef extern from "cdd.h" nogil:
     ctypedef mpq_t mytype
@@ -107,23 +93,23 @@ include "cddlib_f.pxi"
 
 # helper functions
 
-cdef FILE *_tmpfile() except NULL:
-     cdef FILE *result
-     result = tmpfile()
+cdef libc.stdio.FILE *_tmpfile() except NULL:
+     cdef libc.stdio.FILE *result
+     result = libc.stdio.tmpfile()
      if result == NULL:
          raise RuntimeError("failed to create temporary file")
      return result
 
 DEF MAX_STR_LEN = 20000
 
-cdef _tmpread(FILE *pfile):
+cdef _tmpread(libc.stdio.FILE *pfile):
     cdef char result[MAX_STR_LEN]
     cdef size_t num_bytes
     # read the file
-    fseek(pfile, 0, SEEK_SET)
-    num_bytes = fread(result, 1, MAX_STR_LEN, pfile)
+    libc.stdio.fseek(pfile, 0, libc.stdio.SEEK_SET)
+    num_bytes = libc.stdio.fread(result, 1, MAX_STR_LEN, pfile)
     # close the file
-    fclose(pfile)
+    libc.stdio.fclose(pfile)
     # return result
     return cpython.unicode.PyUnicode_DecodeUTF8(result, num_bytes, 'strict')
 
@@ -145,7 +131,7 @@ cdef _set_set(set_type set_, pset):
 
 cdef _raise_error(dd_ErrorType error, msg):
     """Convert error into string and raise it."""
-    cdef FILE *pfile
+    cdef libc.stdio.FILE *pfile
     pfile = _tmpfile()
     dd_WriteErrorMessages(pfile, error)
     raise RuntimeError(msg + "\n" + _tmpread(pfile).rstrip('\n'))
@@ -825,7 +811,7 @@ cdef class Matrix(NumberTypeable):
 
     def __str__(self):
         """Print the matrix data."""
-        cdef FILE *pfile
+        cdef libc.stdio.FILE *pfile
         pfile = _tmpfile()
         if self.dd_mat:
             dd_WriteMatrix(pfile, self.dd_mat)
@@ -1040,7 +1026,7 @@ cdef class LinProg(NumberTypeable):
 
     def __str__(self):
         """Print the linear program data."""
-        cdef FILE *pfile
+        cdef libc.stdio.FILE *pfile
         # open file for writing the data
         pfile = _tmpfile()
         # note: if lp has an error, then exception is raised
@@ -1127,7 +1113,7 @@ cdef class Polyhedron(NumberTypeable):
 
     def __str__(self):
         """Print the polyhedra data."""
-        cdef FILE *pfile
+        cdef libc.stdio.FILE *pfile
         pfile = _tmpfile()
         if self.dd_poly:
             dd_WritePolyFile(pfile, self.dd_poly)
