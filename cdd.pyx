@@ -99,9 +99,9 @@ cdef extern from *:
 cdef extern from "stdio.h":
     char *_tempnam(char *dir, char *prefix)
 cdef libc.stdio.FILE *libc_stdio_tmpfile() except NULL:
-     _emit_ifdef_msc_ver()
      cdef libc.stdio.FILE *result
      cdef char *name
+     _emit_ifdef_msc_ver()
      name = _tempnam(NULL, NULL)
      if name == NULL:
          raise RuntimeError("failed to create temporary file name")
