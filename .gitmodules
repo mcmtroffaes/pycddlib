@@ -1,6 +1,3 @@
 [submodule "cddlib"]
 	path = cddlib
 	url = git://github.com/mcmtroffaes/cddlib.git
-[submodule "docs/_build/html"]
-	path = docs/_build/html
-	url = git://github.com/mcmtroffaes/pycddlib.git
