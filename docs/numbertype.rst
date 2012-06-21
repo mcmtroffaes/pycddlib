@@ -63,10 +63,10 @@ Numerical Representations
         ...     x = nt.make_number(number)
         ...     print(repr(x))
         4.0
-        0.66666666666666663
-        1.6000000000000001
+        0.6666666666666666
+        1.6
         -1.5
-        1.1200000000000001
+        1.12
         >>> nt = cdd.NumberTypeable('fraction')
         >>> for number in numbers:
         ...     x = nt.make_number(number)
@@ -121,10 +121,10 @@ Numerical Representations
         ...     x = nt.make_number(number)
         ...     print(nt.number_repr(x))
         4.0
-        0.66666666666666663
-        1.6000000000000001
+        0.6666666666666666
+        1.6
         -1.5
-        1.1200000000000001
+        1.12
         >>> nt = cdd.NumberTypeable('fraction')
         >>> for number in numbers:
         ...     x = nt.make_number(number)
