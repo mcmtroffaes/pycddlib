@@ -3,25 +3,111 @@
    import cdd
    from fractions import Fraction
 
+.. currentmodule:: cdd
+
 Sets of Linear Inequalities and Generators
 ==========================================
 
-.. autoclass:: cdd.Matrix(rows, linear=False, number_type=None)
+.. class:: Matrix(rows, linear=False, number_type=None)
+
+    A class for working with sets of linear constraints and extreme
+    points.
+
+    Bases: :class:`~cdd.NumberTypeable`
+
+    :param rows: The rows of the matrix. Each element can be an
+        :class:`int`, :class:`float`, :class:`~fractions.Fraction`, or
+        :class:`str`.
+    :type rows: :class:`list` of :class:`list`\ s.
+    :param linear: Whether to add the rows to the
+        :attr:`~cdd.Matrix.lin_set` or not.
+    :type linear: :class:`bool`
+    :param number_type: The number type (``'float'`` or
+        ``'fraction'``). If omitted,
+        :func:`~cdd.get_number_type_from_sequences` is used to
+        determine the number type.
+    :type number_type: :class:`str`
+
+    .. warning::
+
+       With the fraction number type, beware when using floats:
+
+       >>> print(cdd.Matrix([[1.12]], number_type='fraction')[0][0])
+       1261007895663739/1125899906842624
+
+       If the float represents a fraction, it is better to pass it as a
+       string, so it gets automatically converted to its exact fraction
+       representation:
+
+       >>> print(cdd.Matrix([['1.12']])[0][0])
+       28/25
+
+       Of course, for the float number type, both ``1.12`` and
+       ``'1.12'`` will yield the same result, namely the
+       :class:`float` ``1.12``.
 
 Methods and Attributes
 ----------------------
 
-.. automethod:: cdd.Matrix.__getitem__(key)
-.. automethod:: cdd.Matrix.canonicalize()
-.. automethod:: cdd.Matrix.copy()
-.. automethod:: cdd.Matrix.extend(rows, linear=False)
+.. method:: Matrix.__getitem__(key)
 
-.. autoattribute:: cdd.Matrix.row_size
-.. autoattribute:: cdd.Matrix.col_size
-.. autoattribute:: cdd.Matrix.lin_set
-.. autoattribute:: cdd.Matrix.rep_type
-.. autoattribute:: cdd.Matrix.obj_type
-.. autoattribute:: cdd.Matrix.obj_func
+        Return a row, or a slice of rows, of the matrix.
+
+        :param key: The row number, or slice of row numbers, to get.
+        :type key: :class:`int` or :class:`slice`
+        :rtype: :class:`tuple` of :attr:`~cdd.NumberTypeable.NumberType`, or :class:`tuple` of :class:`tuple` of :attr:`~cdd.NumberTypeable.NumberType`
+
+.. method:: Matrix.canonicalize()
+
+        Transform to canonical representation by recognizing all
+        implicit linearities and all redundancies. These are returned
+        as a pair of sets of row indices.
+
+.. method:: Matrix.copy()
+
+        Make a copy of the matrix and return that copy.
+
+.. method:: Matrix.extend(rows, linear=False)
+
+        Append rows to self (this corresponds to the dd_MatrixAppendTo
+        function in cdd; to emulate the effect of dd_MatrixAppend, first call
+        copy and then call extend on the copy).
+
+        The column size must be equal in the two input matrices. It
+        raises a ValueError if the input rows are not appropriate.
+
+        :param rows: The rows to append.
+        :type rows: :class:`list` of :class:`list`\ s
+        :param linear: Whether to add the rows to the :attr:`~cdd.Matrix.lin_set` or not.
+        :type linear: :class:`bool`
+
+.. attribute:: Matrix.row_size
+
+        Number of rows.
+
+.. attribute:: Matrix.col_size
+
+        Number of columns.
+
+.. attribute:: Matrix.lin_set
+
+        A :class:`frozenset` containing the rows of linearity
+        (generators of linearity space for V-representation, and
+        equations for H-representation).
+
+.. attribute:: Matrix.rep_type
+
+        Representation (see :class:`~cdd.RepType`).
+
+.. attribute:: Matrix.obj_type
+
+        Linear programming objective: maximize or minimize (see
+        :class:`~cdd.LPObjType`).
+
+.. attribute:: Matrix.obj_func
+
+        A :class:`tuple` containing the linear programming objective
+        function.
 
 Examples
 --------

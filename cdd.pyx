@@ -442,42 +442,6 @@ cdef class LPStatusType:
 # extension classes to wrap matrix, linear program, and polyhedron
 
 cdef class Matrix(NumberTypeable):
-    """A class for working with sets of linear constraints and extreme
-    points.
-
-    Bases: :class:`~cdd.NumberTypeable`
-
-    :param rows: The rows of the matrix. Each element can be an
-        :class:`int`, :class:`float`, :class:`~fractions.Fraction`, or
-        :class:`str`.
-    :type rows: :class:`list` of :class:`list`\ s.
-    :param linear: Whether to add the rows to the
-        :attr:`~cdd.Matrix.lin_set` or not.
-    :type linear: :class:`bool`
-    :param number_type: The number type (``'float'`` or
-        ``'fraction'``). If omitted,
-        :func:`~cdd.get_number_type_from_sequences` is used to
-        determine the number type.
-    :type number_type: :class:`str`
-
-    .. warning::
-
-       With the fraction number type, beware when using floats:
-
-       >>> print(cdd.Matrix([[1.12]], number_type='fraction')[0][0])
-       1261007895663739/1125899906842624
-
-       If the float represents a fraction, it is better to pass it as a
-       string, so it gets automatically converted to its exact fraction
-       representation:
-
-       >>> print(cdd.Matrix([['1.12']])[0][0])
-       28/25
-
-       Of course, for the float number type, both ``1.12`` and
-       ``'1.12'`` will yield the same result, namely the
-       :class:`float` ``1.12``.
-    """
 
     cdef dd_MatrixPtr dd_mat
     cdef ddf_MatrixPtr ddf_mat
@@ -497,25 +461,18 @@ cdef class Matrix(NumberTypeable):
             return self.ddf_mat.colsize
 
     property row_size:
-        """Number of rows."""
         def __get__(self):
             return self._get_row_size()
 
     def __len__(self):
-        """Number of rows."""
         return self._get_row_size()
 
 
     property col_size:
-        """Number of columns."""
         def __get__(self):
             return self._get_col_size()
 
     property lin_set:
-        """A :class:`frozenset` containing the rows of linearity
-        (generators of linearity space for V-representation, and
-        equations for H-representation).
-        """
         def __get__(self):
             if self.dd_mat:
                 return _get_set(self.dd_mat.linset)
@@ -528,7 +485,6 @@ cdef class Matrix(NumberTypeable):
                 _set_set(self.ddf_mat.linset, value)
 
     property rep_type:
-        """Representation (see :class:`~cdd.RepType`)."""
         def __get__(self):
             if self.dd_mat:
                 return self.dd_mat.representation
@@ -541,9 +497,6 @@ cdef class Matrix(NumberTypeable):
                 self.ddf_mat.representation = <ddf_RepresentationType>value
 
     property obj_type:
-        """Linear programming objective: maximize or minimize (see
-        :class:`~cdd.LPObjType`).
-        """
         def __get__(self):
             if self.dd_mat:
                 return self.dd_mat.objective
@@ -556,9 +509,6 @@ cdef class Matrix(NumberTypeable):
                 self.ddf_mat.objective = <ddf_LPObjectiveType>value
 
     property obj_func:
-        """A :class:`tuple` containing the linear programming objective
-        function.
-        """
         def __get__(self):
             # return an immutable tuple to prohibit item assignment
             cdef int colindex
@@ -580,7 +530,6 @@ cdef class Matrix(NumberTypeable):
                     _set_myfloat(self.ddf_mat.rowvec[colindex], value)
 
     def __str__(self):
-        """Print the matrix data."""
         cdef libc.stdio.FILE *pfile
         pfile = _tmpfile()
         if self.dd_mat:
@@ -643,25 +592,12 @@ cdef class Matrix(NumberTypeable):
         self.ddf_mat = NULL
 
     def copy(self):
-        """Make a copy of the matrix and return that copy."""
         if self.dd_mat:
             return _make_dd_matrix(dd_CopyMatrix(self.dd_mat))
         else:
             return _make_ddf_matrix(ddf_CopyMatrix(self.ddf_mat))
 
     def extend(self, rows, linear=False):
-        """Append rows to self (this corresponds to the dd_MatrixAppendTo
-        function in cdd; to emulate the effect of dd_MatrixAppend, first call
-        copy and then call extend on the copy).
-
-        The column size must be equal in the two input matrices. It
-        raises a ValueError if the input rows are not appropriate.
-
-        :param rows: The rows to append.
-        :type rows: :class:`list` of :class:`list`\ s
-        :param linear: Whether to add the rows to the :attr:`~cdd.Matrix.lin_set` or not.
-        :type linear: :class:`bool`
-        """
         cdef Matrix other
         cdef int success
         # create matrix with given rows
@@ -677,12 +613,6 @@ cdef class Matrix(NumberTypeable):
                 "cannot append because column sizes differ")
 
     def __getitem__(self, key):
-        """Return a row, or a slice of rows, of the matrix.
-
-        :param key: The row number, or slice of row numbers, to get.
-        :type key: :class:`int` or :class:`slice`
-        :rtype: :class:`tuple` of :attr:`~cdd.NumberTypeable.NumberType`, or :class:`tuple` of :class:`tuple` of :attr:`~cdd.NumberTypeable.NumberType`
-        """
         cdef dd_rowrange rownum
         cdef dd_rowrange j
         # check if we are slicing
@@ -704,10 +634,6 @@ cdef class Matrix(NumberTypeable):
                               for 0 <= j < self.ddf_mat.colsize])
 
     def canonicalize(self):
-        """Transform to canonical representation by recognizing all
-        implicit linearities and all redundancies. These are returned
-        as a pair of sets of row indices.
-        """
         cdef dd_rowset impl_linset
         cdef dd_rowset redset
         cdef dd_rowindex newpos
