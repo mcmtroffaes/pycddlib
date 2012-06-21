@@ -533,56 +533,21 @@ cdef class NumberTypeable:
 # extension types to wrap the cddlib enums
 
 cdef class AdjacencyTestType:
-    """Adjacency test type.
-
-    .. attribute::
-       COMBINATORIAL
-       ALGEBRAIC
-    """
     COMBINATORIAL = dd_Combinatorial
     ALGEBRAIC     = dd_Algebraic
 
 cdef class NumberType:
-    """Number type.
-
-    .. attribute::
-       UNKNOWN
-       REAL
-       RATIONAL
-       INTEGER
-    """
     UNKNOWN  = dd_Unknown
     REAL     = dd_Real
     RATIONAL = dd_Rational
     INTEGER  = dd_Integer
 
 cdef class RepType:
-    """Type of representation. Use :attr:`INEQUALITY` for
-    H-representation and :attr:`GENERATOR` for V-representation.
-
-    .. attribute::
-       UNSPECIFIED
-       INEQUALITY
-       GENERATOR
-    """
-
     UNSPECIFIED = dd_Unspecified
     INEQUALITY  = dd_Inequality
     GENERATOR   = dd_Generator
 
 cdef class RowOrderType:
-    """The row order.
-
-    .. attribute::
-       MAX_INDEX
-       MIN_INDEX
-       MIN_CUTOFF
-       MAX_CUTOFF
-       MIX_CUTOFF
-       LEX_MIN
-       LEX_MAX
-       RANDOM_ROW
-    """
     MAX_INDEX  = dd_MaxIndex
     MIN_INDEX  = dd_MinIndex
     MIN_CUTOFF = dd_MinCutoff
@@ -593,28 +558,6 @@ cdef class RowOrderType:
     RANDOM_ROW = dd_RandomRow
 
 cdef class Error:
-    """Error constants.
-
-    .. attribute::
-       DIMENSION_TOO_LARGE
-       IMPROPER_INPUT_FORMAT
-       NEGATIVE_MATRIX_SIZE
-       EMPTY_V_REPRESENTATION
-       EMPTY_H_REPRESENTATION
-       EMPTY_REPRESENTATION
-       I_FILE_NOT_FOUND
-       O_FILE_NOT_FOUND
-       NO_LP_OBJECTIVE
-       NO_REAL_NUMBER_SUPPORT
-       NOT_AVAIL_FOR_H
-       NOT_AVAIL_FOR_V
-       CANNOT_HANDLE_LINEARITY
-       ROW_INDEX_OUT_OF_RANGE
-       COL_INDEX_OUT_OF_RANGE
-       LP_CYCLING
-       NUMERICALLY_INCONSISTENT
-       NO_ERROR
-    """
     DIMENSION_TOO_LARGE      = dd_DimensionTooLarge
     IMPROPER_INPUT_FORMAT    = dd_ImproperInputFormat
     NEGATIVE_MATRIX_SIZE     = dd_NegativeMatrixSize
@@ -635,52 +578,20 @@ cdef class Error:
     NO_ERROR                 = dd_NoError
 
 cdef class CompStatus:
-    """Status of computation.
-
-    .. attribute::
-       IN_PROGRESS
-       ALL_FOUND
-       REGION_EMPTY
-    """
     IN_PROGRESS  = dd_InProgress
     ALL_FOUND    = dd_AllFound
     REGION_EMPTY = dd_RegionEmpty
 
 cdef class LPObjType:
-    """Type of objective for a linear program.
-
-    .. attribute::
-       NONE
-       MAX
-       MIN
-    """
     NONE = dd_LPnone
     MAX  = dd_LPmax
     MIN  = dd_LPmin
 
 cdef class LPSolverType:
-    """Type of solver for a linear program.
-
-    .. attribute::
-       CRISS_CROSS
-       DUAL_SIMPLEX
-    """
     CRISS_CROSS  = dd_CrissCross
     DUAL_SIMPLEX = dd_DualSimplex
 
 cdef class LPStatusType:
-    """Status of a linear program.
-
-    .. attribute::
-       UNDECIDED
-       OPTIMAL
-       INCONSISTENT
-       DUAL_INCONSISTENT
-       STRUC_INCONSISTENT
-       STRUC_DUAL_INCONSISTENT
-       UNBOUNDED
-       DUAL_UNBOUNDED
-    """
     UNDECIDED             = dd_LPSundecided
     OPTIMAL               = dd_Optimal
     INCONSISTENT          = dd_Inconsistent
