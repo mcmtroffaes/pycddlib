@@ -2,22 +2,56 @@
 
    import cdd
 
+.. currentmodule:: cdd
+
 Solving Linear Programs
 =======================
 
-.. autoclass:: cdd.LinProg(mat)
+.. class:: LinProg(mat)
+
+    A class for solving linear programs.
+
+    Bases: :class:`~cdd.NumberTypeable`
+
+    :param mat: The matrix to load the linear program from.
+    :type mat: :class:`~cdd.Matrix`
 
 Methods and Attributes
 ----------------------
 
-.. automethod:: cdd.LinProg.solve(solver=cdd.LPSolverType.DUAL_SIMPLEX)
+.. method:: LinProg.solve(solver=cdd.LPSolverType.DUAL_SIMPLEX)
 
-.. autoattribute:: cdd.LinProg.dual_solution
-.. autoattribute:: cdd.LinProg.obj_type
-.. autoattribute:: cdd.LinProg.obj_value
-.. autoattribute:: cdd.LinProg.primal_solution
-.. autoattribute:: cdd.LinProg.solver
-.. autoattribute:: cdd.LinProg.status
+        Solve linear program.
+
+        :param solver: The method of solution (see :class:`~cdd.LPSolverType`).
+        :type solver: :class:`int`
+
+.. attribute:: LinProg.dual_solution
+
+        A :class:`tuple` containing the dual solution.
+
+.. attribute:: LinProg.obj_type
+
+        Whether we are minimizing or maximizing (see
+        :class:`~cdd.LPObjType`).
+
+.. attribute:: LinProg.obj_value
+
+        The optimal value of the objective function.
+
+.. attribute:: LinProg.primal_solution
+
+        A :class:`tuple` containing the primal solution.
+
+.. attribute:: LinProg.solver
+
+        The type of solver to use (see :class:`~cdd.LPSolverType`).
+
+.. attribute:: LinProg.status
+
+        The status of the linear program (see
+        :class:`~cdd.LPStatusType`).
+
 
 Examples
 --------
