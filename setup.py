@@ -37,6 +37,7 @@ import os.path
 USE_CYTHON = not os.path.exists('cdd.c')
 USE_SETUPTOOLS = not USE_CYTHON
 USE_MPIR = (sys.platform == 'win32') # mpir or gmp?
+GET_GMP = os.environ.get('READTHEDOCS', None) == 'True' # download gmp?
 
 if USE_SETUPTOOLS:
     from setuptools import setup
@@ -53,11 +54,12 @@ else:
 
 define_macros = [('GMPRATIONAL', None)]
 libraries = []
-if USE_MPIR:
-    define_macros += [('MPIR', None)]
-    libraries += ['mpir']
-else:
-    libraries += ['gmp']
+if not GET_GMP:
+    if USE_MPIR:
+        define_macros += [('MPIR', None)]
+        libraries += ['mpir']
+    else:
+        libraries += ['gmp']
 
 # get version from Cython file (without requiring extensions to be compiled!)
 for line in open('cdd.pyx'):
@@ -110,6 +112,32 @@ cddgmp_headers = cdd_headers + [
         ]
     ]
 
+include_dirs = [cdd_dir, cddgmp_dir]
+if GET_GMP:
+    import subprocess
+    GMP_DIR = 'gmp-5.0.5'
+    if not os.path.exists(GMP_DIR + ".tar.bz2"):
+        import urllib
+        urllib.urlretrieve(
+            "ftp://ftp.gmplib.org/pub/{0}/{0}.tar.bz2".format(GMP_DIR),
+            GMP_DIR + ".tar.bz2")
+    if not os.path.exists(GMP_DIR):
+        import tarfile
+        f = tarfile.open(GMP_DIR + ".tar.bz2", "r:bz2")
+        try:
+            f.extractall()
+        finally:
+            f.close()
+    if not os.path.exists(GMP_DIR + "/gmp.h"):
+        process = subprocess.Popen(
+            ["./configure", "--disable-shared"], cwd=GMP_DIR)
+        process.wait()
+    if not os.path.exists(GMP_DIR + "/.libs/libgmp.a"):
+        process = subprocess.Popen(["make"], cwd=GMP_DIR)
+        process.wait()
+    include_dirs += [GMP_DIR]
+    library_dirs=[GMP_DIR + "/.libs/"],
+
 # generate include files from template
 cddlib_pxi_in = open("cddlib.pxi.in", "r").read()
 cddlib_pxi = open("cddlib.pxi", "w")
@@ -133,10 +161,10 @@ setup(
     ext_modules= [
         Extension("cdd",
                   ["cdd.pyx" if USE_CYTHON else "cdd.c"] + cddgmp_sources,
-                  include_dirs = [cdd_dir, cddgmp_dir],
+                  include_dirs=include_dirs,
                   depends=cddgmp_headers,
-                  define_macros = define_macros,
-                  libraries = libraries,
+                  define_macros=define_macros,
+                  libraries=libraries,
                   ),
         ],
     author = "Matthias Troffaes",
