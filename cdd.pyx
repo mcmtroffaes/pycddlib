@@ -655,35 +655,21 @@ cdef class Matrix(NumberTypeable):
         return result
 
 cdef class LinProg(NumberTypeable):
-    """A class for solving linear programs.
-
-    Bases: :class:`~cdd.NumberTypeable`
-
-    :param mat: The matrix to load the linear program from.
-    :type mat: :class:`~cdd.Matrix`
-    """
 
     cdef dd_LPPtr dd_lp
     cdef ddf_LPPtr ddf_lp
 
     property solver:
-        """The type of solver to use (see :class:`~cdd.LPSolverType`)."""
         def __get__(self):
             return self.dd_lp.solver
 
     property obj_type:
-        """Whether we are minimizing or maximizing (see
-        :class:`~cdd.LPObjType`).
-        """
         def __get__(self):
             return self.dd_lp.objective
         def __set__(self, dd_LPObjectiveType value):
             self.dd_lp.objective = value
 
     property status:
-        """The status of the linear program (see
-        :class:`~cdd.LPStatusType`).
-        """
         def __get__(self):
             if self.dd_lp:
                 return self.dd_lp.LPS
@@ -691,7 +677,6 @@ cdef class LinProg(NumberTypeable):
                 return self.ddf_lp.LPS
 
     property obj_value:
-        """The optimal value of the objective function."""
         def __get__(self):
             if self.dd_lp:
                 return _get_mytype(self.dd_lp.optvalue)
@@ -699,7 +684,6 @@ cdef class LinProg(NumberTypeable):
                 return _get_myfloat(self.ddf_lp.optvalue)
 
     property primal_solution:
-        """A :class:`tuple` containing the primal solution."""
         def __get__(self):
             cdef int colindex
             if self.dd_lp:
@@ -710,7 +694,6 @@ cdef class LinProg(NumberTypeable):
                               for 1 <= colindex < self.ddf_lp.d])
 
     property dual_solution:
-        """A :class:`tuple` containing the dual solution."""
         def __get__(self):
             cdef int colindex
             if self.dd_lp:
@@ -772,11 +755,6 @@ cdef class LinProg(NumberTypeable):
         self.dd_lp = NULL
 
     def solve(self, dd_LPSolverType solver=dd_DualSimplex):
-        """Solve linear program.
-
-        :param solver: The method of solution (see :class:`~cdd.LPSolverType`).
-        :type solver: :class:`int`
-        """
         cdef dd_ErrorType error = dd_NoError
         if self.dd_lp:
             dd_LPSolve(self.dd_lp, solver, &error)
@@ -786,19 +764,11 @@ cdef class LinProg(NumberTypeable):
             _raise_error(error, "failed to solve linear program")
 
 cdef class Polyhedron(NumberTypeable):
-    """A class for converting between representations of a polyhedron.
-
-    Bases: :class:`~cdd.NumberTypeable`
-
-    :param mat: The matrix to load the polyhedron from.
-    :type mat: :class:`~cdd.Matrix`
-    """
 
     cdef dd_PolyhedraPtr dd_poly
     cdef ddf_PolyhedraPtr ddf_poly
 
     property rep_type:
-        """Representation (see :class:`~cdd.RepType`)."""
         def __get__(self):
             if self.dd_poly:
                 return self.dd_poly.representation
@@ -855,22 +825,12 @@ cdef class Polyhedron(NumberTypeable):
         self.ddf_poly = NULL
 
     def get_inequalities(self):
-        """Get all inequalities.
-
-        :returns: H-representation.
-        :rtype: :class:`~cdd.Matrix`
-        """
         if self.dd_poly:
             return _make_dd_matrix(dd_CopyInequalities(self.dd_poly))
         else:
             return _make_ddf_matrix(ddf_CopyInequalities(self.ddf_poly))
 
     def get_generators(self):
-        """Get all generators.
-
-        :returns: V-representation.
-        :rtype: :class:`~cdd.Matrix`
-        """
         if self.dd_poly:
             return _make_dd_matrix(dd_CopyGenerators(self.dd_poly))
         else:

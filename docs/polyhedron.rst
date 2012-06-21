@@ -2,18 +2,40 @@
 
    import cdd
 
+.. currentmodule:: cdd
+
 Working With Polyhedron Representations
 =======================================
 
-.. autoclass:: cdd.Polyhedron(mat)
+.. class:: Polyhedron(mat)
+
+    A class for converting between representations of a polyhedron.
+
+    Bases: :class:`~cdd.NumberTypeable`
+
+    :param mat: The matrix to load the polyhedron from.
+    :type mat: :class:`~cdd.Matrix`
 
 Methods and Attributes
 ----------------------
 
-.. automethod:: cdd.Polyhedron.get_inequalities()
-.. automethod:: cdd.Polyhedron.get_generators()
+.. method:: Polyhedron.get_inequalities()
 
-.. autoattribute:: cdd.Polyhedron.rep_type
+        Get all inequalities.
+
+        :returns: H-representation.
+        :rtype: :class:`~cdd.Matrix`
+
+.. method:: Polyhedron.get_generators()
+
+        Get all generators.
+
+        :returns: V-representation.
+        :rtype: :class:`~cdd.Matrix`
+
+.. attribute:: Polyhedron.rep_type
+
+        Representation (see :class:`~cdd.RepType`).
 
 Examples
 --------
