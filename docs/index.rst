@@ -13,3 +13,5 @@ Welcome to pycddlib's documentation!
    matrix
    linprog
    polyhedron
+   changes
+
