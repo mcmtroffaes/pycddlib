@@ -6,8 +6,8 @@ The simplest way to install pycddlib, is to `download <http://pypi.python.org/py
 Building From Source
 ~~~~~~~~~~~~~~~~~~~~
 
-MPIR
-''''
+MPIR/GMP
+''''''''
 
 To compile pycddlib on Windows, you need `MPIR <http://www.mpir.org/>`_. Download the latest MPIR source tarball (decompress the ``mpir-x.x.x.tar.bz2`` file with `7-Zip <http://www.7-zip.org/>`_), and follow the instructions in :file:`mpir-x.x.x\\build.vc9\\readme.txt`. [#vc9]_ For pycddlib, you only need to build the **lib_mpir_gc** project. Once built, go to the :file:`build.vc9\\lib\\win32\\release` folder, and copy :file:`mpir.h` to::
 
