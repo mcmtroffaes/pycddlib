@@ -1,8 +1,10 @@
 Constants
 =========
 
+.. currentmodule:: cdd
+
 .. not used elsewhere
-   .. class:: cdd.AdjacencyTestType
+   .. class:: AdjacencyTestType
 
     Adjacency test type.
 
@@ -11,7 +13,7 @@ Constants
        ALGEBRAIC
 
 .. not used elsewhere
-   .. class:: cdd.CompStatus
+   .. class:: CompStatus
 
     Status of computation.
 
@@ -21,7 +23,7 @@ Constants
        REGION_EMPTY
 
 .. not used elsewhere
-   .. class:: cdd.Error
+   .. class:: Error
 
     Error constants.
 
@@ -45,7 +47,7 @@ Constants
        NUMERICALLY_INCONSISTENT
        NO_ERROR
 
-.. class:: cdd.LPObjType
+.. class:: LPObjType
 
     Type of objective for a linear program.
 
@@ -54,7 +56,7 @@ Constants
        MAX
        MIN
 
-.. class:: cdd.LPSolverType
+.. class:: LPSolverType
 
     Type of solver for a linear program.
 
@@ -62,7 +64,8 @@ Constants
        CRISS_CROSS
        DUAL_SIMPLEX
 
-.. class:: cdd.LPStatusType
+.. class:: LPStatusType
+
     Status of a linear program.
 
     .. attribute::
@@ -76,7 +79,7 @@ Constants
        DUAL_UNBOUNDED
 
 .. not used elsewhere
-   .. class:: cdd.NumberType
+   .. class:: NumberType
 
     Number type.
 
@@ -86,7 +89,7 @@ Constants
        RATIONAL
        INTEGER
 
-.. class:: cdd.RepType
+.. class:: RepType
 
     Type of representation. Use :attr:`INEQUALITY` for
     H-representation and :attr:`GENERATOR` for V-representation.
@@ -97,7 +100,7 @@ Constants
        GENERATOR
 
 .. not used elsewhere
-   .. class:: cdd.RowOrderType
+   .. class:: RowOrderType
 
     The row order.
 
