@@ -25,8 +25,7 @@ cimport libc.stdlib
 
 from fractions import Fraction
 
-__version__ = "1.0.4"
-__release__ = __version__ + " (beta)"
+__version__ = "1.0.4c0.dev0"
 
 # also need time_t
 cdef extern from "time.h":
