@@ -14,4 +14,4 @@ Welcome to pycddlib's documentation!
    linprog
    polyhedron
    changes
-
+   license
