@@ -278,7 +278,7 @@ end
 >>> print(cdd.Matrix([[Fraction(10 ** 100, 13 ** 90)]], number_type='float')) # doctest: +NORMALIZE_WHITESPACE +ELLIPSIS
 begin
  1 1 real
- 5.5603...E-01
+ 5.5603...E-001
 end
 >>> cdd.Matrix([['10000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000']], number_type='float')[0][0]
 1e+100
