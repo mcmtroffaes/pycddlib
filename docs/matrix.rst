@@ -182,7 +182,7 @@ Canonicalizing:
 
 >>> mat = cdd.Matrix([[2, 1, 2, 3], [0, 1, 2, 3], [3, 0, 1, 2], [0, -2, -4, -6]], number_type='fraction')
 >>> mat.canonicalize()
-(frozenset([1, 3]), frozenset([0]))
+(frozenset({1, 3}), frozenset({0}))
 >>> print(mat)
 linearity 1  1
 begin
@@ -215,7 +215,7 @@ Declaring matrices, and checking some attributes:
 
 >>> mat1 = cdd.Matrix([[1,2],[3,4]])
 >>> mat1.NumberType
-<type 'float'>
+<class 'float'>
 >>> print(mat1) # doctest: +NORMALIZE_WHITESPACE
 begin
  2 2 real
@@ -259,7 +259,7 @@ Canonicalizing:
 
 >>> mat = cdd.Matrix([[2, 1, 2, 3], [0, 1, 2, 3], [3, 0, 1, 2], [0, -2, -4, -6]])
 >>> mat.canonicalize()
-(frozenset([1, 3]), frozenset([0]))
+(frozenset({1, 3}), frozenset({0}))
 >>> print(mat) # doctest: +NORMALIZE_WHITESPACE
 linearity 1  1
 begin
