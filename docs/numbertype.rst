@@ -181,8 +181,8 @@ Numerical Representations
         The number type as class.
 
         >>> cdd.NumberTypeable().NumberType
-        <type 'float'>
+        <class 'float'>
         >>> cdd.NumberTypeable('float').NumberType
-        <type 'float'>
+        <class 'float'>
         >>> cdd.NumberTypeable('fraction').NumberType
         <class 'fractions.Fraction'>
