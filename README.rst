@@ -15,6 +15,6 @@ linear function over a polyhedron.
 
 * Download: http://pypi.python.org/pypi/pycddlib/#downloads
 
-* Documentation: http://packages.python.org/pycddlib/
+* Documentation: http://pycddlib.readthedocs.org/
 
 * Development: http://github.com/mcmtroffaes/pycddlib/

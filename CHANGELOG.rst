@@ -1,8 +1,20 @@
-Version 1.0.4 (in development)
-* updated for Cython 0.14
+Version 1.0.4 (9 July 2012)
+---------------------------
+
+* updated for Cython 0.16
+* updated for cddlib 0.94g
+* updated for MPIR 2.5.1
 * various fixes in documentation
+* building the documentation no longer requires cdd to be installed
+* documentation hosted on readthedocs.org
+* development model uses gitflow
+* build script uses virtualenv
+* workaround for Microsoft tmpfile bug on Vista/Win7 (reported by Lorenzo
+  Di Gregorio)
 
 Version 1.0.3 (24 August 2010)
+------------------------------
+
 * added Matrix.canonicalize method
 * sanitized NumberTypeable class: no more __cinit__ magic: derived
   classes can decide to call __init__ or not
@@ -14,12 +26,16 @@ Version 1.0.3 (24 August 2010)
   functions to aid subclasses to determine their number type.
 
 Version 1.0.2 (9 August 2010)
+-----------------------------
+
 * new NumberTypeable base class to allow different representations to be
   delegated to construction
 * everything is now contained in the cdd module
 * code refactored and better organized
 
 Version 1.0.1 (1 August 2010)
+-----------------------------
+
 * minor documentation updates
 * also support the GMPRATIONAL build of cddlib with Python's fractions.Fraction
 * using MPIR so it also builds on Windows
@@ -27,5 +43,6 @@ Version 1.0.1 (1 August 2010)
 * modules are now called cdd (uses float) and cddgmp (uses Fraction)
 
 Version 1.0.0 (21 July 2010)
-* first release, based on cddlib 0.94f
+----------------------------
 
+* first release, based on cddlib 0.94f

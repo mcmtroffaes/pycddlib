@@ -2,7 +2,7 @@
 
 
 # pycddlib is a Python wrapper for Komei Fukuda's cddlib
-# Copyright (c) 2008, Matthias Troffaes
+# Copyright (c) 2008-2012, Matthias C. M. Troffaes
 #
 # This program is free software; you can redistribute it and/or modify
 # it under the terms of the GNU General Public License as published by
@@ -26,7 +26,6 @@ cimport libc.stdlib
 from fractions import Fraction
 
 __version__ = "1.0.4"
-__release__ = __version__ + " (beta)"
 
 # also need time_t
 cdef extern from "time.h":
@@ -247,26 +246,12 @@ cdef int _get_number_type(str number_type) except -1:
             "number type must be 'float' or 'fraction' (got %s)" % repr(number_type))
 
 def get_number_type_from_value(value):
-    """Determine number type from a value.
-
-    :return: ``'fraction'`` if the value is
-        :class:`~fractions.Fraction` or :class:`str`, otherwise
-        ``'float'``.
-    :rtype: :class:`str`
-    """
     if isinstance(value, (Fraction, str)):
         return 'fraction'
     else:
         return 'float'
 
 def get_number_type_from_sequences(*data):
-    """Determine number type from sequences.
-
-    :return: ``'fraction'`` if all elements are
-        :class:`~fractions.Fraction` or :class:`str`, otherwise
-        ``'float'``.
-    :rtype: :class:`str`
-    """
     for row in data:
         for elem in row:
             if not isinstance(elem, (Fraction, str)):
@@ -277,27 +262,6 @@ cdef inline _invalid_number_type(int number_type):
     raise RuntimeError("invalid number type %i" % number_type)
 
 cdef class NumberTypeable:
-    """Base class for any class which admits different numerical
-    representations.
-
-    :param number_type: The number type (``'float'`` or ``'fraction'``).
-    :type number_type: :class:`str`
-
-    >>> x = cdd.NumberTypeable()
-    >>> x.number_type
-    'float'
-    >>> x = cdd.NumberTypeable('float')
-    >>> x.number_type
-    'float'
-    >>> y = cdd.NumberTypeable('fraction') # doctest: +ELLIPSIS
-    >>> y.number_type
-    'fraction'
-    >>> # hyperreals are not supported :-)
-    >>> cdd.NumberTypeable('hyperreal') # doctest: +ELLIPSIS
-    Traceback (most recent call last):
-        ...
-    ValueError: ...
-    """
 
     cdef int _number_type
 
@@ -305,15 +269,6 @@ cdef class NumberTypeable:
         self._number_type = _get_number_type(number_type)
 
     property number_type:
-        """The number type as string.
-
-        >>> cdd.NumberTypeable().number_type
-        'float'
-        >>> cdd.NumberTypeable('float').number_type
-        'float'
-        >>> cdd.NumberTypeable('fraction').number_type
-        'fraction'
-        """
         def __get__(self):
             if self._number_type == FLOAT:
                 return 'float'
@@ -323,15 +278,6 @@ cdef class NumberTypeable:
                 _invalid_number_type(self._number_type)
 
     property NumberType:
-        """The number type as class.
-
-        >>> cdd.NumberTypeable().NumberType
-        <type 'float'>
-        >>> cdd.NumberTypeable('float').NumberType
-        <type 'float'>
-        >>> cdd.NumberTypeable('fraction').NumberType
-        <class 'fractions.Fraction'>
-        """
         def __get__(self):
             if self._number_type == FLOAT:
                 return float
@@ -341,33 +287,6 @@ cdef class NumberTypeable:
                 _invalid_number_type(self._number_type)
 
     def make_number(self, value):
-        """Convert value into a number.
-
-        :param value: The value to convert.
-        :type value: :class:`int`, :class:`float`, or :class:`str`
-        :returns: The converted value.
-        :rtype: :attr:`~cdd.NumberTypeable.NumberType`
-
-        >>> numbers = ['4', '2/3', '1.6', '-9/6', 1.12]
-        >>> nt = cdd.NumberTypeable('float')
-        >>> for number in numbers:
-        ...     x = nt.make_number(number)
-        ...     print(repr(x))
-        4.0
-        0.66666666666666663
-        1.6000000000000001
-        -1.5
-        1.1200000000000001
-        >>> nt = cdd.NumberTypeable('fraction')
-        >>> for number in numbers:
-        ...     x = nt.make_number(number)
-        ...     print(repr(x))
-        Fraction(4, 1)
-        Fraction(2, 3)
-        Fraction(8, 5)
-        Fraction(-3, 2)
-        Fraction(1261007895663739, 1125899906842624)
-        """
         if self._number_type == FLOAT:
             if isinstance(value, str) and '/' in value:
                 numerator, denominator = value.split('/')
@@ -384,33 +303,6 @@ cdef class NumberTypeable:
             _invalid_number_type(self._number_type)
 
     def number_str(self, value):
-        """Convert value into a string.
-
-        :param value: The value.
-        :type value: :attr:`~cdd.NumberTypeable.NumberType`
-        :returns: A string for the value.
-        :rtype: :class:`str`
-
-        >>> numbers = ['4', '2/3', '1.6', '-9/6', 1.12]
-        >>> nt = cdd.NumberTypeable('float')
-        >>> for number in numbers:
-        ...     x = nt.make_number(number)
-        ...     print(nt.number_str(x))
-        4.0
-        0.666666666667
-        1.6
-        -1.5
-        1.12
-        >>> nt = cdd.NumberTypeable('fraction')
-        >>> for number in numbers:
-        ...     x = nt.make_number(number)
-        ...     print(nt.number_str(x))
-        4
-        2/3
-        8/5
-        -3/2
-        1261007895663739/1125899906842624
-        """
         if self._number_type == FLOAT:
             if not isinstance(value, float):
                 raise TypeError(
@@ -427,33 +319,6 @@ cdef class NumberTypeable:
             _invalid_number_type(self._number_type)
 
     def number_repr(self, value):
-        """Return representation string for value.
-
-        :param value: The value.
-        :type value: :attr:`~cdd.NumberTypeable.NumberType`
-        :returns: A string for the value.
-        :rtype: :class:`str`
-
-        >>> numbers = ['4', '2/3', '1.6', '-9/6', 1.12]
-        >>> nt = cdd.NumberTypeable('float')
-        >>> for number in numbers:
-        ...     x = nt.make_number(number)
-        ...     print(nt.number_repr(x))
-        4.0
-        0.66666666666666663
-        1.6000000000000001
-        -1.5
-        1.1200000000000001
-        >>> nt = cdd.NumberTypeable('fraction')
-        >>> for number in numbers:
-        ...     x = nt.make_number(number)
-        ...     print(nt.number_repr(x))
-        4
-        '2/3'
-        '8/5'
-        '-3/2'
-        '1261007895663739/1125899906842624'
-        """
         if self._number_type == FLOAT:
             if not isinstance(value, float):
                 raise TypeError(
@@ -474,34 +339,6 @@ cdef class NumberTypeable:
             _invalid_number_type(self._number_type)
 
     def number_cmp(self, num1, num2=None):
-        """Compare values. Type checking may not be performed, for
-        speed. If *num2* is not specified, then *num1* is compared
-        against zero.
-
-        :param num1: First value.
-        :type num1: :attr:`~cdd.NumberTypeable.NumberType`
-        :param num2: Second value.
-        :type num2: :attr:`~cdd.NumberTypeable.NumberType`
-
-        >>> a = cdd.NumberTypeable('float')
-        >>> a.number_cmp(0.0, 5.0)
-        -1
-        >>> a.number_cmp(5.0, 0.0)
-        1
-        >>> a.number_cmp(5.0, 5.0)
-        0
-        >>> a.number_cmp(1e-30)
-        0
-        >>> a = cdd.NumberTypeable('fraction')
-        >>> a.number_cmp(0, 1)
-        -1
-        >>> a.number_cmp(1, 0)
-        1
-        >>> a.number_cmp(0, 0)
-        0
-        >>> a.number_cmp(a.make_number(1e-30))
-        1
-        """
         cdef double f1, f2, fdiff
         if self._number_type == FLOAT:
             if num2 is not None:
@@ -533,56 +370,21 @@ cdef class NumberTypeable:
 # extension types to wrap the cddlib enums
 
 cdef class AdjacencyTestType:
-    """Adjacency test type.
-
-    .. attribute::
-       COMBINATORIAL
-       ALGEBRAIC
-    """
     COMBINATORIAL = dd_Combinatorial
     ALGEBRAIC     = dd_Algebraic
 
 cdef class NumberType:
-    """Number type.
-
-    .. attribute::
-       UNKNOWN
-       REAL
-       RATIONAL
-       INTEGER
-    """
     UNKNOWN  = dd_Unknown
     REAL     = dd_Real
     RATIONAL = dd_Rational
     INTEGER  = dd_Integer
 
 cdef class RepType:
-    """Type of representation. Use :attr:`INEQUALITY` for
-    H-representation and :attr:`GENERATOR` for V-representation.
-
-    .. attribute::
-       UNSPECIFIED
-       INEQUALITY
-       GENERATOR
-    """
-
     UNSPECIFIED = dd_Unspecified
     INEQUALITY  = dd_Inequality
     GENERATOR   = dd_Generator
 
 cdef class RowOrderType:
-    """The row order.
-
-    .. attribute::
-       MAX_INDEX
-       MIN_INDEX
-       MIN_CUTOFF
-       MAX_CUTOFF
-       MIX_CUTOFF
-       LEX_MIN
-       LEX_MAX
-       RANDOM_ROW
-    """
     MAX_INDEX  = dd_MaxIndex
     MIN_INDEX  = dd_MinIndex
     MIN_CUTOFF = dd_MinCutoff
@@ -593,28 +395,6 @@ cdef class RowOrderType:
     RANDOM_ROW = dd_RandomRow
 
 cdef class Error:
-    """Error constants.
-
-    .. attribute::
-       DIMENSION_TOO_LARGE
-       IMPROPER_INPUT_FORMAT
-       NEGATIVE_MATRIX_SIZE
-       EMPTY_V_REPRESENTATION
-       EMPTY_H_REPRESENTATION
-       EMPTY_REPRESENTATION
-       I_FILE_NOT_FOUND
-       O_FILE_NOT_FOUND
-       NO_LP_OBJECTIVE
-       NO_REAL_NUMBER_SUPPORT
-       NOT_AVAIL_FOR_H
-       NOT_AVAIL_FOR_V
-       CANNOT_HANDLE_LINEARITY
-       ROW_INDEX_OUT_OF_RANGE
-       COL_INDEX_OUT_OF_RANGE
-       LP_CYCLING
-       NUMERICALLY_INCONSISTENT
-       NO_ERROR
-    """
     DIMENSION_TOO_LARGE      = dd_DimensionTooLarge
     IMPROPER_INPUT_FORMAT    = dd_ImproperInputFormat
     NEGATIVE_MATRIX_SIZE     = dd_NegativeMatrixSize
@@ -635,52 +415,20 @@ cdef class Error:
     NO_ERROR                 = dd_NoError
 
 cdef class CompStatus:
-    """Status of computation.
-
-    .. attribute::
-       IN_PROGRESS
-       ALL_FOUND
-       REGION_EMPTY
-    """
     IN_PROGRESS  = dd_InProgress
     ALL_FOUND    = dd_AllFound
     REGION_EMPTY = dd_RegionEmpty
 
 cdef class LPObjType:
-    """Type of objective for a linear program.
-
-    .. attribute::
-       NONE
-       MAX
-       MIN
-    """
     NONE = dd_LPnone
     MAX  = dd_LPmax
     MIN  = dd_LPmin
 
 cdef class LPSolverType:
-    """Type of solver for a linear program.
-
-    .. attribute::
-       CRISS_CROSS
-       DUAL_SIMPLEX
-    """
     CRISS_CROSS  = dd_CrissCross
     DUAL_SIMPLEX = dd_DualSimplex
 
 cdef class LPStatusType:
-    """Status of a linear program.
-
-    .. attribute::
-       UNDECIDED
-       OPTIMAL
-       INCONSISTENT
-       DUAL_INCONSISTENT
-       STRUC_INCONSISTENT
-       STRUC_DUAL_INCONSISTENT
-       UNBOUNDED
-       DUAL_UNBOUNDED
-    """
     UNDECIDED             = dd_LPSundecided
     OPTIMAL               = dd_Optimal
     INCONSISTENT          = dd_Inconsistent
@@ -693,42 +441,6 @@ cdef class LPStatusType:
 # extension classes to wrap matrix, linear program, and polyhedron
 
 cdef class Matrix(NumberTypeable):
-    """A class for working with sets of linear constraints and extreme
-    points.
-
-    Bases: :class:`~cdd.NumberTypeable`
-
-    :param rows: The rows of the matrix. Each element can be an
-        :class:`int`, :class:`float`, :class:`~fractions.Fraction`, or
-        :class:`str`.
-    :type rows: :class:`list` of :class:`list`\ s.
-    :param linear: Whether to add the rows to the
-        :attr:`~cdd.Matrix.lin_set` or not.
-    :type linear: :class:`bool`
-    :param number_type: The number type (``'float'`` or
-        ``'fraction'``). If omitted,
-        :func:`~cdd.get_number_type_from_sequences` is used to
-        determine the number type.
-    :type number_type: :class:`str`
-
-    .. warning::
-
-       With the fraction number type, beware when using floats:
-
-       >>> print(cdd.Matrix([[1.12]], number_type='fraction')[0][0])
-       1261007895663739/1125899906842624
-
-       If the float represents a fraction, it is better to pass it as a
-       string, so it gets automatically converted to its exact fraction
-       representation:
-
-       >>> print(cdd.Matrix([['1.12']])[0][0])
-       28/25
-
-       Of course, for the float number type, both ``1.12`` and
-       ``'1.12'`` will yield the same result, namely the
-       :class:`float` ``1.12``.
-    """
 
     cdef dd_MatrixPtr dd_mat
     cdef ddf_MatrixPtr ddf_mat
@@ -748,25 +460,18 @@ cdef class Matrix(NumberTypeable):
             return self.ddf_mat.colsize
 
     property row_size:
-        """Number of rows."""
         def __get__(self):
             return self._get_row_size()
 
     def __len__(self):
-        """Number of rows."""
         return self._get_row_size()
 
 
     property col_size:
-        """Number of columns."""
         def __get__(self):
             return self._get_col_size()
 
     property lin_set:
-        """A :class:`frozenset` containing the rows of linearity
-        (generators of linearity space for V-representation, and
-        equations for H-representation).
-        """
         def __get__(self):
             if self.dd_mat:
                 return _get_set(self.dd_mat.linset)
@@ -779,7 +484,6 @@ cdef class Matrix(NumberTypeable):
                 _set_set(self.ddf_mat.linset, value)
 
     property rep_type:
-        """Representation (see :class:`~cdd.RepType`)."""
         def __get__(self):
             if self.dd_mat:
                 return self.dd_mat.representation
@@ -792,9 +496,6 @@ cdef class Matrix(NumberTypeable):
                 self.ddf_mat.representation = <ddf_RepresentationType>value
 
     property obj_type:
-        """Linear programming objective: maximize or minimize (see
-        :class:`~cdd.LPObjType`).
-        """
         def __get__(self):
             if self.dd_mat:
                 return self.dd_mat.objective
@@ -807,9 +508,6 @@ cdef class Matrix(NumberTypeable):
                 self.ddf_mat.objective = <ddf_LPObjectiveType>value
 
     property obj_func:
-        """A :class:`tuple` containing the linear programming objective
-        function.
-        """
         def __get__(self):
             # return an immutable tuple to prohibit item assignment
             cdef int colindex
@@ -831,7 +529,6 @@ cdef class Matrix(NumberTypeable):
                     _set_myfloat(self.ddf_mat.rowvec[colindex], value)
 
     def __str__(self):
-        """Print the matrix data."""
         cdef libc.stdio.FILE *pfile
         pfile = _tmpfile()
         if self.dd_mat:
@@ -894,25 +591,12 @@ cdef class Matrix(NumberTypeable):
         self.ddf_mat = NULL
 
     def copy(self):
-        """Make a copy of the matrix and return that copy."""
         if self.dd_mat:
             return _make_dd_matrix(dd_CopyMatrix(self.dd_mat))
         else:
             return _make_ddf_matrix(ddf_CopyMatrix(self.ddf_mat))
 
     def extend(self, rows, linear=False):
-        """Append rows to self (this corresponds to the dd_MatrixAppendTo
-        function in cdd; to emulate the effect of dd_MatrixAppend, first call
-        copy and then call extend on the copy).
-
-        The column size must be equal in the two input matrices. It
-        raises a ValueError if the input rows are not appropriate.
-
-        :param rows: The rows to append.
-        :type rows: :class:`list` of :class:`list`\ s
-        :param linear: Whether to add the rows to the :attr:`~cdd.Matrix.lin_set` or not.
-        :type linear: :class:`bool`
-        """
         cdef Matrix other
         cdef int success
         # create matrix with given rows
@@ -928,12 +612,6 @@ cdef class Matrix(NumberTypeable):
                 "cannot append because column sizes differ")
 
     def __getitem__(self, key):
-        """Return a row, or a slice of rows, of the matrix.
-
-        :param key: The row number, or slice of row numbers, to get.
-        :type key: :class:`int` or :class:`slice`
-        :rtype: :class:`tuple` of :attr:`~cdd.NumberTypeable.NumberType`, or :class:`tuple` of :class:`tuple` of :attr:`~cdd.NumberTypeable.NumberType`
-        """
         cdef dd_rowrange rownum
         cdef dd_rowrange j
         # check if we are slicing
@@ -955,10 +633,6 @@ cdef class Matrix(NumberTypeable):
                               for 0 <= j < self.ddf_mat.colsize])
 
     def canonicalize(self):
-        """Transform to canonical representation by recognizing all
-        implicit linearities and all redundancies. These are returned
-        as a pair of sets of row indices.
-        """
         cdef dd_rowset impl_linset
         cdef dd_rowset redset
         cdef dd_rowindex newpos
@@ -980,35 +654,21 @@ cdef class Matrix(NumberTypeable):
         return result
 
 cdef class LinProg(NumberTypeable):
-    """A class for solving linear programs.
-
-    Bases: :class:`~cdd.NumberTypeable`
-
-    :param mat: The matrix to load the linear program from.
-    :type mat: :class:`~cdd.Matrix`
-    """
 
     cdef dd_LPPtr dd_lp
     cdef ddf_LPPtr ddf_lp
 
     property solver:
-        """The type of solver to use (see :class:`~cdd.LPSolverType`)."""
         def __get__(self):
             return self.dd_lp.solver
 
     property obj_type:
-        """Whether we are minimizing or maximizing (see
-        :class:`~cdd.LPObjType`).
-        """
         def __get__(self):
             return self.dd_lp.objective
         def __set__(self, dd_LPObjectiveType value):
             self.dd_lp.objective = value
 
     property status:
-        """The status of the linear program (see
-        :class:`~cdd.LPStatusType`).
-        """
         def __get__(self):
             if self.dd_lp:
                 return self.dd_lp.LPS
@@ -1016,7 +676,6 @@ cdef class LinProg(NumberTypeable):
                 return self.ddf_lp.LPS
 
     property obj_value:
-        """The optimal value of the objective function."""
         def __get__(self):
             if self.dd_lp:
                 return _get_mytype(self.dd_lp.optvalue)
@@ -1024,7 +683,6 @@ cdef class LinProg(NumberTypeable):
                 return _get_myfloat(self.ddf_lp.optvalue)
 
     property primal_solution:
-        """A :class:`tuple` containing the primal solution."""
         def __get__(self):
             cdef int colindex
             if self.dd_lp:
@@ -1035,7 +693,6 @@ cdef class LinProg(NumberTypeable):
                               for 1 <= colindex < self.ddf_lp.d])
 
     property dual_solution:
-        """A :class:`tuple` containing the dual solution."""
         def __get__(self):
             cdef int colindex
             if self.dd_lp:
@@ -1097,11 +754,6 @@ cdef class LinProg(NumberTypeable):
         self.dd_lp = NULL
 
     def solve(self, dd_LPSolverType solver=dd_DualSimplex):
-        """Solve linear program.
-
-        :param solver: The method of solution (see :class:`~cdd.LPSolverType`).
-        :type solver: :class:`int`
-        """
         cdef dd_ErrorType error = dd_NoError
         if self.dd_lp:
             dd_LPSolve(self.dd_lp, solver, &error)
@@ -1111,19 +763,11 @@ cdef class LinProg(NumberTypeable):
             _raise_error(error, "failed to solve linear program")
 
 cdef class Polyhedron(NumberTypeable):
-    """A class for converting between representations of a polyhedron.
-
-    Bases: :class:`~cdd.NumberTypeable`
-
-    :param mat: The matrix to load the polyhedron from.
-    :type mat: :class:`~cdd.Matrix`
-    """
 
     cdef dd_PolyhedraPtr dd_poly
     cdef ddf_PolyhedraPtr ddf_poly
 
     property rep_type:
-        """Representation (see :class:`~cdd.RepType`)."""
         def __get__(self):
             if self.dd_poly:
                 return self.dd_poly.representation
@@ -1180,22 +824,12 @@ cdef class Polyhedron(NumberTypeable):
         self.ddf_poly = NULL
 
     def get_inequalities(self):
-        """Get all inequalities.
-
-        :returns: H-representation.
-        :rtype: :class:`~cdd.Matrix`
-        """
         if self.dd_poly:
             return _make_dd_matrix(dd_CopyInequalities(self.dd_poly))
         else:
             return _make_ddf_matrix(ddf_CopyInequalities(self.ddf_poly))
 
     def get_generators(self):
-        """Get all generators.
-
-        :returns: V-representation.
-        :rtype: :class:`~cdd.Matrix`
-        """
         if self.dd_poly:
             return _make_dd_matrix(dd_CopyGenerators(self.dd_poly))
         else:

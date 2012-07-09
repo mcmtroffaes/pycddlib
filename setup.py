@@ -132,7 +132,7 @@ setup(
     version = version,
     ext_modules= [
         Extension("cdd",
-                  ["cdd.pyx"] + cddgmp_sources,
+                  ["cdd.pyx" if USE_CYTHON else "cdd.c"] + cddgmp_sources,
                   include_dirs = [cdd_dir, cddgmp_dir],
                   depends=cddgmp_headers,
                   define_macros = define_macros,

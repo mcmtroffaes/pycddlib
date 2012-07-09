@@ -6,16 +6,20 @@ The simplest way to install pycddlib, is to `download <http://pypi.python.org/py
 Building From Source
 ~~~~~~~~~~~~~~~~~~~~
 
-MPIR
-''''
+MPIR/GMP
+''''''''
 
-To compile pycddlib on Windows, you need `MPIR <http://www.mpir.org/>`_. Download the latest MPIR source tarball (decompress the ``mpir-x.x.x.tar.bz2`` file with `7-Zip <http://www.7-zip.org/>`_), and follow the instructions in :file:`mpir-x.x.x\\build.vc9\\readme.txt`. [#vc9]_ For pycddlib, you only need to build the **lib_mpir_gc** project. Once built, go to the :file:`build.vc9\\lib\\win32\\release` folder, and copy :file:`mpir.h` to::
+To compile pycddlib on Windows, you need `MPIR <http://www.mpir.org/>`_. Download the latest MPIR source tarball (decompress the ``mpir-x.x.x.tar.bz2`` file with `7-Zip <http://www.7-zip.org/>`_), and run :file:`configure.bat` and :file:`make.bat` from the :file:`mpir-x.x.x\\win` folder. [#vc9]_ Once built, go to the :file:`mpir-x.x.x` folder, and copy :file:`mpir.h` and :file:`mpirxx.h` to::
 
     C:\Program Files (x86)\Microsoft Visual Studio 9.0\VC\include
 
-and :file:`mpir.lib` and :file:`mpir.pdb` to::
+and :file:`mpir.lib` and :file:`mpirxx.lib` to either (for a 32-bit build)::
 
     C:\Program Files (x86)\Microsoft Visual Studio 9.0\VC\lib
+
+or (for a 64-bit build)::
+
+    C:\Program Files (x86)\Microsoft Visual Studio 9.0\VC\lib\amd64
 
 On Linux, you need `GMP <http://gmplib.org/>`_ (although you can also use MPIR if you desire so, by tweaking the ``setup.py`` file). Your distribution probably has a pre-built package for it. For example, on Fedora, install it by running::
 
@@ -48,4 +52,4 @@ Then simply run the :file:`build.sh` script: this will build the library, instal
 
 .. [#vc9]
 
-   When compiling extension modules, it is easiest to use same compiler that was used to compile Python. For Python 2.6, 2.7, 3.0, and 3.1, this is Microsoft Visual C/C++ 2008 (the `express edition <http://download.microsoft.com/download/A/5/4/A54BADB6-9C3F-478D-8657-93B3FC9FE62D/vcsetup.exe>`_ will do just fine).
+   When compiling extension modules, it is easiest to use same compiler that was used to compile Python. For Python 2.6, 2.7, 3.0, 3.1, and 3.2, this is Microsoft Visual C/C++ 2008 (the `express edition <http://download.microsoft.com/download/A/5/4/A54BADB6-9C3F-478D-8657-93B3FC9FE62D/vcsetup.exe>`_ will do just fine).
