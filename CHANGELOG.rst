@@ -1,13 +1,16 @@
-Version 1.0.4 (in development)
-------------------------------
+Version 1.0.4 (9 July 2012)
+---------------------------
 
 * updated for Cython 0.16
 * updated for cddlib 0.94g
+* updated for MPIR 2.5.1
 * various fixes in documentation
 * building the documentation no longer requires cdd to be installed
 * documentation hosted on readthedocs.org
 * development model uses gitflow
 * build script uses virtualenv
+* workaround for Microsoft tmpfile bug on Vista/Win7 (reported by Lorenzo
+  Di Gregorio)
 
 Version 1.0.3 (24 August 2010)
 ------------------------------

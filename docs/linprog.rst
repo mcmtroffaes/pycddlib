@@ -124,8 +124,8 @@ This is the testlp2.c example that comes with cddlib.
 >>> print(mat) # doctest: +NORMALIZE_WHITESPACE
 begin
  4 3 real
- 1.333333333E+00 -2 -1
- 6.666666667E-01 0 -1
+ 1.333333333E+000 -2 -1
+ 6.666666667E-001 0 -1
  0 1 0
  0 0 1
 end
