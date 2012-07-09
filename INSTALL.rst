@@ -9,13 +9,17 @@ Building From Source
 MPIR/GMP
 ''''''''
 
-To compile pycddlib on Windows, you need `MPIR <http://www.mpir.org/>`_. Download the latest MPIR source tarball (decompress the ``mpir-x.x.x.tar.bz2`` file with `7-Zip <http://www.7-zip.org/>`_), and follow the instructions in :file:`mpir-x.x.x\\build.vc9\\readme.txt`. [#vc9]_ For pycddlib, you only need to build the **lib_mpir_gc** project. Once built, go to the :file:`build.vc9\\lib\\win32\\release` folder, and copy :file:`mpir.h` to::
+To compile pycddlib on Windows, you need `MPIR <http://www.mpir.org/>`_. Download the latest MPIR source tarball (decompress the ``mpir-x.x.x.tar.bz2`` file with `7-Zip <http://www.7-zip.org/>`_), and run :file:`configure.bat` and :file:`make.bat` from the :file:`mpir-x.x.x\\win` folder. [#vc9]_ Once built, go to the :file:`mpir-x.x.x` folder, and copy :file:`mpir.h` and :file:`mpirxx.h` to::
 
     C:\Program Files (x86)\Microsoft Visual Studio 9.0\VC\include
 
-and :file:`mpir.lib` and :file:`mpir.pdb` to::
+and :file:`mpir.lib` and :file:`mpirxx.lib` to either (for a 32-bit build)::
 
     C:\Program Files (x86)\Microsoft Visual Studio 9.0\VC\lib
+
+or (for a 64-bit build)::
+
+    C:\Program Files (x86)\Microsoft Visual Studio 9.0\VC\lib\amd64
 
 On Linux, you need `GMP <http://gmplib.org/>`_ (although you can also use MPIR if you desire so, by tweaking the ``setup.py`` file). Your distribution probably has a pre-built package for it. For example, on Fedora, install it by running::
 
