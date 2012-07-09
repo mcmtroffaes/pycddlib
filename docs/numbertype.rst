@@ -92,7 +92,7 @@ Numerical Representations
         ...     x = nt.make_number(number)
         ...     print(nt.number_str(x))
         4.0
-        0.666666666667
+        0.6666666666666666
         1.6
         -1.5
         1.12
