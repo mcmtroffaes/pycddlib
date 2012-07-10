@@ -30,12 +30,12 @@ pycddlib
 
 Once MPIR/GMP is installed, `download <http://pypi.python.org/pypi/pycddlib/#downloads>`_ and extract the source ``.zip``. On Windows, start the MSVC command line, and run the setup script from within the extracted folder::
 
-    cd ....\pycddlib-x.x.x
+    cd ..\pycddlib-x.x.x
     C:\PythonXX\python.exe setup.py install
 
 On Linux, start a terminal and run::
 
-    cd ..../pycddlib-x.x.x
+    cd ../pycddlib-x.x.x
     python setup.py build
     su -c 'python setup.py install'
 
