@@ -2,7 +2,7 @@
 #
 # usage:
 #
-#   ./build-fedora.sh <interpreter> <virtualenv-relative-path>
+#   ./build-fedora.sh <interpreter> <virtualenv-path>
 #
 # for example:
 #
@@ -23,6 +23,7 @@ then
 else
    ENVPATH=$2
 fi
+ENVPATH=`cd $ENVPATH; pwd` # absolute path
 PYTHON=$ENVPATH/bin/python
 PIP=$ENVPATH/bin/pip
 SPHINXBUILD=$ENVPATH/bin/sphinx-build
@@ -36,10 +37,10 @@ $PIP install Sphinx &&
 $PYTHON setup.py build &&
 $PYTHON setup.py install &&
 pushd docs &&
-make SPHINXBUILD=../$SPHINXBUILD clean &&
-make SPHINXBUILD=../$SPHINXBUILD html &&
-make SPHINXBUILD=../$SPHINXBUILD latexpdf &&
-make SPHINXBUILD=../$SPHINXBUILD doctest &&
+make SPHINXBUILD=$SPHINXBUILD clean &&
+make SPHINXBUILD=$SPHINXBUILD html &&
+make SPHINXBUILD=$SPHINXBUILD latexpdf &&
+make SPHINXBUILD=$SPHINXBUILD doctest &&
 popd &&
 $PYTHON setup.py sdist --formats=zip
 
