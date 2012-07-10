@@ -1,8 +1,9 @@
 include COPYING
 include README.rst
-include CHANGELOG
+include CHANGELOG.rst
 include AUTHORS
 include INSTALL.rst
+include LICENSE.rst
 include cddlib/COPYING
 include cddlib/README
 include cddlib/AUTHORS
