@@ -52,4 +52,4 @@ Then simply run the :file:`build.sh` script: this will build the library, instal
 
 .. [#vc9]
 
-   When compiling extension modules, it is easiest to use same compiler that was used to compile Python. For Python 2.6, 2.7, 3.0, 3.1, and 3.2, this is Microsoft Visual C/C++ 2008 (the `express edition <http://download.microsoft.com/download/A/5/4/A54BADB6-9C3F-478D-8657-93B3FC9FE62D/vcsetup.exe>`_ will do just fine).
+   When compiling extension modules, use same compiler that was used to compile Python. For Python 2.6, 2.7, 3.0, 3.1, and 3.2, this is Microsoft Visual C/C++ 2008 (the `express edition <http://download.microsoft.com/download/A/5/4/A54BADB6-9C3F-478D-8657-93B3FC9FE62D/vcsetup.exe>`_ will do just fine). For Python 3.3, use Microsoft Visual C/C++ 2010 (again, the `express edition <http://download.microsoft.com/download/1/D/9/1D9A6C0E-FC89-43EE-9658-B9F0E3A76983/vc_web.exe>`_ suffices).
