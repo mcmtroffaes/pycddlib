@@ -164,10 +164,10 @@ end
 V-representation
 begin
  4 3 real
- 1 2.333333333E+000 -1
+ 1 2.333333333E+00 -1
  1 -1 -1
- 1 -1 2.333333333E+000
- 1 2.333333333E+000 2.333333333E+000
+ 1 -1 2.333333333E+00
+ 1 2.333333333E+00 2.333333333E+00
 end
 >>> # add an equality and an inequality
 >>> mat.extend([[7, 1, -3]], linear=True)
@@ -189,5 +189,5 @@ V-representation
 begin
  2 3 real
  1 -1 2
- 1 0 2.333333333E+000
+ 1 0 2.333333333E+00
 end

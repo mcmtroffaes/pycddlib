@@ -61,9 +61,9 @@ Numerical Representations
         >>> nt = cdd.NumberTypeable('float')
         >>> for number in numbers:
         ...     x = nt.make_number(number)
-        ...     print(repr(x))
+        ...     print(repr(x)) # doctest: +ELLIPSIS
         4.0
-        0.6666666666666666
+        0.666666666...
         1.6
         -1.5
         1.12
@@ -90,9 +90,9 @@ Numerical Representations
         >>> nt = cdd.NumberTypeable('float')
         >>> for number in numbers:
         ...     x = nt.make_number(number)
-        ...     print(nt.number_str(x))
+        ...     print(nt.number_str(x)) # doctest: +ELLIPSIS
         4.0
-        0.6666666666666666
+        0.666666666...
         1.6
         -1.5
         1.12
@@ -180,9 +180,10 @@ Numerical Representations
 
         The number type as class.
 
+        >>> pass # doctest: +ELLIPSIS
         >>> cdd.NumberTypeable().NumberType
-        <class 'float'>
+        <... 'float'>
         >>> cdd.NumberTypeable('float').NumberType
-        <class 'float'>
+        <... 'float'>
         >>> cdd.NumberTypeable('fraction').NumberType
-        <class 'fractions.Fraction'>
+        <... 'fractions.Fraction'>
