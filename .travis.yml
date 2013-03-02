@@ -1,0 +1,13 @@
+language: python
+python:
+  - "3.3"
+  - "3.2"
+  - "2.7"
+  - "2.6"
+install:
+  - "pip install Cython --use-mirrors"
+  - "pip install . --use-mirrors"
+script:
+  - "cd docs"
+  - "make doctest"
+
