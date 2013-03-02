@@ -64,9 +64,9 @@ Numerical Representations
         ...     print(repr(x)) # doctest: +ELLIPSIS
         4.0
         0.666666666...
-        1.6
+        1.6...
         -1.5
-        1.12
+        1.12...
         >>> nt = cdd.NumberTypeable('fraction')
         >>> for number in numbers:
         ...     x = nt.make_number(number)
@@ -121,10 +121,10 @@ Numerical Representations
         ...     x = nt.make_number(number)
         ...     print(nt.number_repr(x))
         4.0
-        0.6666666666666666
-        1.6
+        0.666666666...
+        1.6...
         -1.5
-        1.12
+        1.12...
         >>> nt = cdd.NumberTypeable('fraction')
         >>> for number in numbers:
         ...     x = nt.make_number(number)
