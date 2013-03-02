@@ -9,6 +9,7 @@ before_install:
   - "sudo apt-get install -qq libgmp-dev"
 install:
   - "pip install Cython --use-mirrors"
+  - "pip install Sphinx --use-mirrors"
   - "pip install . --use-mirrors"
 script:
   - "cd docs"
