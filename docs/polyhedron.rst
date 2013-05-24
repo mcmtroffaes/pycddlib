@@ -37,6 +37,11 @@ Methods and Attributes
 
         Representation (see :class:`~cdd.RepType`).
 
+.. note::
+
+    The H-representation and/or V-representation are not guaranteed to
+    be minimal, that is, they can still contain redundancy.
+
 Examples
 --------
 
