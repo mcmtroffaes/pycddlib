@@ -33,21 +33,6 @@ Numerical Representations
     :param number_type: The number type (``'float'`` or ``'fraction'``).
     :type number_type: :class:`str`
 
-    >>> x = cdd.NumberTypeable()
-    >>> x.number_type
-    'float'
-    >>> x = cdd.NumberTypeable('float')
-    >>> x.number_type
-    'float'
-    >>> y = cdd.NumberTypeable('fraction') # doctest: +ELLIPSIS
-    >>> y.number_type
-    'fraction'
-    >>> # hyperreals are not supported :-)
-    >>> cdd.NumberTypeable('hyperreal') # doctest: +ELLIPSIS
-    Traceback (most recent call last):
-        ...
-    ValueError: ...
-
 .. method:: NumberTypeable.make_number(value)
 
         Convert value into a number.
