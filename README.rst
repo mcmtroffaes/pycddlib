@@ -17,4 +17,8 @@ linear function over a polyhedron.
 
 * Documentation: http://pycddlib.readthedocs.org/
 
-* Development: http://github.com/mcmtroffaes/pycddlib/
+* Development: http://github.com/mcmtroffaes/pycddlib/ |imagetravis|
+
+.. |imagetravis| image:: https://travis-ci.org/mcmtroffaes/pycddlib.png?branch=develop
+       :target: https://travis-ci.org/mcmtroffaes/pycddlib
+       :alt: travis-ci
