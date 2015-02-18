@@ -1,3 +1,9 @@
+Version 1.0.5 (in development)
+------------------------------
+
+* drop Python 3.2 support
+* add Python 3.4 support
+
 Version 1.0.4 (9 July 2012)
 ---------------------------
 
