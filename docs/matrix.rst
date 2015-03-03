@@ -181,9 +181,15 @@ end
 Canonicalizing:
 
 >>> mat = cdd.Matrix([[2, 1, 2, 3], [0, 1, 2, 3], [3, 0, 1, 2], [0, -2, -4, -6]], number_type='fraction')
+>>> mat.canonicalize()  # oops... must specify rep_type!
+Traceback (most recent call last):
+    ...
+ValueError: rep_type unspecified
+>>> mat.rep_type = cdd.RepType.INEQUALITY
 >>> mat.canonicalize()
 (frozenset(...1, 3...), frozenset(...0...))
 >>> print(mat)
+H-representation
 linearity 1  1
 begin
  2 4 rational
@@ -258,9 +264,15 @@ end
 Canonicalizing:
 
 >>> mat = cdd.Matrix([[2, 1, 2, 3], [0, 1, 2, 3], [3, 0, 1, 2], [0, -2, -4, -6]])
+>>> mat.canonicalize()  # oops... must specify rep_type!
+Traceback (most recent call last):
+    ...
+ValueError: rep_type unspecified
+>>> mat.rep_type = cdd.RepType.INEQUALITY
 >>> mat.canonicalize()
 (frozenset(...1, 3...), frozenset(...0...))
 >>> print(mat) # doctest: +NORMALIZE_WHITESPACE
+H-representation
 linearity 1  1
 begin
  2 4 real

@@ -3,6 +3,10 @@ Version 1.0.5 (in development)
 
 * drop Python 3.2 support
 * add Python 3.4 support
+* Matrix.canonicalize now requires rep_type to be specified; you can
+  get back the old behaviour by setting rep_type to
+  cdd.RepType.INEQUALITY before calling canonicalize (reported by
+  Stéphane Caron, fixes issue #4).
 
 Version 1.0.4 (9 July 2012)
 ---------------------------

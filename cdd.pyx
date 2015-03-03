@@ -639,6 +639,8 @@ cdef class Matrix(NumberTypeable):
         cdef dd_ErrorType error = dd_NoError
         cdef int m
         cdef dd_boolean success
+        if self.rep_type == dd_Unspecified:
+            raise ValueError("rep_type unspecified")
         if self.dd_mat:
             m = self.dd_mat.rowsize
             success = dd_MatrixCanonicalize(&self.dd_mat, &impl_linset, &redset, &newpos, &error)
