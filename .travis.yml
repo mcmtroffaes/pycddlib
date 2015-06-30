@@ -10,7 +10,7 @@ before_install:
 install:
   - "pip install Cython"
   - "pip install Sphinx"
-    "pip install nose"
+  - "pip install nose"
   - "pip install ."
 script:
     "nosetests"
