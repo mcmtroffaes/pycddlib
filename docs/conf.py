@@ -41,7 +41,7 @@ master_doc = 'index'
 
 # General information about the project.
 project = 'pycddlib'
-copyright = '2008-2012, Matthias C. M. Troffaes'
+copyright = '2008-2015, Matthias C. M. Troffaes'
 
 # The version info for the project you're documenting, acts as replacement for
 # |version| and |release|, also used in various other places throughout the
