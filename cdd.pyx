@@ -804,14 +804,16 @@ cdef class Polyhedron(NumberTypeable):
         if mat.dd_mat:
             self.dd_poly = dd_DDMatrix2Poly(mat.dd_mat, &error)
             if self.dd_poly == NULL or error != dd_NoError:
-                if self.dd_poly != NULL:
-                    dd_FreePolyhedra(self.dd_poly)
+                # Do not clean up data: see issue #7.
+                #if self.dd_poly != NULL:
+                #    dd_FreePolyhedra(self.dd_poly)
                 _raise_error(error, "failed to load polyhedra")
         else:
             self.ddf_poly = ddf_DDMatrix2Poly(mat.ddf_mat, <ddf_ErrorType *>(&error))
             if self.ddf_poly == NULL or error != dd_NoError:
-                if self.ddf_poly != NULL:
-                    ddf_FreePolyhedra(self.ddf_poly)
+                # Do not clean up data: see issue #7.
+                #if self.ddf_poly != NULL:
+                #    ddf_FreePolyhedra(self.ddf_poly)
                 _raise_error(error, "failed to load polyhedra")
         # debug
         #dd_WritePolyFile(stdout, self.dd_poly)
