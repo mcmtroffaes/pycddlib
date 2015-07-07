@@ -31,6 +31,11 @@ environment:
 #      PYTHON_ARCH: "64"
 
 install:
+  - "SET PATH=%PYTHON%;%PYTHON%\\Scripts;%PATH%"
+  - "python --version"
+  - "python -c \"import struct; print(struct.calcsize('P') * 8)\""
+  - "dir %PYTHON%\\Scripts"
+  - "%CMD_IN_ENV% sphinx-build -h"
   - "git submodule update --init --recursive"
   # remove cddlib symlinks: they interfere with the build
   - del "cddlib\\lib-src-gmp\\cdd.h"
@@ -44,9 +49,6 @@ install:
   - del "cddlib\\lib-src-gmp\\cddtypes.h"
   - del "cddlib\\lib-src-gmp\\setoper.c"
   - del "cddlib\\lib-src-gmp\\setoper.h"
-  - "SET PATH=%PYTHON%;%PYTHON%\\Scripts;%PATH%"
-  - "python --version"
-  - "python -c \"import struct; print(struct.calcsize('P') * 8)\""
   - "appveyor DownloadFile http://mpir.org/mpir-2.7.0.zip"
   - "7z x mpir-2.7.0.zip > NUL"
   - "%CMD_IN_ENV% msbuild mpir-2.7.0/build.vc10/lib_mpir_gc/lib_mpir_gc.vcxproj /p:Configuration=Release /p:PlatformToolset=v100 /verbosity:minimal"
