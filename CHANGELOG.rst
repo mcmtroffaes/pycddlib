@@ -7,6 +7,7 @@ Version 1.0.5 (in development)
   get back the old behaviour by setting rep_type to
   cdd.RepType.INEQUALITY before calling canonicalize (reported by
   Stéphane Caron, fixes issue #4).
+* updated for cddlib 0.94h
 
 Version 1.0.4 (9 July 2012)
 ---------------------------
