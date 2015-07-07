@@ -51,7 +51,7 @@ install:
   - "7z x mpir-2.7.0.zip > NUL"
   - "%CMD_IN_ENV% msbuild mpir-2.7.0/build.vc10/lib_mpir_gc/lib_mpir_gc.vcxproj /p:Configuration=Release /p:PlatformToolset=v100 /verbosity:minimal"
   - "%CMD_IN_ENV% pip install --install-option=\"--no-cython-compile\" Cython"
-  - "%CMD_IN_ENV% pip install Sphinx nose"
+  - "%CMD_IN_ENV% pip install Sphinx nose wheel"
   - "%CMD_IN_ENV% python setup.py build build_ext -Impir-2.7.0/lib/Win32/Release/ -Lmpir-2.7.0/build.vc10/lib_mpir_gc/Win32/Release/"
   - "%CMD_IN_ENV% python setup.py bdist_wheel"
   - ps: "ls dist"
