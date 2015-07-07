@@ -31,21 +31,15 @@ environment:
 #      PYTHON_ARCH: "64"
 
 install:
-  - ps: "ls"
   - "git submodule update --init --recursive"
-  - ps: "ls"
   - "SET PATH=%PYTHON%;%PYTHON%\\Scripts;%PATH%"
   - "python --version"
   - "python -c \"import struct; print(struct.calcsize('P') * 8)\""
   - "appveyor DownloadFile http://mpir.org/mpir-2.7.0.zip"
   - "7z x mpir-2.7.0.zip"
   - "%CMD_IN_ENV% msbuild mpir-2.7.0/build.vc10/lib_mpir_gc/lib_mpir_gc.vcxproj /p:Configuration=Release /p:PlatformToolset=v100"
-  - ps: "ls mpir-2.7.0/lib/Win32/Release"
-  - ps: "ls mpir-2.7.0/build.vc10/lib_mpir_gc/Win32/Release"
-  - "copy mpir-2.7.0\\build.vc10\\lib_mpir_gc\\Win32\\Release\\mpir.lib ."
-  - "copy mpir-2.7.0\\lib\\Win32\\Release\\mpir.h ."
   - "%CMD_IN_ENV% pip install Cython Sphinx nose"
-  - "%CMD_IN_ENV% python setup.py build build_ext -I. -L."
+  - "%CMD_IN_ENV% python setup.py build build_ext -Impir-2.7.0/lib/Win32/Release/ -Lmpir-2.7.0/build.vc10/lib_mpir_gc/Win32/Release/"
   - "%CMD_IN_ENV% python setup.py install"
 
 build: false
