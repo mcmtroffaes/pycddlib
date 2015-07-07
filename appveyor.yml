@@ -63,7 +63,7 @@ build: false
 
 test_script:
   - "cd docs"
-  - "%CMD_IN_ENV% sphinx-build -b doctest -d _build\\doctrees   . _build\\doctest
+  - "%CMD_IN_ENV% sphinx-build -b doctest -d _build\\doctrees   . _build\\doctest"
   - "cd .."
   - "%CMD_IN_ENV% nosetests"
 
