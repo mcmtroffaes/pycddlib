@@ -42,7 +42,8 @@ install:
   - "copy mpir-2.7.0\\build.vc10\\lib_mpir_gc\\Win32\\Release\\mpir.lib ."
   - "copy mpir-2.7.0\\lib\\Win32\\Release\\mpir.h ."
   - "%CMD_IN_ENV% pip install Cython Sphinx nose"
-  - "%CMD_IN_ENV% pip install ."
+  - "%CMD_IN_ENV% python setup.py build build_ext -I. -L."
+  - "%CMD_IN_ENV% python setup.py install"
 
 build: false
 
