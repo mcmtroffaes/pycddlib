@@ -53,19 +53,19 @@ install:
   - "%CMD_IN_ENV% pip install --install-option=\"--no-cython-compile\" Cython"
   - "%CMD_IN_ENV% pip install Sphinx nose"
   - "%CMD_IN_ENV% python setup.py build build_ext -Impir-2.7.0/lib/Win32/Release/ -Lmpir-2.7.0/build.vc10/lib_mpir_gc/Win32/Release/"
-  - "%CMD_IN_ENV% python setup.py install"
+  - "%CMD_IN_ENV% python setup.py bdist_wheel"
+  - ps: "ls dist"
+  - "cd dist"
+  - "pip install *.whl"
+  - "cd .."
 
 build: false
 
 test_script:
   - "cd docs"
-  - "%CMD_IN_ENV% make doctest"
+  - "%CMD_IN_ENV% sphinx-build -b doctest -d _build\\doctrees   . _build\\doctest
   - "cd .."
   - "%CMD_IN_ENV% nosetests"
-
-after_test:
-  - "%CMD_IN_ENV% python setup.py bdist_wheel sdist"
-  - ps: "ls dist"
 
 artifacts:
   - path: dist\*
