@@ -32,8 +32,7 @@ environment:
 
 install:
   - "git submodule update --init --recursive"
-  # remove symlinks!!!
-  - ps: "ls cddlib/lib-src-gmp"
+  # remove cddlib symlinks: they interfere with the build
   - del "cddlib\\lib-src-gmp\\cdd.h"
   - del "cddlib\\lib-src-gmp\\cddcore.c"
   - del "cddlib\\lib-src-gmp\\cddio.c"
