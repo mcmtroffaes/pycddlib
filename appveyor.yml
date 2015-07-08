@@ -63,6 +63,7 @@ build: false
 
 test_script:
   - "cd docs"
+  - "dir %PYTHON%\\Scripts"
   - "%CMD_IN_ENV% %PYTHON%\\Scripts\\sphinx-build -h"
   - "%CMD_IN_ENV% %PYTHON%\\Scripts\\sphinx-build -b doctest . _doctest"
   - "cd ..\\test"
