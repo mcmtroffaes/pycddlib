@@ -62,12 +62,8 @@ install:
 build: false
 
 test_script:
-  - "cd docs"
-  #- "%CMD_IN_ENV% %PYTHON%\\Scripts\\sphinx-build -h"
-  #- "%CMD_IN_ENV% %PYTHON%\\Scripts\\sphinx-build -b doctest . _doctest"
-  - "cd ..\\test"
-  - "dir"
-  - "%CMD_IN_ENV% python -m nose"
+  - "%CMD_IN_ENV% sphinx-build -b doctest docs/ docs/_doctest"
+  - "%CMD_IN_ENV% nosetests -w test"
 
 artifacts:
   - path: dist\*
