@@ -67,7 +67,7 @@ test_script:
   #- "%CMD_IN_ENV% %PYTHON%\\Scripts\\sphinx-build -h"
   #- "%CMD_IN_ENV% %PYTHON%\\Scripts\\sphinx-build -b doctest . _doctest"
   - "cd ..\\test"
-  - "%CMD_IN_ENV% %PYTHON%\\Scripts\\nosetests"
+  - "%CMD_IN_ENV% %PYTHON%\\Scripts\\nosetests.exe"
 
 artifacts:
   - path: dist\*
