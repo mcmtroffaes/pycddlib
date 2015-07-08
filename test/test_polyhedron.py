@@ -1,7 +1,7 @@
 import cdd
 import nose
 from fractions import Fraction
-from test_matrix import assert_almost_equal
+from test_matrix import assert_matrix_almost_equal
 
 def _test_sampleh1(number_type=None, assert_matrix_equal=None):
     mat = cdd.Matrix([[2,-1,-1,0],[0,1,0,0],[0,0,1,0]],
@@ -46,10 +46,10 @@ def test_fraction_sampleh1():
     _test_sampleh1('fraction', nose.tools.assert_equal)
 
 def test_float_sampleh1():
-    _test_sampleh1('float', assert_almost_equal)
+    _test_sampleh1('float', assert_matrix_almost_equal)
 
 def test_fraction_testcdd2():
     _test_testcdd2('fraction', nose.tools.assert_equal)
 
 def test_float_testcdd2():
-    _test_testcdd2('float', assert_almost_equal)
+    _test_testcdd2('float', assert_matrix_almost_equal)
