@@ -33,21 +33,6 @@ Numerical Representations
     :param number_type: The number type (``'float'`` or ``'fraction'``).
     :type number_type: :class:`str`
 
-    >>> x = cdd.NumberTypeable()
-    >>> x.number_type
-    'float'
-    >>> x = cdd.NumberTypeable('float')
-    >>> x.number_type
-    'float'
-    >>> y = cdd.NumberTypeable('fraction') # doctest: +ELLIPSIS
-    >>> y.number_type
-    'fraction'
-    >>> # hyperreals are not supported :-)
-    >>> cdd.NumberTypeable('hyperreal') # doctest: +ELLIPSIS
-    Traceback (most recent call last):
-        ...
-    ValueError: ...
-
 .. method:: NumberTypeable.make_number(value)
 
         Convert value into a number.
@@ -59,23 +44,11 @@ Numerical Representations
 
         >>> numbers = ['4', '2/3', '1.6', '-9/6', 1.12]
         >>> nt = cdd.NumberTypeable('float')
-        >>> for number in numbers:
-        ...     x = nt.make_number(number)
-        ...     print(repr(x)) # doctest: +ELLIPSIS
-        4.0
+        >>> print(repr(nt.make_number('2/3'))) # doctest: +ELLIPSIS
         0.666666666...
-        1.6...
-        -1.5
-        1.12...
         >>> nt = cdd.NumberTypeable('fraction')
-        >>> for number in numbers:
-        ...     x = nt.make_number(number)
-        ...     print(repr(x))
-        Fraction(4, 1)
+        >>> print(repr(nt.make_number('2/3'))) # doctest: +ELLIPSIS
         Fraction(2, 3)
-        Fraction(8, 5)
-        Fraction(-3, 2)
-        Fraction(1261007895663739, 1125899906842624)
 
 .. method:: NumberTypeable.number_str(value)
 

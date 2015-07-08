@@ -1,0 +1,69 @@
+environment:
+  global:
+    # SDK v7.0 MSVC Express 2008's SetEnv.cmd script will fail if the
+    # /E:ON and /V:ON options are not enabled in the batch script intepreter
+    # See: http://stackoverflow.com/a/13751649/163740
+    CMD_IN_ENV: "cmd /E:ON /V:ON /C .\\appveyor\\run_with_env.cmd"
+
+  matrix:
+#    - PYTHON: "C:\\Python27"
+#      PYTHON_VERSION: "2.7.x"
+#      PYTHON_ARCH: "32"
+#
+#    - PYTHON: "C:\\Python27-x64"
+#      PYTHON_VERSION: "2.7.x"
+#      PYTHON_ARCH: "64"
+#
+#    - PYTHON: "C:\\Python33"
+#      PYTHON_VERSION: "3.3.x"
+#      PYTHON_ARCH: "32"
+#
+#    - PYTHON: "C:\\Python33-x64"
+#      PYTHON_VERSION: "3.3.x"
+#      PYTHON_ARCH: "64"
+#
+    - PYTHON: "C:\\Python34"
+      PYTHON_VERSION: "3.4.x"
+      PYTHON_ARCH: "32"
+
+#    - PYTHON: "C:\\Python34-x64"
+#      PYTHON_VERSION: "3.4.x"
+#      PYTHON_ARCH: "64"
+
+install:
+  - "git submodule update --init --recursive"
+  # remove cddlib symlinks: they interfere with the build
+  - del "cddlib\\lib-src-gmp\\cdd.h"
+  - del "cddlib\\lib-src-gmp\\cddcore.c"
+  - del "cddlib\\lib-src-gmp\\cddio.c"
+  - del "cddlib\\lib-src-gmp\\cddlib.c"
+  - del "cddlib\\lib-src-gmp\\cddlp.c"
+  - del "cddlib\\lib-src-gmp\\cddmp.c"
+  - del "cddlib\\lib-src-gmp\\cddmp.h"
+  - del "cddlib\\lib-src-gmp\\cddproj.c"
+  - del "cddlib\\lib-src-gmp\\cddtypes.h"
+  - del "cddlib\\lib-src-gmp\\setoper.c"
+  - del "cddlib\\lib-src-gmp\\setoper.h"
+  - "SET PATH=%PYTHON%;%PYTHON%\\Scripts;%PATH%"
+  - "python --version"
+  - "python -c \"import struct; print(struct.calcsize('P') * 8)\""
+  - "appveyor DownloadFile http://mpir.org/mpir-2.7.0.zip"
+  - "7z x mpir-2.7.0.zip > NUL"
+  - "%CMD_IN_ENV% msbuild mpir-2.7.0/build.vc10/lib_mpir_gc/lib_mpir_gc.vcxproj /p:Configuration=Release /p:PlatformToolset=v100 /verbosity:minimal"
+  - "%CMD_IN_ENV% pip install --install-option=\"--no-cython-compile\" Cython"
+  - "%CMD_IN_ENV% pip install Sphinx nose wheel"
+  - "%CMD_IN_ENV% python setup.py build build_ext -Impir-2.7.0/lib/Win32/Release/ -Lmpir-2.7.0/build.vc10/lib_mpir_gc/Win32/Release/"
+  - "%CMD_IN_ENV% python setup.py bdist_wheel"
+  - ps: "ls dist"
+  - "cd dist"
+  - "pip install --pre --no-index --find-links=. pycddlib"
+  - "cd .."
+
+build: false
+
+test_script:
+  - "%CMD_IN_ENV% sphinx-build -b doctest docs/ docs/_doctest"
+  - "%CMD_IN_ENV% nosetests -w test"
+
+artifacts:
+  - path: dist\*
