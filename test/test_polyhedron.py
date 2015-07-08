@@ -1,13 +1,7 @@
 import cdd
 import nose
 from fractions import Fraction
-
-def assert_almost_equal(mat1, mat2):
-    nose.tools.assert_equal(len(mat1), len(mat2))
-    for (row1, row2) in zip(mat1, mat2):
-        nose.tools.assert_equal(len(row1), len(row2))
-        for (entry1, entry2) in zip(row1, row2):
-            nose.tools.assert_almost_equal(entry1, entry2)
+from test_matrix import assert_almost_equal
 
 def _test_sampleh1(number_type=None, assert_matrix_equal=None):
     mat = cdd.Matrix([[2,-1,-1,0],[0,1,0,0],[0,0,1,0]],
