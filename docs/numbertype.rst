@@ -140,23 +140,9 @@ Numerical Representations
 
 .. attribute:: NumberTypeable.number_type
 
-        The number type as string.
-
-        >>> cdd.NumberTypeable().number_type
-        'float'
-        >>> cdd.NumberTypeable('float').number_type
-        'float'
-        >>> cdd.NumberTypeable('fraction').number_type
-        'fraction'
+        The number type as string (``'float'`` or ``'fraction'``).
 
 .. attribute:: NumberTypeable.NumberType
 
-        The number type as class.
-
-        >>> pass # doctest: +ELLIPSIS
-        >>> cdd.NumberTypeable().NumberType
-        <... 'float'>
-        >>> cdd.NumberTypeable('float').NumberType
-        <... 'float'>
-        >>> cdd.NumberTypeable('fraction').NumberType
-        <... 'fractions.Fraction'>
+        The number type as class
+        (:class:`float` or :class:`~fractions.Fraction`).
