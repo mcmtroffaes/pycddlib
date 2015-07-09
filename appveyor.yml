@@ -9,26 +9,38 @@ environment:
     - PYTHON: "C:\\Python27"
       PYTHON_VERSION: "2.7.x"
       PYTHON_ARCH: "32"
+      PLATFORMTOOLSET: "v90"
+      PLATFORM: "Win32"
 
     - PYTHON: "C:\\Python27-x64"
       PYTHON_VERSION: "2.7.x"
       PYTHON_ARCH: "64"
+      PLATFORMTOOLSET: "v90"
+      PLATFORM: "x64"
 
 #    - PYTHON: "C:\\Python33"
 #      PYTHON_VERSION: "3.3.x"
 #      PYTHON_ARCH: "32"
-#
+#      PLATFORMTOOLSET: "v100"
+#      PLATFORM: "Win32"
+
 #    - PYTHON: "C:\\Python33-x64"
 #      PYTHON_VERSION: "3.3.x"
 #      PYTHON_ARCH: "64"
+#      PLATFORMTOOLSET: "v100"
+#      PLATFORM: "x64"
 
     - PYTHON: "C:\\Python34"
       PYTHON_VERSION: "3.4.x"
       PYTHON_ARCH: "32"
+      PLATFORMTOOLSET: "v100"
+      PLATFORM: "Win32"
 
 #    - PYTHON: "C:\\Python34-x64"
 #      PYTHON_VERSION: "3.4.x"
 #      PYTHON_ARCH: "64"
+#      PLATFORMTOOLSET: "v100"
+#      PLATFORM: "x64"
 
 install:
   - "git submodule update --init --recursive"
@@ -49,10 +61,12 @@ install:
   - "python -c \"import struct; print(struct.calcsize('P') * 8)\""
   - "appveyor DownloadFile http://mpir.org/mpir-2.7.0.zip"
   - "7z x mpir-2.7.0.zip > NUL"
-  - "%CMD_IN_ENV% msbuild mpir-2.7.0/build.vc10/lib_mpir_gc/lib_mpir_gc.vcxproj /p:Configuration=Release /verbosity:normal"
+  # note: no %CMD_IN_ENV% to ensure latest msbuild to be used
+  #       because the v90 msbuild does not parse the vc10 project file
+  - "msbuild mpir-2.7.0/build.vc10/lib_mpir_gc/lib_mpir_gc.vcxproj /p:Configuration=Release /p:Platform=%PLATFORM% /p:PlatformToolset=%PLATFORMTOOLSET% /verbosity:normal"
   - "%CMD_IN_ENV% pip install --install-option=\"--no-cython-compile\" Cython"
   - "%CMD_IN_ENV% pip install Sphinx nose wheel"
-  - "%CMD_IN_ENV% python setup.py build build_ext -Impir-2.7.0/lib/Win32/Release/ -Lmpir-2.7.0/build.vc10/lib_mpir_gc/Win32/Release/"
+  - "%CMD_IN_ENV% python setup.py build build_ext -Impir-2.7.0/lib/%PLATFORM%/Release/ -Lmpir-2.7.0/build.vc10/lib_mpir_gc/%PLATFORM%/Release/"
   - "%CMD_IN_ENV% python setup.py bdist_wheel"
   - ps: "ls dist"
   - "cd dist"
