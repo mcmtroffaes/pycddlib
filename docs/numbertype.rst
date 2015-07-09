@@ -42,7 +42,6 @@ Numerical Representations
         :returns: The converted value.
         :rtype: :attr:`~cdd.NumberTypeable.NumberType`
 
-        >>> numbers = ['4', '2/3', '1.6', '-9/6', 1.12]
         >>> nt = cdd.NumberTypeable('float')
         >>> print(repr(nt.make_number('2/3'))) # doctest: +ELLIPSIS
         0.666666666...
