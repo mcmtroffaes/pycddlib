@@ -9,6 +9,8 @@ Version 1.0.5 (in development)
   Stéphane Caron, fixes issue #4).
 * updated for cddlib 0.94h
 * windows builds now tested on appveyor
+* windows wheels provided for Python 2.7, 3.3, and 3.4
+* updated for MPIR 2.7.0
 
 Version 1.0.4 (9 July 2012)
 ---------------------------
