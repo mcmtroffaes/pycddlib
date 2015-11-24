@@ -42,6 +42,18 @@ environment:
       PLATFORMTOOLSET: "v100"
       PLATFORM: "x64"
 
+    - PYTHON: "C:\\Python35"
+      PYTHON_VERSION: "3.5.x"
+      PYTHON_ARCH: "32"
+      PLATFORMTOOLSET: "v140"
+      PLATFORM: "Win32"
+
+    - PYTHON: "C:\\Python35-x64"
+      PYTHON_VERSION: "3.5.x"
+      PYTHON_ARCH: "64"
+      PLATFORMTOOLSET: "v140"
+      PLATFORM: "x64"
+
 install:
   - "git submodule update --init --recursive"
   # remove cddlib symlinks: they interfere with the build
