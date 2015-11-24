@@ -1,5 +1,5 @@
-Version 1.0.5 (in development)
-------------------------------
+Version 1.0.5 (24 November 2015)
+--------------------------------
 
 * drop Python 3.2 support
 * add Python 3.4 and Python 3.5 support
