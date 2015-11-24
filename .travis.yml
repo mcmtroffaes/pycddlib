@@ -6,9 +6,10 @@ python:
   - "3.3"
   - "2.7"
   - "2.6"
-before_install:
-  - "sudo apt-get update -qq"
-  - "sudo apt-get install -qq libgmp-dev"
+addons:
+  apt:
+    packages:
+    - libgmp-dev
 install:
   - pip install --install-option="--no-cython-compile" Cython
   - "pip install Sphinx"
