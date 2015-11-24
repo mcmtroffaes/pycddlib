@@ -71,14 +71,14 @@ install:
   - "SET PATH=%PYTHON%;%PYTHON%\\Scripts;%PATH%"
   - "python --version"
   - "python -c \"import struct; print(struct.calcsize('P') * 8)\""
-  - "appveyor DownloadFile http://mpir.org/mpir-2.7.0.zip"
-  - "7z x mpir-2.7.0.zip > NUL"
+  - "appveyor DownloadFile http://mpir.org/mpir-2.7.2.zip"
+  - "7z x mpir-2.7.2.zip > NUL"
   # note: no %CMD_IN_ENV% to ensure latest msbuild to be used
   #       because the v90 msbuild does not parse the vc10 project file
-  - "msbuild mpir-2.7.0/build.vc10/lib_mpir_gc/lib_mpir_gc.vcxproj /p:Configuration=Release /p:Platform=%PLATFORM% /p:PlatformToolset=%PLATFORMTOOLSET% /verbosity:normal"
+  - "msbuild mpir-2.7.2/build.vc10/lib_mpir_gc/lib_mpir_gc.vcxproj /p:Configuration=Release /p:Platform=%PLATFORM% /p:PlatformToolset=%PLATFORMTOOLSET% /verbosity:normal"
   - "%CMD_IN_ENV% pip install --install-option=\"--no-cython-compile\" Cython"
   - "%CMD_IN_ENV% pip install Sphinx nose wheel"
-  - "%CMD_IN_ENV% python setup.py build build_ext -Impir-2.7.0/lib/%PLATFORM%/Release/ -Lmpir-2.7.0/build.vc10/lib_mpir_gc/%PLATFORM%/Release/"
+  - "%CMD_IN_ENV% python setup.py build build_ext -Impir-2.7.2/lib/%PLATFORM%/Release/ -Lmpir-2.7.2/build.vc10/lib_mpir_gc/%PLATFORM%/Release/"
   - "%CMD_IN_ENV% python setup.py bdist_wheel"
   - ps: "ls dist"
   - "cd dist"
