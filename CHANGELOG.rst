@@ -2,13 +2,15 @@ Version 1.0.5 (in development)
 ------------------------------
 
 * drop Python 3.2 support
-* add Python 3.4 support
+* add Python 3.4 and Python 3.5 support
 * Matrix.canonicalize now requires rep_type to be specified; you can
   get back the old behaviour by setting rep_type to
   cdd.RepType.INEQUALITY before calling canonicalize (reported by
   Stéphane Caron, fixes issue #4).
 * updated for cddlib 0.94h
 * windows builds now tested on appveyor
+* windows wheels provided for Python 2.7, 3.3, 3.4, and 3.5
+* updated for MPIR 2.7.2
 
 Version 1.0.4 (9 July 2012)
 ---------------------------
