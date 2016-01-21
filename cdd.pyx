@@ -775,8 +775,12 @@ cdef class Polyhedron(NumberTypeable):
                 return self.dd_poly.representation
             else:
                 return self.ddf_poly.representation
+
         def __set__(self, dd_RepresentationType value):
-            self.dd_poly.representation = value
+            if self.dd_poly:
+                self.dd_poly.representation = value
+            else:
+                self.ddf_poly.representation = <ddf_RepresentationType>value
 
     def __str__(self):
         """Print the polyhedra data."""
