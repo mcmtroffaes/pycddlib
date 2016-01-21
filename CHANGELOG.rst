@@ -1,6 +1,9 @@
 Version 1.0.6 (in development)
 ------------------------------
 
+* fix segfault when setting rep_type (see issues #16 and #17, reported
+  and fixed by Hervé Audren).
+
 Version 1.0.5 (24 November 2015)
 --------------------------------
 
