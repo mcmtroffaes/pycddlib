@@ -18,18 +18,6 @@ environment:
       PLATFORMTOOLSET: "v90"
       PLATFORM: "x64"
 
-    - PYTHON: "C:\\Python33"
-      PYTHON_VERSION: "3.3.x"
-      PYTHON_ARCH: "32"
-      PLATFORMTOOLSET: "v100"
-      PLATFORM: "Win32"
-
-    - PYTHON: "C:\\Python33-x64"
-      PYTHON_VERSION: "3.3.x"
-      PYTHON_ARCH: "64"
-      PLATFORMTOOLSET: "v100"
-      PLATFORM: "x64"
-
     - PYTHON: "C:\\Python34"
       PYTHON_VERSION: "3.4.x"
       PYTHON_ARCH: "32"
@@ -50,6 +38,18 @@ environment:
 
     - PYTHON: "C:\\Python35-x64"
       PYTHON_VERSION: "3.5.x"
+      PYTHON_ARCH: "64"
+      PLATFORMTOOLSET: "v140"
+      PLATFORM: "x64"
+
+    - PYTHON: "C:\\Python36"
+      PYTHON_VERSION: "3.6.x"
+      PYTHON_ARCH: "32"
+      PLATFORMTOOLSET: "v140"
+      PLATFORM: "Win32"
+
+    - PYTHON: "C:\\Python36-x64"
+      PYTHON_VERSION: "3.6.x"
       PYTHON_ARCH: "64"
       PLATFORMTOOLSET: "v140"
       PLATFORM: "x64"
