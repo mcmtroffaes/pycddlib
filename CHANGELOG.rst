@@ -1,8 +1,11 @@
-Version 1.0.6 (in development)
-------------------------------
+Version 1.0.6 (24 October 2017)
+-------------------------------
 
 * fix segfault when setting rep_type (see issues #16 and #17, reported
   and fixed by Hervé Audren).
+* drop Python 3.3 support
+* add Python 3.6 support
+* updated for MPIR 3.0.0
 
 Version 1.0.5 (24 November 2015)
 --------------------------------
