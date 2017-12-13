@@ -247,7 +247,7 @@ cdef int _get_number_type(str number_type) except -1:
             "number type must be 'float' or 'fraction' (got %s)" % repr(number_type))
 
 def get_number_type_from_value(value):
-    if isinstance(value, (Fraction, str)):
+    if isinstance(value, (numbers.Rational, str)):
         return 'fraction'
     else:
         return 'float'
@@ -255,7 +255,7 @@ def get_number_type_from_value(value):
 def get_number_type_from_sequences(*data):
     for row in data:
         for elem in row:
-            if not isinstance(elem, (Fraction, str)):
+            if not isinstance(elem, (numbers.Rational, str)):
                 return 'float'
     return 'fraction'
 
