@@ -26,7 +26,7 @@ cimport libc.stdlib
 from fractions import Fraction
 import numbers
 
-__version__ = "1.0.6"
+__version__ = "2.0.0"
 
 # also need time_t
 cdef extern from "time.h":
@@ -211,9 +211,7 @@ cdef _set_mytype(mytype target, value):
     if isinstance(value, str):
         value = Fraction(value)
     # set target to value
-    if isinstance(value, float):
-        dd_set_d(target, value)
-    elif isinstance(value, numbers.Rational):
+    if isinstance(value, numbers.Rational):
         try:
             dd_set_si2(target, value.numerator, value.denominator)
         except OverflowError:
@@ -221,6 +219,8 @@ cdef _set_mytype(mytype target, value):
             buf = str(value).encode('ascii')
             if mpq_set_str(target, buf, 10) == -1:
                 raise ValueError('could not convert %s to mpq_t' % value)
+    elif isinstance(value, numbers.Real):
+        dd_set_d(target, float(value))
 
 cdef _get_myfloat(myfloat target):
     return target[0]
@@ -247,7 +247,7 @@ cdef int _get_number_type(str number_type) except -1:
             "number type must be 'float' or 'fraction' (got %s)" % repr(number_type))
 
 def get_number_type_from_value(value):
-    if isinstance(value, (Fraction, str)):
+    if isinstance(value, (numbers.Rational, str)):
         return 'fraction'
     else:
         return 'float'
@@ -255,7 +255,7 @@ def get_number_type_from_value(value):
 def get_number_type_from_sequences(*data):
     for row in data:
         for elem in row:
-            if not isinstance(elem, (Fraction, str)):
+            if not isinstance(elem, (numbers.Rational, str)):
                 return 'float'
     return 'fraction'
 
