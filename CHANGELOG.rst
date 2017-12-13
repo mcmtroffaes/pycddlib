@@ -1,8 +1,14 @@
+Version 1.0.7 (13 December 2017)
+--------------------------------
+
+* fix creation of rational matrices from numpy array's (see issues #20
+  and #21, reported and fixed by Hervé Audren)
+
 Version 1.0.6 (24 October 2017)
 -------------------------------
 
 * fix segfault when setting rep_type (see issues #16 and #17, reported
-  and fixed by Hervé Audren).
+  and fixed by Hervé Audren)
 * drop Python 3.3 support
 * add Python 3.6 support
 * updated for MPIR 3.0.0
