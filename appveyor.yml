@@ -4,6 +4,8 @@ environment:
     # /E:ON and /V:ON options are not enabled in the batch script intepreter
     # See: http://stackoverflow.com/a/13751649/163740
     CMD_IN_ENV: "cmd /E:ON /V:ON /C .\\appveyor\\run_with_env.cmd"
+    PYPIPASSWORD:
+      secure: L0+QHnkYba7KY7hR3bFsbJ7Y5HW1RtIvOmQtOXQoOck=
 
   matrix:
     - PYTHON: "C:\\Python27"
@@ -93,3 +95,20 @@ test_script:
 
 artifacts:
   - path: dist\*
+
+# deploy to PyPI if a tagged release
+on_success:
+  # account details for PyPI
+  - echo [distutils]                                  > %USERPROFILE%\\.pypirc
+  - echo index-servers =                             >> %USERPROFILE%\\.pypirc
+  - echo     pypi                                    >> %USERPROFILE%\\.pypirc
+  - echo [pypi]                                      >> %USERPROFILE%\\.pypirc
+  - echo repository=https://pypi.python.org/pypi >> %USERPROFILE%\\.pypirc
+  - echo username=mcmtroffaes                        >> %USERPROFILE%\\.pypirc
+  - echo password=%PYPIPASSWORD%                     >> %USERPROFILE%\\.pypirc
+
+  # workaround required to ensure setup.py finds the .pypirc under Windows
+  - set HOME=%USERPROFILE%
+
+  # deploy wheel for tags
+  - if "%APPVEYOR_REPO_TAG%"=="true" ( %CMD_IN_ENV% python setup.py bdist_wheel upload ) else ( echo "Not deploying because not a tagged commit." )
