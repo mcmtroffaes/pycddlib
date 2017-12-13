@@ -1,8 +1,11 @@
-Version 1.0.7 (13 December 2017)
+Version 2.0.0 (13 December 2017)
 --------------------------------
 
 * fix creation of rational matrices from numpy array's (see issues #20
   and #21, reported and fixed by Hervé Audren)
+
+* consider all numbers.Rational subtypes as rationals (instead of just
+  Fraction)
 
 Version 1.0.6 (24 October 2017)
 -------------------------------
