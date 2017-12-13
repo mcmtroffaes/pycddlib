@@ -98,7 +98,7 @@ artifacts:
 
 # deploy to PyPI if a tagged release
 on_success:
-  - echo [pypi]                   > %USERPROFILE%\\.pypirc
-  - echo username=mcmtroffaes    >> %USERPROFILE%\\.pypirc
-  - echo password=%PYPIPASSWORD% >> %USERPROFILE%\\.pypirc
-  - %CMD_IN_ENV% twine upload dist\\*.whl
+  - "echo [pypi]                   > %USERPROFILE%\\.pypirc"
+  - "echo username=mcmtroffaes    >> %USERPROFILE%\\.pypirc"
+  - "echo password=%PYPIPASSWORD% >> %USERPROFILE%\\.pypirc"
+  - "%CMD_IN_ENV% twine upload dist\\*.whl"
