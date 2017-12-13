@@ -123,9 +123,9 @@ Number Types
 >>> cdd.Matrix([[1.5,2]]).number_type
 'float'
 >>> cdd.Matrix([['1.5',2]]).number_type
-'float'
+'fraction'
 >>> cdd.Matrix([[Fraction(3, 2),2]]).number_type
-'float'
+'fraction'
 >>> cdd.Matrix([['1.5','2']]).number_type
 'fraction'
 >>> cdd.Matrix([[Fraction(3, 2), Fraction(2, 1)]]).number_type
@@ -221,10 +221,10 @@ Declaring matrices, and checking some attributes:
 
 >>> mat1 = cdd.Matrix([[1,2],[3,4]])
 >>> mat1.NumberType
-<... 'float'>
+<... 'fractions.Fraction'>
 >>> print(mat1) # doctest: +NORMALIZE_WHITESPACE
 begin
- 2 2 real
+ 2 2 rational
  1 2
  3 4
 end
@@ -233,9 +233,9 @@ end
 >>> mat1.col_size
 2
 >>> print(mat1[0])
-(1.0, 2.0)
+(1, 2)
 >>> print(mat1[1])
-(3.0, 4.0)
+(3, 4)
 >>> print(mat1[2]) # doctest: +ELLIPSIS
 Traceback (most recent call last):
   ...
@@ -245,21 +245,21 @@ IndexError: row index out of range
 3
 >>> print(mat1) # doctest: +NORMALIZE_WHITESPACE
 begin
- 3 2 real
+ 3 2 rational
  1 2
  3 4
  5 6
 end
 >>> print(mat1[0])
-(1.0, 2.0)
+(1, 2)
 >>> print(mat1[1])
-(3.0, 4.0)
+(3, 4)
 >>> print(mat1[2])
-(5.0, 6.0)
+(5, 6)
 >>> mat1[1:3]
-((3.0, 4.0), (5.0, 6.0))
+((3, 4), (5, 6))
 >>> mat1[:-1]
-((1.0, 2.0), (3.0, 4.0))
+((1, 2), (3, 4))
 
 Canonicalizing:
 
@@ -275,7 +275,7 @@ ValueError: rep_type unspecified
 H-representation
 linearity 1  1
 begin
- 2 4 real
+ 2 4 rational
  0 1 2 3
  3 0 1 2
 end
