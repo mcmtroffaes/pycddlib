@@ -24,6 +24,7 @@ cimport libc.stdio
 cimport libc.stdlib
 
 from fractions import Fraction
+import numbers
 
 __version__ = "1.0.6"
 
@@ -212,7 +213,7 @@ cdef _set_mytype(mytype target, value):
     # set target to value
     if isinstance(value, float):
         dd_set_d(target, value)
-    elif isinstance(value, (Fraction, int, long)):
+    elif isinstance(value, numbers.Rational):
         try:
             dd_set_si2(target, value.numerator, value.denominator)
         except OverflowError:
