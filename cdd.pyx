@@ -211,9 +211,7 @@ cdef _set_mytype(mytype target, value):
     if isinstance(value, str):
         value = Fraction(value)
     # set target to value
-    if isinstance(value, float):
-        dd_set_d(target, value)
-    elif isinstance(value, numbers.Rational):
+    if isinstance(value, numbers.Rational):
         try:
             dd_set_si2(target, value.numerator, value.denominator)
         except OverflowError:
@@ -221,6 +219,8 @@ cdef _set_mytype(mytype target, value):
             buf = str(value).encode('ascii')
             if mpq_set_str(target, buf, 10) == -1:
                 raise ValueError('could not convert %s to mpq_t' % value)
+    elif isinstance(value, numbers.Real):
+        dd_set_d(target, float(value))
 
 cdef _get_myfloat(myfloat target):
     return target[0]
