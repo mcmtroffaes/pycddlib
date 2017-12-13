@@ -12,7 +12,7 @@ Numerical Representations
     Determine number type from a value.
 
     :return: ``'fraction'`` if the value is
-        :class:`~fractions.Fraction` or :class:`str`, otherwise
+        :class:`~numbers.Rational` or :class:`str`, otherwise
         ``'float'``.
     :rtype: :class:`str`
 
@@ -21,7 +21,7 @@ Numerical Representations
     Determine number type from sequences.
 
     :return: ``'fraction'`` if all elements are
-        :class:`~fractions.Fraction` or :class:`str`, otherwise
+        :class:`~numbers.Rational` or :class:`str`, otherwise
         ``'float'``.
     :rtype: :class:`str`
 
