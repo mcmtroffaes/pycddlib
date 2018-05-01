@@ -1,6 +1,8 @@
 Version 2.0.1 (in development)
 ------------------------------
 
+* updated for cddlib 0.94i
+
 Version 2.0.0 (13 December 2017)
 --------------------------------
 
