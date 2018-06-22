@@ -58,18 +58,6 @@ environment:
 
 install:
   - "git submodule update --init --recursive"
-  # remove cddlib symlinks: they interfere with the build
-  - del "cddlib\\lib-src-gmp\\cdd.h"
-  - del "cddlib\\lib-src-gmp\\cddcore.c"
-  - del "cddlib\\lib-src-gmp\\cddio.c"
-  - del "cddlib\\lib-src-gmp\\cddlib.c"
-  - del "cddlib\\lib-src-gmp\\cddlp.c"
-  - del "cddlib\\lib-src-gmp\\cddmp.c"
-  - del "cddlib\\lib-src-gmp\\cddmp.h"
-  - del "cddlib\\lib-src-gmp\\cddproj.c"
-  - del "cddlib\\lib-src-gmp\\cddtypes.h"
-  - del "cddlib\\lib-src-gmp\\setoper.c"
-  - del "cddlib\\lib-src-gmp\\setoper.h"
   - "SET PATH=%PYTHON%;%PYTHON%\\Scripts;%PATH%"
   - "python --version"
   - "python -c \"import struct; print(struct.calcsize('P') * 8)\""
