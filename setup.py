@@ -51,7 +51,7 @@ else:
     cmdclass = {}
 
 define_macros = [('GMPRATIONAL', None)]
-libraries = ['gmp']
+libraries = ['mpir']
 
 # get version from Cython file (without requiring extensions to be compiled!)
 for line in open('cdd.pyx'):
