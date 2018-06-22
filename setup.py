@@ -36,7 +36,6 @@ import os.path
 # only one of these should be True
 USE_CYTHON = not os.path.exists('cdd.c')
 USE_SETUPTOOLS = not USE_CYTHON
-USE_MPIR = (sys.platform == 'win32') # mpir or gmp?
 
 if USE_SETUPTOOLS:
     from setuptools import setup
@@ -52,12 +51,7 @@ else:
     cmdclass = {}
 
 define_macros = [('GMPRATIONAL', None)]
-libraries = []
-if USE_MPIR:
-    define_macros += [('MPIR', None)]
-    libraries += ['mpir']
-else:
-    libraries += ['gmp']
+libraries = ['mpir' if (sys.platform == 'win32') else 'gmp']
 
 # get version from Cython file (without requiring extensions to be compiled!)
 for line in open('cdd.pyx'):
@@ -91,9 +85,8 @@ cdd_headers = [
         ]
     ]
 
-cddgmp_dir = 'cddlib/lib-src-gmp'
 cddgmp_sources = cdd_sources + [
-    '{0}/{1}'.format(cddgmp_dir, srcfile) for srcfile in [
+    '{0}/{1}'.format(cdd_dir, srcfile) for srcfile in [
         'cddcore_f.c',
         'cddio_f.c',
         'cddlib_f.c',
@@ -103,7 +96,7 @@ cddgmp_sources = cdd_sources + [
         ]
     ]
 cddgmp_headers = cdd_headers + [
-    '{0}/{1}'.format(cddgmp_dir, hdrfile) for hdrfile in [
+    '{0}/{1}'.format(cdd_dir, hdrfile) for hdrfile in [
         'cdd_f.h',
         'cddmp_f.h',
         'cddtypes_f.h',
@@ -133,7 +126,7 @@ setup(
     ext_modules= [
         Extension("cdd",
                   ["cdd.pyx" if USE_CYTHON else "cdd.c"] + cddgmp_sources,
-                  include_dirs = [cdd_dir, cddgmp_dir],
+                  include_dirs = [cdd_dir],
                   depends=cddgmp_headers,
                   define_macros = define_macros,
                   libraries = libraries,
