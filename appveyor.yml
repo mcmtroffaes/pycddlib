@@ -67,7 +67,6 @@ install:
   #       because the v90 msbuild does not parse the vc10 project file
   - "msbuild mpir-3.0.0/build.vc14/lib_mpir_gc/lib_mpir_gc.vcxproj /p:Configuration=Release /p:Platform=%PLATFORM% /p:PlatformToolset=%PLATFORMTOOLSET% /verbosity:normal"
   # for debugging, check files in mpir folder
-  - "dir"
   - "dir mpir-3.0.0\\lib\\%PLATFORM%\\Release\\"
   - "%CMD_IN_ENV% pip install --install-option=\"--no-cython-compile\" Cython"
   - "%CMD_IN_ENV% pip install Sphinx nose wheel twine numpy"
