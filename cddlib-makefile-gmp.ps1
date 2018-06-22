@@ -4,19 +4,19 @@ function MakeGmp {
     param( [string]$InFile, [string]$OutFile )
     (Get-Content $InFile) | 
     Foreach-Object {
-        $_ -replace 'dd_','ddf_'
-        $_ -replace 'cddf_','cdd_'
-        $_ -replace 'mytype','myfloat'
-        $_ -replace '#include "cdd.h"','#include "cdd_f.h"'
-        $_ -replace '#include "cddtypes.h"','#include "cddtypes_f.h'
-        $_ -replace '#include "cddmp.h"','#include "cddmp_f.h'
-        $_ -replace '__CDD_H','__CDD_HF'
-        $_ -replace '__CDD_HFF','__CDD_HF'
-        $_ -replace '__CDDMP_H','_CDDMP_HF'
-        $_ -replace '__CDDTYPES_H','_CDDTYPES_HF'
-        $_ -replace 'GMPRATIONAL','ddf_GMPRATIONAL'
-        $_ -replace 'ARITHMETIC','ddf_ARITHMETIC'
-        $_ -replace 'CDOUBLE','ddf_CDOUBLE'
+        $_ -replace 'dd_','ddf_' `
+           -replace 'cddf_','cdd_' `
+           -replace 'mytype','myfloat' `
+           -replace '#include "cdd.h"','#include "cdd_f.h"' `
+           -replace '#include "cddtypes.h"','#include "cddtypes_f.h' `
+           -replace '#include "cddmp.h"','#include "cddmp_f.h' `
+           -replace '__CDD_H','__CDD_HF' `
+           -replace '__CDD_HFF','__CDD_HF' `
+           -replace '__CDDMP_H','_CDDMP_HF' `
+           -replace '__CDDTYPES_H','_CDDTYPES_HF' `
+           -replace 'GMPRATIONAL','ddf_GMPRATIONAL' `
+           -replace 'ARITHMETIC','ddf_ARITHMETIC' `
+           -replace 'CDOUBLE','ddf_CDOUBLE'
     }  | Set-Content $OutFile
 }
 
