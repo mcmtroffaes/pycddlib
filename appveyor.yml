@@ -66,10 +66,11 @@ install:
   # note: no %CMD_IN_ENV% to ensure latest msbuild to be used
   #       because the v90 msbuild does not parse the vc10 project file
   - "msbuild mpir-3.0.0/build.vc14/lib_mpir_gc/lib_mpir_gc.vcxproj /p:Configuration=Release /p:Platform=%PLATFORM% /p:PlatformToolset=%PLATFORMTOOLSET% /verbosity:normal"
-  # for debugging, check files in mpir folder
   - "dir mpir-3.0.0\\lib\\%PLATFORM%\\Release\\"
   - "%CMD_IN_ENV% pip install --install-option=\"--no-cython-compile\" Cython"
   - "%CMD_IN_ENV% pip install Sphinx nose wheel twine numpy"
+  - ps: ./cddlib-makefile-gmp.ps1
+  - "dir cddlib\\lib-src\\"
   - "%CMD_IN_ENV% python setup.py build build_ext -Impir-3.0.0/lib/%PLATFORM%/Release/ -Lmpir-3.0.0/build.vc14/lib_mpir_gc/%PLATFORM%/Release/"
   - "%CMD_IN_ENV% python setup.py bdist_wheel"
   - ps: "ls dist"
