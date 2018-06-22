@@ -59,6 +59,7 @@ environment:
 install:
   - "git submodule update --init --recursive"
   - ps: ./cddlib-makefile-gmp.ps1
+  - if "%PLATFORMTOOLSET%"=="v90" copy "stdint\\stdint.h" "cddlib\\lib-src\\"
   - "dir cddlib\\lib-src\\"
   - "SET PATH=%PYTHON%;%PYTHON%\\Scripts;%PATH%"
   - "python --version"
@@ -68,7 +69,6 @@ install:
   # note: no %CMD_IN_ENV% to ensure latest msbuild to be used
   #       because the v90 msbuild does not parse the vc10 project file
   - "msbuild mpir-3.0.0/build.vc14/lib_mpir_gc/lib_mpir_gc.vcxproj /p:Configuration=Release /p:Platform=%PLATFORM% /p:PlatformToolset=%PLATFORMTOOLSET% /verbosity:normal"
-  - if "%PLATFORMTOOLSET%"=="v90" copy "stdint\\stdint.h" "mpir-3.0.0\\lib\\%PLATFORM%\\Release\\"
   - "dir mpir-3.0.0\\lib\\%PLATFORM%\\Release\\"
   - "%CMD_IN_ENV% pip install --install-option=\"--no-cython-compile\" Cython"
   - "%CMD_IN_ENV% pip install Sphinx nose wheel twine numpy"
