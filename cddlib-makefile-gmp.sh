@@ -1,4 +1,4 @@
-#!/bin/sh
+#!/bin/bash
 
 # to be kept in sync with SED_GMP from cddlib/lib-src/Makefile.gmp.am
 
