@@ -2,8 +2,10 @@
 
 function MakeGmp {
     param( [string]$InFile, [string]$OutFile )
-    (Get-Content $InFile) | 
-    Foreach-Object {
+    (Get-Content $InFile) | Foreach-Object {
+        if ($_.ReadCount -eq 1) {
+            "/* generated automatically from $Infile */"
+        }
         $_ -creplace 'dd_','ddf_' `
            -creplace 'cddf_','cdd_' `
            -creplace 'mytype','myfloat' `
@@ -17,7 +19,7 @@ function MakeGmp {
            -creplace 'GMPRATIONAL','ddf_GMPRATIONAL' `
            -creplace 'ARITHMETIC','ddf_ARITHMETIC' `
            -creplace 'CDOUBLE','ddf_CDOUBLE'
-    }  | Set-Content $OutFile
+    } | Set-Content $OutFile
 }
 
 pushd cddlib\lib-src
