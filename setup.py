@@ -51,7 +51,7 @@ else:
     cmdclass = {}
 
 define_macros = [('GMPRATIONAL', None)]
-libraries = ['mpir']
+libraries = ['mpir' if (sys.platform == 'win32') else 'gmp']
 
 # get version from Cython file (without requiring extensions to be compiled!)
 for line in open('cdd.pyx'):
