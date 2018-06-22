@@ -10,6 +10,7 @@ addons:
     packages:
     - libgmp-dev
 install:
+  - "./cddlib-makefile-gmp.sh"
   - pip install --install-option="--no-cython-compile" Cython
   - "pip install Sphinx"
   - "pip install nose"
