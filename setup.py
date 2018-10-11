@@ -32,23 +32,8 @@ Operating System :: OS Independent"""
 import sys
 import os.path
 
-# at the moment, cython and setuptools don't work well together, so
-# only one of these should be True
-USE_CYTHON = not os.path.exists('cdd.c')
-USE_SETUPTOOLS = not USE_CYTHON
-
-if USE_SETUPTOOLS:
-    from setuptools import setup
-    from setuptools.extension import Extension
-else:
-    from distutils.core import setup
-    from distutils.extension import Extension
-
-if USE_CYTHON:
-    from Cython.Distutils import build_ext
-    cmdclass = {'build_ext': build_ext}
-else:
-    cmdclass = {}
+from setuptools import setup
+from setuptools.extension import Extension
 
 define_macros = [('GMPRATIONAL', None)]
 libraries = ['mpir' if (sys.platform == 'win32') else 'gmp']
@@ -125,7 +110,7 @@ setup(
     version = version,
     ext_modules= [
         Extension("cdd",
-                  ["cdd.pyx" if USE_CYTHON else "cdd.c"] + cddgmp_sources,
+                  ["cdd.pyx"] + cddgmp_sources,
                   include_dirs = [cdd_dir],
                   depends=cddgmp_headers,
                   define_macros = define_macros,
@@ -141,5 +126,7 @@ setup(
     long_description = "\n".join(doclines[2:]),
     url = "http://pypi.python.org/pypi/pycddlib",
     classifiers = classifiers.split('\n'),
-    cmdclass = cmdclass,
+    setup_requires = [
+        # setuptools 18.0 properly handles Cython extensions.
+        'setuptools>=18.0', 'Cython'],
 )
