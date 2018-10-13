@@ -26,12 +26,20 @@ Methods and Attributes
         :returns: H-representation.
         :rtype: :class:`~cdd.Matrix`
 
+        For a polyhedron described as `P = {x | A x <= b}`, the
+        H-representation is the matrix `[b -A]`.
+
 .. method:: Polyhedron.get_generators()
 
         Get all generators.
 
         :returns: V-representation.
         :rtype: :class:`~cdd.Matrix`
+
+        For a polyhedron described as `P = conv(v_1, ..., v_n) + nonneg(r_1,
+        ..., r_s)`, the V-representation matrix is `[t V]` where `t` is the
+        column vector with `n` ones followed by `s` zeroes, and `V` is the
+        stacked matrix of `n` vertex row vectors on top of `s` ray row vectors.
 
 .. attribute:: Polyhedron.rep_type
 
