@@ -5,11 +5,18 @@ python:
   - "3.5"
   - "3.4"
   - "2.7"
+# Enable 3.7 without globally enabling sudo and dist for other build jobs
+matrix:
+  include:
+    - python: 3.7
+      dist: xenial
+      sudo: true
 addons:
   apt:
     packages:
     - libgmp-dev
 install:
+  - "./cddlib-makefile-gmp.sh"
   - pip install --install-option="--no-cython-compile" Cython
   - "pip install Sphinx"
   - "pip install nose"
