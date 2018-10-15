@@ -1,9 +1,12 @@
-Version 2.0.1 (in development)
+Version 2.1.0 (in development)
 ------------------------------
 
 * updated for cddlib 0.94i
 
 * fix Cython setup requirement (see issue #27)
+
+* add documentation about representation types (see issues #29 and
+  #30, contributed by stephane-caron)
 
 Version 2.0.0 (13 December 2017)
 --------------------------------
