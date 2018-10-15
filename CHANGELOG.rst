@@ -1,5 +1,5 @@
-Version 2.1.0 (in development)
-------------------------------
+Version 2.1.0 (15 October 2018)
+-------------------------------
 
 * updated for cddlib 0.94i
 
@@ -7,6 +7,8 @@ Version 2.1.0 (in development)
 
 * add documentation about representation types (see issues #29 and
   #30, contributed by stephane-caron)
+
+* add Python 3.7 support
 
 Version 2.0.0 (13 December 2017)
 --------------------------------
