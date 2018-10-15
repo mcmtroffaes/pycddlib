@@ -3,6 +3,8 @@ Version 2.0.1 (in development)
 
 * updated for cddlib 0.94i
 
+* fix Cython setup requirement (see issue #27)
+
 Version 2.0.0 (13 December 2017)
 --------------------------------
 
