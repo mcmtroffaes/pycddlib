@@ -761,7 +761,7 @@ cdef class SetFamily(NumberTypeable):
             dd_WriteSetFamily(pfile, self.dd_setfamily)
         else:
             ddf_WriteSetFamily(pfile, self.ddf_setfamily)
-        return _tmpread(pfile).rstrip('\n')
+        return _tmpread(pfile).replace(' \n', '\n').rstrip('\n')
 
     def __init__(self, *args, **kwargs):
         # overriding this to prevent base class constructor to be called

@@ -117,8 +117,8 @@ end
 >>> # The numbering in the sets starts from zero,
 >>> # so the vertices adjacent to the first vertex (vertex 0)
 >>> # have indices 1 and 3:
->>> print(adjacency_list[0])
-frozenset([1, 3])
+>>> print(list(adjacency_list[0]))
+[1, 3]
 >>> # Finally, we can output the vertex adjacency matrix
 >>> print(adjacency_list.set_family_matrix)
 [[0, 1, 0, 1], [1, 0, 1, 0], [0, 1, 0, 1], [1, 0, 1, 0]]
