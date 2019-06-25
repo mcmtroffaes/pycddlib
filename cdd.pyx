@@ -26,7 +26,7 @@ cimport libc.stdlib
 from fractions import Fraction
 import numbers
 
-__version__ = "2.1.1a0"
+__version__ = "2.1.1a1"
 
 # also need time_t
 cdef extern from "time.h":
@@ -150,6 +150,34 @@ cdef _set_set(set_type set_, pset):
         else:
             set_delelem(set_, elem)
 
+cdef _get_dd_setvector(dd_SetVector set_vector,
+                       int famsize, int setsize):
+    """
+    Create tuple of Python frozensets from dd_SetVector.
+    The indexing of the sets start at 0, unlike the
+    string output from the SetFamily class,
+    which starts at 1.
+    """
+    cdef long elem
+    return tuple(frozenset([elem - 1
+                            for elem from 1 <= elem <= setsize
+                            if set_member(elem, set_vector[i])])
+                 for i in range(famsize))
+
+cdef _get_ddf_setvector(ddf_SetVector set_vector,
+                        int famsize, int setsize):
+    """
+    Create tuple of Python frozensets from dd_SetVector.
+    The indexing of the sets start at 0, unlike the
+    string output from the SetFamily class,
+    which starts at 1.
+    """
+    cdef long elem
+    return tuple(frozenset([elem - 1
+                            for elem from 1 <= elem <= setsize
+                            if set_member(elem, set_vector[i])])
+                 for i in range(famsize))
+
 cdef _raise_error(dd_ErrorType error, msg):
     """Convert error into string and raise it."""
     cdef libc.stdio.FILE *pfile
@@ -180,6 +208,30 @@ cdef _make_ddf_matrix(ddf_MatrixPtr ddf_mat):
     ddf_FreeMatrix(mat.ddf_mat)
     mat.ddf_mat = ddf_mat
     return mat
+
+cdef _make_dd_setfamily(dd_SetFamilyPtr dd_setfamily):
+    """Create set family from given pointer."""
+    # we must "cdef SetFamily setfamily" because otherwise pyrex will not
+    # recognize setfamily.thisptr as a C pointer
+    cdef SetFamily setfamily
+    if dd_setfamily == NULL:
+        raise ValueError("failed to make set family")
+    setfamily = SetFamily([[]], number_type='fraction')
+    dd_FreeSetFamily(setfamily.dd_setfamily)
+    setfamily.dd_setfamily = dd_setfamily
+    return setfamily
+
+cdef _make_ddf_setfamily(ddf_SetFamilyPtr ddf_setfamily):
+    """Create set family from given pointer"""
+    # we must "cdef SetFamily setfamily" because otherwise pyrex will not
+    # recognize setfamily.thisptr as a C pointer
+    cdef SetFamily setfamily
+    if ddf_setfamily == NULL:
+        raise ValueError("failed to make set family")
+    setfamily = SetFamily([[]], number_type='float')
+    ddf_FreeSetFamily(setfamily.ddf_setfamily)
+    setfamily.ddf_setfamily = ddf_setfamily
+    return setfamily
 
 cdef _get_mytype(mytype target):
     """Get :class:`~fractions.Fraction` or :class:`int` from target."""
@@ -656,6 +708,83 @@ cdef class Matrix(NumberTypeable):
             _raise_error(error, "failed to canonicalize matrix")
         return result
 
+cdef class SetFamily(NumberTypeable):
+
+    cdef dd_SetFamilyPtr dd_setfamily
+    cdef ddf_SetFamilyPtr ddf_setfamily
+
+    cdef int _get_family_size(self):
+        """Quick implementation of fam_size property, for Cython use."""
+        if self.dd_setfamily:
+            return self.dd_setfamily.famsize
+        else:
+            return self.ddf_setfamily.famsize
+
+    cdef int _get_set_size(self):
+        """Quick implementation of col_size property, for Cython use."""
+        if self.dd_setfamily:
+            return self.dd_setfamily.setsize
+        else:
+            return self.ddf_setfamily.setsize
+
+    property family_size:
+        def __get__(self):
+            return self._get_family_size()
+
+    def __len__(self):
+        return self._get_family_size()
+
+    property set_size:
+        def __get__(self):
+            return self._get_set_size()
+
+    property set_family:
+        def __get__(self):
+            if self.dd_setfamily:
+                return _get_dd_setvector(self.dd_setfamily.set,
+                                         self.dd_setfamily.famsize,
+                                         self.dd_setfamily.setsize)
+            else:
+                return _get_ddf_setvector(self.ddf_setfamily.set,
+                                          self.dd_setfamily.famsize,
+                                          self.dd_setfamily.setsize)
+
+    property set_family_matrix:
+        def __get__(self):
+            return [[1 if i in set_ else 0 for i in range(0, self.set_size)]
+                    for set_ in self.set_family]
+
+    def __str__(self):
+        cdef libc.stdio.FILE *pfile
+        pfile = _tmpfile()
+        if self.dd_setfamily:
+            dd_WriteSetFamily(pfile, self.dd_setfamily)
+        else:
+            ddf_WriteSetFamily(pfile, self.ddf_setfamily)
+        return _tmpread(pfile).rstrip('\n')
+
+    def __init__(self, *args, **kwargs):
+        # overriding this to prevent base class constructor to be called
+        pass
+
+    def __dealloc__(self):
+        """Deallocate set family."""
+        if self.dd_setfamily:
+            dd_FreeSetFamily(self.dd_setfamily)
+        self.dd_setfamily = NULL
+        if self.ddf_setfamily:
+            ddf_FreeSetFamily(self.ddf_setfamily)
+        self.ddf_setfamily = NULL
+
+    def copy(self):
+        if self.dd_setfamily:
+            return _make_dd_setfamily(self.dd_setfamily)
+        else:
+            return _make_ddf_setfamily(self.ddf_setfamily)
+
+    def __getitem__(self, key):
+        return self.set_family[key]
+
 cdef class LinProg(NumberTypeable):
 
     cdef dd_LPPtr dd_lp
@@ -813,6 +942,7 @@ cdef class Polyhedron(NumberTypeable):
                 #if self.dd_poly != NULL:
                 #    dd_FreePolyhedra(self.dd_poly)
                 _raise_error(error, "failed to load polyhedra")
+
         else:
             self.ddf_poly = ddf_DDMatrix2Poly(mat.ddf_mat, <ddf_ErrorType *>(&error))
             if self.ddf_poly == NULL or error != dd_NoError:
@@ -820,6 +950,7 @@ cdef class Polyhedron(NumberTypeable):
                 #if self.ddf_poly != NULL:
                 #    ddf_FreePolyhedra(self.ddf_poly)
                 _raise_error(error, "failed to load polyhedra")
+
         # debug
         #dd_WritePolyFile(stdout, self.dd_poly)
 
@@ -843,6 +974,12 @@ cdef class Polyhedron(NumberTypeable):
             return _make_dd_matrix(dd_CopyGenerators(self.dd_poly))
         else:
             return _make_ddf_matrix(ddf_CopyGenerators(self.ddf_poly))
+
+    def get_adjacency_list(self):
+        if self.dd_poly:
+            return _make_dd_setfamily(dd_CopyAdjacency(self.dd_poly))
+        else:
+            return _make_ddf_setfamily(ddf_CopyAdjacency(self.ddf_poly))
 
 # module initialization code comes here
 # initialize module constants
