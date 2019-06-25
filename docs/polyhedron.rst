@@ -41,6 +41,16 @@ Methods and Attributes
         column vector with `n` ones followed by `s` zeroes, and `V` is the
         stacked matrix of `n` vertex row vectors on top of `s` ray row vectors.
 
+.. method:: Polyhedron.get_adjacency_list()
+
+        Get the adjacency list for the polyhedron.
+
+        :returns: Adjacency list.
+        :rtype: :class:`~cdd.SetFamily`
+
+	The adjacency list of a polyhedron is the list of sets of vertices
+	which are adjacent to each vertex.
+
 .. attribute:: Polyhedron.rep_type
 
         Representation (see :class:`~cdd.RepType`).
@@ -50,10 +60,10 @@ Methods and Attributes
     The H-representation and/or V-representation are not guaranteed to
     be minimal, that is, they can still contain redundancy.
 
-Example
--------
+Examples
+--------
 
-This is the sampleh1.ine example that comes with cddlib.
+1) This is the sampleh1.ine example that comes with cddlib.
 
 >>> import cdd
 >>> mat = cdd.Matrix([[2,-1,-1,0],[0,1,0,0],[0,0,1,0]], number_type='fraction')
@@ -79,3 +89,36 @@ begin
 end
 >>> print(list(ext.lin_set)) # note: first row is 0, so fourth row is 3
 [3]
+
+
+2) The following example illustrates the use of the get_adjacency_list method.
+
+>>> import cdd
+>>> # We start with the H-representation for a square
+>>> mat = cdd.Matrix([[1, 1, 0], [1, 0, 1], [1, -1, 0], [1, 0, -1]])
+>>> mat.rep_type = cdd.RepType.INEQUALITY
+>>> poly = cdd.Polyhedron(mat)
+>>> adjacency_list = poly.get_adjacency_list()
+>>> # We can output to screen as done by cddlib
+>>> print(adjacency_list)
+begin
+  4    4
+ 1 2 : 2 4
+ 2 2 : 1 3
+ 3 2 : 2 4
+ 4 2 : 1 3
+end
+>>> # We can also use some attributes of the SetFamily class
+>>> print(adjacency_list.family_size)
+4
+>>> print(adjacency_list.set_size)
+4
+>>> # The adjacencies are stored as a tuple of frozensets
+>>> # The numbering in the sets starts from zero,
+>>> # so the vertices adjacent to the first vertex (vertex 0)
+>>> # have indices 1 and 3:
+>>> print(adjacency_list[0])
+frozenset([1, 3])
+>>> # Finally, we can output the vertex adjacency matrix
+>>> print(adjacency_list.set_family_matrix)
+[[0, 1, 0, 1], [1, 0, 1, 0], [0, 1, 0, 1], [1, 0, 1, 0]]
