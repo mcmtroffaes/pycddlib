@@ -45,3 +45,27 @@ def test_vertex_adjacency_list():
         nose.tools.assert_equal(list(adjacency_list[i]), adjacencies[i])
         nose.tools.assert_equal(adjacency_list.set_family_matrix[i],
                                 [1 if j in adjacencies[i] else 0 for j in range(8)])
+
+def test_facet_adjacency_list():
+    # This matrix is the same as in vtest_vo.ine
+    mat = cdd.Matrix([[0, 0, 0, 1],
+                      [5, -4, -2, 1],
+                      [5, -2, -4, 1],
+                      [16, -8, 0, 1],
+                      [16, 0, -8, 1],
+                      [32, -8, -8, 1]], number_type='fraction')
+
+    mat.rep_type = cdd.RepType.INEQUALITY
+    poly = cdd.Polyhedron(mat)
+
+    adjacencies = [[1, 2, 3, 4, 6],
+                   [0, 2, 3, 5],
+                   [0, 1, 4, 5],
+                   [0, 1, 5, 6],
+                   [0, 2, 5, 6],
+                   [1, 2, 3, 4, 6],
+                   [0, 3, 4, 5]]
+
+    adjacency_list = poly.get_facet_adjacency_list()
+    for i in range(7):
+        nose.tools.assert_equal(list(adjacency_list[i]), adjacencies[i])
