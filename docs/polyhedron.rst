@@ -41,15 +41,25 @@ Methods and Attributes
         column vector with `n` ones followed by `s` zeroes, and `V` is the
         stacked matrix of `n` vertex row vectors on top of `s` ray row vectors.
 
-.. method:: Polyhedron.get_adjacency_list()
+.. method:: Polyhedron.get_vertex_adjacency_list()
 
-        Get the adjacency list for the polyhedron.
+        Get the vertex adjacency list for the polyhedron.
 
-        :returns: Adjacency list.
+        :returns: Vertex adjacency list.
         :rtype: :class:`~cdd.SetFamily`
 
-	The adjacency list of a polyhedron is the list of sets of vertices
+	The vertex adjacency list of a polyhedron is the list of sets of vertices
 	which are adjacent to each vertex.
+
+.. method:: Polyhedron.get_facet_adjacency_list()
+
+        Get the facet adjacency list for the polyhedron.
+
+        :returns: Facet adjacency list.
+        :rtype: :class:`~cdd.SetFamily`
+
+	The facet adjacency list of a polyhedron is the list of sets of facets
+	which are adjacent to each facet.
 
 .. attribute:: Polyhedron.rep_type
 
@@ -98,7 +108,7 @@ end
 >>> mat = cdd.Matrix([[1, 1, 0], [1, 0, 1], [1, -1, 0], [1, 0, -1]])
 >>> mat.rep_type = cdd.RepType.INEQUALITY
 >>> poly = cdd.Polyhedron(mat)
->>> adjacency_list = poly.get_adjacency_list()
+>>> adjacency_list = poly.get_vertex_adjacency_list()
 >>> # We can output to screen as done by cddlib
 >>> print(adjacency_list)
 begin

@@ -975,11 +975,30 @@ cdef class Polyhedron(NumberTypeable):
         else:
             return _make_ddf_matrix(ddf_CopyGenerators(self.ddf_poly))
 
-    def get_adjacency_list(self):
+    def get_vertex_adjacency_list(self):
+        # if rep_type is generator, the input adjacency is the vertex adjacency
         if self.dd_poly:
-            return _make_dd_setfamily(dd_CopyAdjacency(self.dd_poly))
+            if self.dd_poly.representation == 2:
+                return _make_dd_setfamily(dd_CopyInputAdjacency(self.dd_poly))
+            else:
+                return _make_dd_setfamily(dd_CopyAdjacency(self.dd_poly))
         else:
-            return _make_ddf_setfamily(ddf_CopyAdjacency(self.ddf_poly))
+            if self.dd_poly.representation == 2:
+                return _make_ddf_setfamily(ddf_CopyInputAdjacency(self.ddf_poly))
+            else:
+                return _make_ddf_setfamily(ddf_CopyAdjacency(self.ddf_poly))
+
+    def get_facet_adjacency_list(self):
+        if self.dd_poly:
+            if self.dd_poly.representation == 2:
+                return _make_dd_setfamily(dd_CopyAdjacency(self.dd_poly))
+            else:
+                return _make_dd_setfamily(dd_CopyInputAdjacency(self.dd_poly))
+        else:
+            if self.dd_poly.representation == 2:
+                return _make_ddf_setfamily(ddf_CopyAdjacency(self.ddf_poly))
+            else:
+                return _make_ddf_setfamily(ddf_CopyInputAdjacency(self.ddf_poly))
 
 # module initialization code comes here
 # initialize module constants

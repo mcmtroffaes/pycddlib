@@ -3,7 +3,7 @@ import nose
 from fractions import Fraction
 
 
-def test_adjacency_list():
+def test_vertex_adjacency_list():
 
     # The following lines test that poly.get_adjacency_list()
     # returns the correct adjacencies.
@@ -18,7 +18,7 @@ def test_adjacency_list():
                      number_type=None)
     mat.rep_type = cdd.RepType.INEQUALITY
     poly = cdd.Polyhedron(mat)
-    adjacency_list = poly.get_adjacency_list()
+    adjacency_list = poly.get_vertex_adjacency_list()
 
     # Family size should equal the number of vertices of the cube (8)
     nose.tools.assert_equal(adjacency_list.family_size, len(adjacency_list))
