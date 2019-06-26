@@ -61,6 +61,26 @@ Methods and Attributes
 	The facet adjacency list of a polyhedron is the list of sets of facets
 	which are adjacent to each facet.
 
+.. method:: Polyhedron.get_vertex_incidence()
+
+        Get the vertex incidences for the polyhedron.
+
+        :returns: Vertex incidences.
+        :rtype: :class:`~cdd.SetFamily`
+
+	The vertex incidence of a polyhedron is the list of sets of facets
+	which are adjacent to each vertex.
+
+.. method:: Polyhedron.get_facet_incidence()
+
+        Get the facet incidences for the polyhedron.
+
+        :returns: Facet incidences.
+        :rtype: :class:`~cdd.SetFamily`
+
+	The facet incidence of a polyhedron is the list of sets of vertices
+	which are adjacent to each facet.
+
 .. attribute:: Polyhedron.rep_type
 
         Representation (see :class:`~cdd.RepType`).
@@ -132,3 +152,49 @@ end
 >>> # Finally, we can output the vertex adjacency matrix
 >>> print(adjacency_list.set_family_matrix)
 [[0, 1, 0, 1], [1, 0, 1, 0], [0, 1, 0, 1], [1, 0, 1, 0]]
+
+
+2) The following example illustrates the use of the get_vertex_incidence method.
+
+>>> import cdd
+>>> # We again start with the H-representation for a square
+>>> mat = cdd.Matrix([[1, 1, 0], [1, 0, 1], [1, -1, 0], [1, 0, -1]])
+>>> mat.rep_type = cdd.RepType.INEQUALITY
+>>> poly = cdd.Polyhedron(mat)
+>>> # The V-representation can be printed in the usual way:
+>>> print(poly.get_generators())
+V-representation
+begin
+ 4 3 rational
+ 1 1 -1
+ 1 1 1
+ 1 -1 1
+ 1 -1 -1
+end
+>>> vertex_incidence = poly.get_vertex_incidence()
+>>> # We can output to screen as done by cddlib
+>>> print(vertex_incidence)
+begin
+  4    5
+ 1 2 : 2 3
+ 2 2 : 3 4
+ 3 2 : 1 4
+ 4 2 : 1 2
+end
+>>> # Note that because this is a closed polyhedron, the last
+>>> # element of the set is not adjacent to any vertex.
+>>> # We can also use some attributes of the SetFamily class
+>>> # First, the size of the family of sets
+>>> print(vertex_incidence.family_size)
+4
+>>> # Next, the set size.
+>>> print(vertex_incidence.set_size)
+5
+>>> # The adjacencies are stored as a tuple of frozensets
+>>> # The numbering in the sets starts from zero,
+>>> # so the facets adjacent to the first vertex
+>>> # (vertex 0; [1, -1])
+>>> # have indices 1 and 2 ([1, 0, 1], [1, -1, 0],
+>>> # equivalent to x_0 < 1, -x_1 < 1):
+>>> print(list(vertex_incidence[0]))
+[1, 2]
