@@ -3,7 +3,9 @@ Version 2.1.1 (in development)
 
 * exposed adjacency list (see issue #33,
   contributed by bobmyhill)
-  
+
+* exposed incidence (contributed by bobmyhill)
+
 Version 2.1.0 (15 October 2018)
 -------------------------------
 

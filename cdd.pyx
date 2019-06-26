@@ -1002,14 +1002,14 @@ cdef class Polyhedron(NumberTypeable):
                 return _make_ddf_setfamily(ddf_CopyInputAdjacency(self.ddf_poly))
 
     def get_vertex_incidence(self):
-        # if rep_type is generator, the input adjacency is the vertex adjacency
+        # if rep_type is generator, the input incidence is the vertex incidence
         if self.dd_poly:
             if self.dd_poly.representation == 2:
                 return _make_dd_setfamily(dd_CopyInputIncidence(self.dd_poly))
             else:
                 return _make_dd_setfamily(dd_CopyIncidence(self.dd_poly))
         else:
-            if self.dd_poly.representation == 2:
+            if self.ddf_poly.representation == 2:
                 return _make_ddf_setfamily(ddf_CopyInputIncidence(self.ddf_poly))
             else:
                 return _make_ddf_setfamily(ddf_CopyIncidence(self.ddf_poly))
@@ -1021,7 +1021,7 @@ cdef class Polyhedron(NumberTypeable):
             else:
                 return _make_dd_setfamily(dd_CopyInputIncidence(self.dd_poly))
         else:
-            if self.dd_poly.representation == 2:
+            if self.ddf_poly.representation == 2:
                 return _make_ddf_setfamily(ddf_CopyIncidence(self.ddf_poly))
             else:
                 return _make_ddf_setfamily(ddf_CopyInputIncidence(self.ddf_poly))
