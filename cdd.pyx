@@ -167,7 +167,7 @@ cdef _get_dd_setvector(dd_SetVector set_vector,
 cdef _get_ddf_setvector(ddf_SetVector set_vector,
                         int famsize, int setsize):
     """
-    Create tuple of Python frozensets from dd_SetVector.
+    Create tuple of Python frozensets from ddf_SetVector.
     The indexing of the sets start at 0, unlike the
     string output from the SetFamily class,
     which starts at 1.
@@ -746,8 +746,8 @@ cdef class SetFamily(NumberTypeable):
                                          self.dd_setfamily.setsize)
             else:
                 return _get_ddf_setvector(self.ddf_setfamily.set,
-                                          self.dd_setfamily.famsize,
-                                          self.dd_setfamily.setsize)
+                                          self.ddf_setfamily.famsize,
+                                          self.ddf_setfamily.setsize)
 
     property set_family_matrix:
         def __get__(self):
@@ -978,24 +978,25 @@ cdef class Polyhedron(NumberTypeable):
     def get_vertex_adjacency_list(self):
         # if rep_type is generator, the input adjacency is the vertex adjacency
         if self.dd_poly:
-            if self.dd_poly.representation == 2:
+            if self.dd_poly.representation == 2: # if generator representation
                 return _make_dd_setfamily(dd_CopyInputAdjacency(self.dd_poly))
             else:
                 return _make_dd_setfamily(dd_CopyAdjacency(self.dd_poly))
         else:
-            if self.dd_poly.representation == 2:
+            if self.ddf_poly.representation == <ddf_RepresentationType>2:
                 return _make_ddf_setfamily(ddf_CopyInputAdjacency(self.ddf_poly))
             else:
                 return _make_ddf_setfamily(ddf_CopyAdjacency(self.ddf_poly))
 
     def get_facet_adjacency_list(self):
+        # if rep_type is generator, the input adjacency is the vertex adjacency
         if self.dd_poly:
-            if self.dd_poly.representation == 2:
+            if self.dd_poly.representation == 2: # if generator representation
                 return _make_dd_setfamily(dd_CopyAdjacency(self.dd_poly))
             else:
                 return _make_dd_setfamily(dd_CopyInputAdjacency(self.dd_poly))
         else:
-            if self.dd_poly.representation == 2:
+            if self.ddf_poly.representation == <ddf_RepresentationType>2:
                 return _make_ddf_setfamily(ddf_CopyAdjacency(self.ddf_poly))
             else:
                 return _make_ddf_setfamily(ddf_CopyInputAdjacency(self.ddf_poly))
