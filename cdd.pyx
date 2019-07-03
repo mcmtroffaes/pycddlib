@@ -1009,19 +1009,20 @@ cdef class Polyhedron(NumberTypeable):
             else:
                 return _make_dd_setfamily(dd_CopyIncidence(self.dd_poly))
         else:
-            if self.ddf_poly.representation == 2:
+            if self.ddf_poly.representation == <ddf_RepresentationType>2:
                 return _make_ddf_setfamily(ddf_CopyInputIncidence(self.ddf_poly))
             else:
                 return _make_ddf_setfamily(ddf_CopyIncidence(self.ddf_poly))
 
     def get_facet_incidence(self):
+        # if rep_type is generator, the input incidence is the vertex incidence
         if self.dd_poly:
-            if self.dd_poly.representation == 2:
+            if self.dd_poly.representation == 2: # if generator representation
                 return _make_dd_setfamily(dd_CopyIncidence(self.dd_poly))
             else:
                 return _make_dd_setfamily(dd_CopyInputIncidence(self.dd_poly))
         else:
-            if self.ddf_poly.representation == 2:
+            if self.ddf_poly.representation == <ddf_RepresentationType>2:
                 return _make_ddf_setfamily(ddf_CopyIncidence(self.ddf_poly))
             else:
                 return _make_ddf_setfamily(ddf_CopyInputIncidence(self.ddf_poly))
