@@ -48,8 +48,11 @@ Methods and Attributes
         :returns: Adjacency list.
         :rtype: :class:`tuple`
 
+        The adjacency of a polyhedron in the H-representation is the
+        list of sets of vertices which are adjacent to each face.
+
         The adjacency of a polyhedron in the V-representation is the
-        list of sets of vertices which are adjacent to each vertex.
+        list of sets of faces which are adjacent to each vertex.
 
 .. method:: Polyhedron.get_input_adjacency()
 
@@ -58,7 +61,10 @@ Methods and Attributes
         :returns: Input adjacency list.
         :rtype: :class:`tuple`
 
-        The adjacency of a polyhedron in the V-representation is the
+        The input adjacency of a polyhedron in the H-representation is the
+        list of sets of faces which are adjacent to each face.
+
+        The input adjacency of a polyhedron in the V-representation is the
         list of sets of vertices which are adjacent to each vertex.
 
 .. method:: Polyhedron.get_incidence()
@@ -68,8 +74,7 @@ Methods and Attributes
         :returns: Incidence list.
         :rtype: :class:`tuple`
 
-	The incidence of a polyhedron is the list of sets of facets
-	which are adjacent to each vertex.
+        TODO
 
 .. method:: Polyhedron.get_input_incidence()
 
@@ -78,8 +83,7 @@ Methods and Attributes
         :returns: Input incidence list.
         :rtype: :class:`tuple`
 
-	The facet incidence of a polyhedron is the list of sets of vertices
-	which are adjacent to each facet.
+	TODO
 
 .. attribute:: Polyhedron.rep_type
 
