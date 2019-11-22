@@ -177,9 +177,44 @@ end
 >>> # face (3) intersects with vertices 1 and 2
 >>> print(poly.get_input_incidence())
 (frozenset({2, 3}), frozenset({0, 3}), frozenset({0, 1}), frozenset({1, 2}), frozenset())
+>>> # add a vertex, and construct new polyhedron
+>>> gen.extend([1, 0, 2])
 >>> vpoly = cdd.Polyhedron(gen)
 >>> print(vpoly.get_inequalities())
+H-representation
+begin
+ 4 3 rational
+ 1 0 1
+ 1 1 0
+ 1 0 -1
+ 1 -1 0
+end
+>>> # so now we have:
+>>> # 0 <= 1 + x2
+>>> # 0 <= 1 + x1
+>>> # 0 <= 1 - x2
+>>> # 0 <= 1 - x1
+>>> #
+>>> # graphical depiction of vertices and faces:
+>>> #
+>>> #        4
+>>> #       / \
+>>> #      /   \
+>>> #     /     \
+>>> #    /       \
+>>> #   2         1
+>>> #   |         |
+>>> #   |         |
+>>> #  (1)       (3)
+>>> #   |         |
+>>> #   |         |
+>>> #   3---(0)---0
+>>> #
 >>> print(vpoly.get_adjacency())
+(frozenset({1, 3}), frozenset({0, 2}), frozenset({1, 3}), frozenset({0, 2}))
 >>> print(vpoly.get_incidence())
+(frozenset({0, 3}), frozenset({2, 3}), frozenset({1, 2}), frozenset({0, 1}))
 >>> print(vpoly.get_input_adjacency())
+(frozenset({1, 3}), frozenset({0, 2}), frozenset({1, 3}), frozenset({0, 2}))
 >>> print(vpoly.get_input_incidence())
+(frozenset({0, 3}), frozenset({2, 3}), frozenset({1, 2}), frozenset({0, 1}))
