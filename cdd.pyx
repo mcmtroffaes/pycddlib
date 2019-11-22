@@ -150,33 +150,28 @@ cdef _set_set(set_type set_, pset):
         else:
             set_delelem(set_, elem)
 
-cdef _get_dd_setvector(dd_SetVector set_vector,
-                       int famsize, int setsize):
-    """
-    Create tuple of Python frozensets from dd_SetVector.
-    The indexing of the sets start at 0, unlike the
-    string output from the SetFamily class,
-    which starts at 1.
+cdef _get_dd_setfam(dd_SetFamilyPtr setfam):
+    """Create tuple of Python frozensets from dd_SetFamilyPtr.  The
+    indexing of the sets start at 0, unlike the string output from
+    cddlib, which starts at 1.
     """
     cdef long elem
     return tuple(frozenset([elem - 1
-                            for elem from 1 <= elem <= setsize
-                            if set_member(elem, set_vector[i])])
-                 for i in range(famsize))
+                            for elem from 1 <= elem <= setfam.setsize
+                            if set_member(elem, setfam.set[i])])
+                 for i in range(setfam.famsize))
 
-cdef _get_ddf_setvector(ddf_SetVector set_vector,
-                        int famsize, int setsize):
+cdef _get_ddf_setfam(ddf_SetFamilyPtr setfam):
+    """Create tuple of Python frozensets from ddf_SetFamilyPtr.  The
+    indexing of the sets start at 0, unlike the string output from
+    cddlib, which starts at 1.
     """
-    Create tuple of Python frozensets from ddf_SetVector.
-    The indexing of the sets start at 0, unlike the
-    string output from the SetFamily class,
-    which starts at 1.
-    """
+
     cdef long elem
     return tuple(frozenset([elem - 1
-                            for elem from 1 <= elem <= setsize
-                            if set_member(elem, set_vector[i])])
-                 for i in range(famsize))
+                            for elem from 1 <= elem <= setfam.setsize
+                            if set_member(elem, setfam.set[i])])
+                 for i in range(setfam.famsize))
 
 cdef _raise_error(dd_ErrorType error, msg):
     """Convert error into string and raise it."""
@@ -208,30 +203,6 @@ cdef _make_ddf_matrix(ddf_MatrixPtr ddf_mat):
     ddf_FreeMatrix(mat.ddf_mat)
     mat.ddf_mat = ddf_mat
     return mat
-
-cdef _make_dd_setfamily(dd_SetFamilyPtr dd_setfamily):
-    """Create set family from given pointer."""
-    # we must "cdef SetFamily setfamily" because otherwise pyrex will not
-    # recognize setfamily.thisptr as a C pointer
-    cdef SetFamily setfamily
-    if dd_setfamily == NULL:
-        raise ValueError("failed to make set family")
-    setfamily = SetFamily([[]], number_type='fraction')
-    dd_FreeSetFamily(setfamily.dd_setfamily)
-    setfamily.dd_setfamily = dd_setfamily
-    return setfamily
-
-cdef _make_ddf_setfamily(ddf_SetFamilyPtr ddf_setfamily):
-    """Create set family from given pointer"""
-    # we must "cdef SetFamily setfamily" because otherwise pyrex will not
-    # recognize setfamily.thisptr as a C pointer
-    cdef SetFamily setfamily
-    if ddf_setfamily == NULL:
-        raise ValueError("failed to make set family")
-    setfamily = SetFamily([[]], number_type='float')
-    ddf_FreeSetFamily(setfamily.ddf_setfamily)
-    setfamily.ddf_setfamily = ddf_setfamily
-    return setfamily
 
 cdef _get_mytype(mytype target):
     """Get :class:`~fractions.Fraction` or :class:`int` from target."""
@@ -708,83 +679,6 @@ cdef class Matrix(NumberTypeable):
             _raise_error(error, "failed to canonicalize matrix")
         return result
 
-cdef class SetFamily(NumberTypeable):
-
-    cdef dd_SetFamilyPtr dd_setfamily
-    cdef ddf_SetFamilyPtr ddf_setfamily
-
-    cdef int _get_family_size(self):
-        """Quick implementation of fam_size property, for Cython use."""
-        if self.dd_setfamily:
-            return self.dd_setfamily.famsize
-        else:
-            return self.ddf_setfamily.famsize
-
-    cdef int _get_set_size(self):
-        """Quick implementation of col_size property, for Cython use."""
-        if self.dd_setfamily:
-            return self.dd_setfamily.setsize
-        else:
-            return self.ddf_setfamily.setsize
-
-    property family_size:
-        def __get__(self):
-            return self._get_family_size()
-
-    def __len__(self):
-        return self._get_family_size()
-
-    property set_size:
-        def __get__(self):
-            return self._get_set_size()
-
-    property set_family:
-        def __get__(self):
-            if self.dd_setfamily:
-                return _get_dd_setvector(self.dd_setfamily.set,
-                                         self.dd_setfamily.famsize,
-                                         self.dd_setfamily.setsize)
-            else:
-                return _get_ddf_setvector(self.ddf_setfamily.set,
-                                          self.ddf_setfamily.famsize,
-                                          self.ddf_setfamily.setsize)
-
-    property set_family_matrix:
-        def __get__(self):
-            return [[1 if i in set_ else 0 for i in range(0, self.set_size)]
-                    for set_ in self.set_family]
-
-    def __str__(self):
-        cdef libc.stdio.FILE *pfile
-        pfile = _tmpfile()
-        if self.dd_setfamily:
-            dd_WriteSetFamily(pfile, self.dd_setfamily)
-        else:
-            ddf_WriteSetFamily(pfile, self.ddf_setfamily)
-        return _tmpread(pfile).replace(' \n', '\n').rstrip('\n')
-
-    def __init__(self, *args, **kwargs):
-        # overriding this to prevent base class constructor to be called
-        pass
-
-    def __dealloc__(self):
-        """Deallocate set family."""
-        if self.dd_setfamily:
-            dd_FreeSetFamily(self.dd_setfamily)
-        self.dd_setfamily = NULL
-        if self.ddf_setfamily:
-            ddf_FreeSetFamily(self.ddf_setfamily)
-        self.ddf_setfamily = NULL
-
-    def copy(self):
-        if self.dd_setfamily:
-            return _make_dd_setfamily(self.dd_setfamily)
-        else:
-            return _make_ddf_setfamily(self.ddf_setfamily)
-
-    def __getitem__(self, key):
-        return self.set_family[key]
-
 cdef class LinProg(NumberTypeable):
 
     cdef dd_LPPtr dd_lp
@@ -942,7 +836,6 @@ cdef class Polyhedron(NumberTypeable):
                 #if self.dd_poly != NULL:
                 #    dd_FreePolyhedra(self.dd_poly)
                 _raise_error(error, "failed to load polyhedra")
-
         else:
             self.ddf_poly = ddf_DDMatrix2Poly(mat.ddf_mat, <ddf_ErrorType *>(&error))
             if self.ddf_poly == NULL or error != dd_NoError:
@@ -950,7 +843,6 @@ cdef class Polyhedron(NumberTypeable):
                 #if self.ddf_poly != NULL:
                 #    ddf_FreePolyhedra(self.ddf_poly)
                 _raise_error(error, "failed to load polyhedra")
-
         # debug
         #dd_WritePolyFile(stdout, self.dd_poly)
 
@@ -975,57 +867,73 @@ cdef class Polyhedron(NumberTypeable):
         else:
             return _make_ddf_matrix(ddf_CopyGenerators(self.ddf_poly))
 
-    def get_vertex_adjacency_list(self):
-        # if rep_type is generator, the input adjacency is the vertex adjacency
+    def get_adjacency(self):
+        cdef dd_SetFamilyPtr dd_setfam
+        cdef ddf_SetFamilyPtr ddf_setfam
         if self.dd_poly:
-            if self.dd_poly.representation == 2: # if generator representation
-                return _make_dd_setfamily(dd_CopyInputAdjacency(self.dd_poly))
-            else:
-                return _make_dd_setfamily(dd_CopyAdjacency(self.dd_poly))
+            dd_setfam = dd_CopyAdjacency(self.dd_poly)
+            if dd_setfam == NULL:
+                raise ValueError("failed to get adjacency")
+            result = _get_dd_setfam(dd_setfam)
+            dd_FreeSetFamily(dd_setfam)
         else:
-            if self.ddf_poly.representation == <ddf_RepresentationType>2:
-                return _make_ddf_setfamily(ddf_CopyInputAdjacency(self.ddf_poly))
-            else:
-                return _make_ddf_setfamily(ddf_CopyAdjacency(self.ddf_poly))
+            ddf_setfam = ddf_CopyAdjacency(self.ddf_poly)
+            if ddf_setfam == NULL:
+                raise ValueError("failed to get adjacency")
+            result = _get_ddf_setfam(ddf_setfam)
+            ddf_FreeSetFamily(ddf_setfam)
+        return result
 
-    def get_facet_adjacency_list(self):
-        # if rep_type is generator, the input adjacency is the vertex adjacency
+    def get_input_adjacency(self):
+        cdef dd_SetFamilyPtr dd_setfam
+        cdef ddf_SetFamilyPtr ddf_setfam
         if self.dd_poly:
-            if self.dd_poly.representation == 2: # if generator representation
-                return _make_dd_setfamily(dd_CopyAdjacency(self.dd_poly))
-            else:
-                return _make_dd_setfamily(dd_CopyInputAdjacency(self.dd_poly))
+            dd_setfam = dd_CopyInputAdjacency(self.dd_poly)
+            if dd_setfam == NULL:
+                raise ValueError("failed to get input adjacency")
+            result = _get_dd_setfam(dd_setfam)
+            dd_FreeSetFamily(dd_setfam)
         else:
-            if self.ddf_poly.representation == <ddf_RepresentationType>2:
-                return _make_ddf_setfamily(ddf_CopyAdjacency(self.ddf_poly))
-            else:
-                return _make_ddf_setfamily(ddf_CopyInputAdjacency(self.ddf_poly))
+            ddf_setfam = ddf_CopyInputAdjacency(self.ddf_poly)
+            if ddf_setfam == NULL:
+                raise ValueError("failed to get input adjacency")
+            result = _get_ddf_setfam(ddf_setfam)
+            ddf_FreeSetFamily(ddf_setfam)
+        return result
 
-    def get_vertex_incidence(self):
-        # if rep_type is generator, the input incidence is the vertex incidence
+    def get_incidence(self):
+        cdef dd_SetFamilyPtr dd_setfam
+        cdef ddf_SetFamilyPtr ddf_setfam
         if self.dd_poly:
-            if self.dd_poly.representation == 2:
-                return _make_dd_setfamily(dd_CopyInputIncidence(self.dd_poly))
-            else:
-                return _make_dd_setfamily(dd_CopyIncidence(self.dd_poly))
+            dd_setfam = dd_CopyIncidence(self.dd_poly)
+            if dd_setfam == NULL:
+                raise ValueError("failed to get incidence")
+            result = _get_dd_setfam(dd_setfam)
+            dd_FreeSetFamily(dd_setfam)
         else:
-            if self.ddf_poly.representation == <ddf_RepresentationType>2:
-                return _make_ddf_setfamily(ddf_CopyInputIncidence(self.ddf_poly))
-            else:
-                return _make_ddf_setfamily(ddf_CopyIncidence(self.ddf_poly))
+            ddf_setfam = ddf_CopyIncidence(self.ddf_poly)
+            if ddf_setfam == NULL:
+                raise ValueError("failed to get incidence")
+            result = _get_ddf_setfam(ddf_setfam)
+            ddf_FreeSetFamily(ddf_setfam)
+        return result
 
-    def get_facet_incidence(self):
-        # if rep_type is generator, the input incidence is the vertex incidence
+    def get_input_incidence(self):
+        cdef dd_SetFamilyPtr dd_setfam
+        cdef ddf_SetFamilyPtr ddf_setfam
         if self.dd_poly:
-            if self.dd_poly.representation == 2: # if generator representation
-                return _make_dd_setfamily(dd_CopyIncidence(self.dd_poly))
-            else:
-                return _make_dd_setfamily(dd_CopyInputIncidence(self.dd_poly))
+            dd_setfam = dd_CopyInputIncidence(self.dd_poly)
+            if dd_setfam == NULL:
+                raise ValueError("failed to get input incidence")
+            result = _get_dd_setfam(dd_setfam)
+            dd_FreeSetFamily(dd_setfam)
         else:
-            if self.ddf_poly.representation == <ddf_RepresentationType>2:
-                return _make_ddf_setfamily(ddf_CopyIncidence(self.ddf_poly))
-            else:
-                return _make_ddf_setfamily(ddf_CopyInputIncidence(self.ddf_poly))
+            ddf_setfam = ddf_CopyInputIncidence(self.ddf_poly)
+            if ddf_setfam == NULL:
+                raise ValueError("failed to get input incidence")
+            result = _get_ddf_setfam(ddf_setfam)
+            ddf_FreeSetFamily(ddf_setfam)
+        return result
 
 # module initialization code comes here
 # initialize module constants
