@@ -157,26 +157,26 @@ end
 >>> # vertex 1 is adjacent to vertices 0 and 2
 >>> # vertex 2 is adjacent to vertices 1 and 3
 >>> # vertex 3 is adjacent to vertices 0 and 2
->>> print(poly.get_adjacency())
-(frozenset({1, 3}), frozenset({0, 2}), frozenset({1, 3}), frozenset({0, 2}))
+>>> print([list(x) for x in poly.get_adjacency()])
+[[1, 3], [0, 2], [1, 3], [0, 2]]
 >>> # vertex 0 is the intersection of faces (1) and (2)
 >>> # vertex 1 is the intersection of faces (2) and (3)
 >>> # vertex 2 is the intersection of faces (0) and (3)
 >>> # vertex 3 is the intersection of faces (0) and (1)
->>> print(poly.get_incidence())
-(frozenset({1, 2}), frozenset({2, 3}), frozenset({0, 3}), frozenset({0, 1}))
+>>> print([list(x) for x in poly.get_incidence()])
+[[1, 2], [2, 3], [0, 3], [0, 1]]
 >>> # face (0) is adjacent to faces (1) and (3)
 >>> # face (1) is adjacent to faces (0) and (2)
 >>> # face (2) is adjacent to faces (1) and (3)
 >>> # face (3) is adjacent to faces (0) and (2)
->>> print(poly.get_input_adjacency())
-(frozenset({1, 3}), frozenset({0, 2}), frozenset({1, 3}), frozenset({0, 2}), frozenset())
+>>> print([list(x) for x in poly.get_input_adjacency()])
+[[1, 3], [0, 2], [1, 3], [0, 2], []]
 >>> # face (0) intersects with vertices 2 and 3
 >>> # face (1) intersects with vertices 0 and 3
 >>> # face (2) intersects with vertices 0 and 1
 >>> # face (3) intersects with vertices 1 and 2
->>> print(poly.get_input_incidence())
-(frozenset({2, 3}), frozenset({0, 3}), frozenset({0, 1}), frozenset({1, 2}), frozenset())
+>>> print([list(x) for x in poly.get_input_incidence()])
+[[2, 3], [0, 3], [0, 1], [1, 2], []]
 >>> # add a vertex, and construct new polyhedron
 >>> gen.extend([[1, 0, 2]])
 >>> vpoly = cdd.Polyhedron(gen)
@@ -213,14 +213,14 @@ end
 >>> #   3---(0)---0
 >>> #
 >>> # for each face, list adjacent faces
->>> print(vpoly.get_adjacency())
-(frozenset({2, 4}), frozenset({2, 3}), frozenset({0, 1}), frozenset({1, 4}), frozenset({0, 3}))
+>>> print([list(x) for x in vpoly.get_adjacency()])
+[[2, 4], [2, 3], [0, 1], [1, 4], [0, 3]]
 >>> # for each face, list adjacent vertices
->>> print(vpoly.get_incidence())
-(frozenset({0, 3}), frozenset({2, 4}), frozenset({2, 3}), frozenset({1, 4}), frozenset({0, 1}))
+>>> print([list(x) for x in vpoly.get_incidence()])
+[[0, 3], [2, 4], [2, 3], [1, 4], [0, 1]]
 >>> # for each vertex, list adjacent vertices
->>> print(vpoly.get_input_adjacency())
-(frozenset({1, 3}), frozenset({0, 4}), frozenset({3, 4}), frozenset({0, 2}), frozenset({1, 2}))
+>>> print([list(x) for x in vpoly.get_input_adjacency()])
+[[1, 3], [0, 4], [3, 4], [0, 2], [1, 2]]
 >>> # for each vertex, list adjacent faces
->>> print(vpoly.get_input_incidence())
-(frozenset({0, 4}), frozenset({3, 4}), frozenset({1, 2}), frozenset({0, 2}), frozenset({1, 3}))
+>>> print([list(x) for x in vpoly.get_input_incidence()])
+[[0, 4], [3, 4], [1, 2], [0, 2], [1, 3]]
