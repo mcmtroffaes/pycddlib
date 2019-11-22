@@ -51,9 +51,6 @@ Methods and Attributes
         The adjacency of a polyhedron in the H-representation is the
         list of sets of vertices which are adjacent to each face.
 
-        The adjacency of a polyhedron in the V-representation is the
-        list of sets of faces which are adjacent to each vertex.
-
 .. method:: Polyhedron.get_input_adjacency()
 
         Get the input adjacencies.
@@ -64,9 +61,6 @@ Methods and Attributes
         The input adjacency of a polyhedron in the H-representation is the
         list of sets of faces which are adjacent to each face.
 
-        The input adjacency of a polyhedron in the V-representation is the
-        list of sets of vertices which are adjacent to each vertex.
-
 .. method:: Polyhedron.get_incidence()
 
         Get the incidences.
@@ -74,7 +68,8 @@ Methods and Attributes
         :returns: Incidence list.
         :rtype: :class:`tuple`
 
-        TODO
+        The incidence of a polyhedron in the H-representation is the
+        list of sets of faces which make up each vertex (by intersection).
 
 .. method:: Polyhedron.get_input_incidence()
 
@@ -83,7 +78,8 @@ Methods and Attributes
         :returns: Input incidence list.
         :rtype: :class:`tuple`
 
-	TODO
+        The input incidence of a polyhedron in the H-representation is the
+        list of sets of vertices that make up each face (by convex hull).
 
 .. attribute:: Polyhedron.rep_type
 
@@ -137,7 +133,8 @@ The following example illustrates how to get adjacencies and incidences.
 >>> mat.rep_type = cdd.RepType.INEQUALITY
 >>> poly = cdd.Polyhedron(mat)
 >>> # The V-representation can be printed in the usual way:
->>> print(poly.get_generators())
+>>> vpoly = poly.get_generators()
+>>> print(vpoly)
 V-representation
 begin
  4 3 rational
@@ -146,11 +143,41 @@ begin
  1 -1 1
  1 -1 -1
 end
+>>> # graphical depiction of vertices and faces:
+>>> #
+>>> #   2---(3)---1
+>>> #   |         |
+>>> #   |         |
+>>> #  (0)       (2)
+>>> #   |         |
+>>> #   |         |
+>>> #   3---(1)---0
+>>> #
+>>> # vertex 0 is adjacent to vertices 1 and 3
+>>> # vertex 1 is adjacent to vertices 0 and 2
+>>> # vertex 2 is adjacent to vertices 1 and 3
+>>> # vertex 3 is adjacent to vertices 0 and 2
 >>> print(poly.get_adjacency())
 (frozenset({1, 3}), frozenset({0, 2}), frozenset({1, 3}), frozenset({0, 2}))
+>>> # vertex 0 is the intersection of faces (1) and (2)
+>>> # vertex 1 is the intersection of faces (2) and (3)
+>>> # vertex 2 is the intersection of faces (0) and (3)
+>>> # vertex 3 is the intersection of faces (0) and (1)
 >>> print(poly.get_incidence())
 (frozenset({1, 2}), frozenset({2, 3}), frozenset({0, 3}), frozenset({0, 1}))
+>>> # face (0) is adjacent to faces (1) and (3)
+>>> # face (1) is adjacent to faces (0) and (2)
+>>> # face (2) is adjacent to faces (1) and (3)
+>>> # face (3) is adjacent to faces (0) and (2)
 >>> print(poly.get_input_adjacency())
-TODO
+(frozenset({1, 3}), frozenset({0, 2}), frozenset({1, 3}), frozenset({0, 2}), frozenset())
+>>> # face (0) intersects with vertices 2 and 3
+>>> # face (1) intersects with vertices 0 and 3
+>>> # face (2) intersects with vertices 0 and 1
+>>> # face (3) intersects with vertices 1 and 2
 >>> print(poly.get_input_incidence())
-TODO
+(frozenset({2, 3}), frozenset({0, 3}), frozenset({0, 1}), frozenset({1, 2}), frozenset())
+>>> print(vpoly.get_adjacency())
+>>> print(vpoly.get_incidence())
+>>> print(vpoly.get_input_adjacency())
+>>> print(vpoly.get_input_incidence())
