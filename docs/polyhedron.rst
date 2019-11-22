@@ -48,8 +48,8 @@ Methods and Attributes
         :returns: Adjacency list.
         :rtype: :class:`tuple`
 
-        The adjacency of a polyhedron in the H-representation is the
-        list of sets of vertices which are adjacent to each face.
+        H-representation: For each vertex, list adjacent vertices.
+        V-representation: For each face, list adjacent faces.
 
 .. method:: Polyhedron.get_input_adjacency()
 
@@ -58,8 +58,8 @@ Methods and Attributes
         :returns: Input adjacency list.
         :rtype: :class:`tuple`
 
-        The input adjacency of a polyhedron in the H-representation is the
-        list of sets of faces which are adjacent to each face.
+        H-representation: For each face, list adjacent faces.
+        V-representation: For each vertex, list adjacent vertices.
 
 .. method:: Polyhedron.get_incidence()
 
@@ -68,18 +68,18 @@ Methods and Attributes
         :returns: Incidence list.
         :rtype: :class:`tuple`
 
-        The incidence of a polyhedron in the H-representation is the
-        list of sets of faces which make up each vertex (by intersection).
+        H-representation: For each vertex, list adjacent faces.
+        V-representation: For each face, list adjacent vertices.
 
 .. method:: Polyhedron.get_input_incidence()
 
-        Get the incidences for the polyhedron.
+        Get the input incidences.
 
         :returns: Input incidence list.
         :rtype: :class:`tuple`
 
-        The input incidence of a polyhedron in the H-representation is the
-        list of sets of vertices that make up each face (by convex hull).
+        H-representation: For each face, list adjacent vertices.
+        V-representation: For each vertex, list adjacent faces.
 
 .. attribute:: Polyhedron.rep_type
 
@@ -183,16 +183,18 @@ end
 >>> print(vpoly.get_inequalities())
 H-representation
 begin
- 4 3 rational
+ 5 3 rational
  1 0 1
+ 2 1 -1
  1 1 0
- 1 0 -1
+ 2 -1 -1
  1 -1 0
 end
 >>> # so now we have:
 >>> # 0 <= 1 + x2
+>>> # 0 <= 2 + x1 - x2
 >>> # 0 <= 1 + x1
->>> # 0 <= 1 - x2
+>>> # 0 <= 2 - x1 - x2
 >>> # 0 <= 1 - x1
 >>> #
 >>> # graphical depiction of vertices and faces:
@@ -200,21 +202,25 @@ end
 >>> #        4
 >>> #       / \
 >>> #      /   \
->>> #     /     \
+>>> #    (1)   (3)
 >>> #    /       \
 >>> #   2         1
 >>> #   |         |
 >>> #   |         |
->>> #  (1)       (3)
+>>> #  (2)       (4)
 >>> #   |         |
 >>> #   |         |
 >>> #   3---(0)---0
 >>> #
+>>> # for each face, list adjacent faces
 >>> print(vpoly.get_adjacency())
-(frozenset({1, 3}), frozenset({0, 2}), frozenset({1, 3}), frozenset({0, 2}))
+(frozenset({2, 4}), frozenset({2, 3}), frozenset({0, 1}), frozenset({1, 4}), frozenset({0, 3}))
+>>> # for each face, list adjacent vertices
 >>> print(vpoly.get_incidence())
-(frozenset({0, 3}), frozenset({2, 3}), frozenset({1, 2}), frozenset({0, 1}))
+(frozenset({0, 3}), frozenset({2, 4}), frozenset({2, 3}), frozenset({1, 4}), frozenset({0, 1}))
+>>> # for each vertex, list adjacent vertices
 >>> print(vpoly.get_input_adjacency())
-(frozenset({1, 3}), frozenset({0, 2}), frozenset({1, 3}), frozenset({0, 2}))
+(frozenset({1, 3}), frozenset({0, 4}), frozenset({3, 4}), frozenset({0, 2}), frozenset({1, 2}))
+>>> # for each vertex, list adjacent faces
 >>> print(vpoly.get_input_incidence())
-(frozenset({0, 3}), frozenset({2, 3}), frozenset({1, 2}), frozenset({0, 1}))
+(frozenset({0, 4}), frozenset({3, 4}), frozenset({1, 2}), frozenset({0, 2}), frozenset({1, 3}))
