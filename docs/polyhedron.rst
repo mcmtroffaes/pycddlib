@@ -125,28 +125,14 @@ end
 [3]
 
 
-The following example illustrates the use of the get_adjacency method.
+The following example illustrates how to get adjacencies and incidences.
 
 >>> import cdd
 >>> # We start with the H-representation for a square
->>> mat = cdd.Matrix([[1, 1, 0], [1, 0, 1], [1, -1, 0], [1, 0, -1]])
->>> mat.rep_type = cdd.RepType.INEQUALITY
->>> poly = cdd.Polyhedron(mat)
->>> adjacency_list = poly.get_adjacency()
->>> # We can output to screen as done by cddlib
->>> print(adjacency_list)
-begin
-  4    4
- 1 2 : 2 4
- 2 2 : 1 3
- 3 2 : 2 4
- 4 2 : 1 3
-end
-
-The following example illustrates the use of the get_incidence method.
-
->>> import cdd
->>> # We again start with the H-representation for a square
+>>> # 0 <= 1 + x1 (face 0)
+>>> # 0 <= 1 + x2 (face 1)
+>>> # 0 <= 1 - x1 (face 2)
+>>> # 0 <= 1 - x2 (face 3)
 >>> mat = cdd.Matrix([[1, 1, 0], [1, 0, 1], [1, -1, 0], [1, 0, -1]])
 >>> mat.rep_type = cdd.RepType.INEQUALITY
 >>> poly = cdd.Polyhedron(mat)
@@ -160,13 +146,11 @@ begin
  1 -1 1
  1 -1 -1
 end
->>> vertex_incidence = poly.get_incidence()
->>> # We can output to screen as done by cddlib
->>> print(vertex_incidence)
-begin
-  4    5
- 1 2 : 2 3
- 2 2 : 3 4
- 3 2 : 1 4
- 4 2 : 1 2
-end
+>>> print(poly.get_adjacency())
+(frozenset({1, 3}), frozenset({0, 2}), frozenset({1, 3}), frozenset({0, 2}))
+>>> print(poly.get_incidence())
+(frozenset({1, 2}), frozenset({2, 3}), frozenset({0, 3}), frozenset({0, 1}))
+>>> print(poly.get_input_adjacency())
+TODO
+>>> print(poly.get_input_incidence())
+TODO
