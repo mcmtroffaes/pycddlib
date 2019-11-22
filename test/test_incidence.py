@@ -19,14 +19,10 @@ def test_vertex_incidence_cube():
                          number_type=number_type)
         mat.rep_type = cdd.RepType.INEQUALITY
         poly = cdd.Polyhedron(mat)
-        incidence = poly.get_vertex_incidence()
+        incidence = poly.get_incidence()
 
         # Family size should equal the number of vertices of the cube (8)
-        nose.tools.assert_equal(incidence.family_size, len(incidence))
-        nose.tools.assert_equal(incidence.family_size, 8)
-
-        # Set size should also equal the number of facets of the cube (6), plus 1 (the empty infinite ray)
-        nose.tools.assert_equal(incidence.set_size, 7)
+        nose.tools.assert_equal(len(incidence), 8)
 
         # All the vertices of the cube should mark the incidence of 3 facets
         nose.tools.assert_equal([len(inc) for inc in incidence], [3]*8)
@@ -70,7 +66,7 @@ def test_vertex_incidence_vtest_vo():
                           [4, 5, 6],
                           [2, 4, 5]]
 
-        incidence = poly.get_vertex_incidence()
+        incidence = poly.get_incidence()
         for i in range(10):
             nose.tools.assert_equal(sorted(list(incidence[i])), incidence_list[i])
 
@@ -87,14 +83,10 @@ def test_facet_incidence_cube():
                          number_type=number_type)
         mat.rep_type = cdd.RepType.INEQUALITY
         poly = cdd.Polyhedron(mat)
-        incidence = poly.get_facet_incidence()
+        incidence = poly.get_input_incidence()
 
         # Family size should equal the number of facets of the cube (6), plus 1 (the empty infinite ray)
-        nose.tools.assert_equal(incidence.family_size, len(incidence))
-        nose.tools.assert_equal(incidence.family_size, 7)
-
-        # Set size should also equal the number of vertices of the cube (8)
-        nose.tools.assert_equal(incidence.set_size, 8)
+        nose.tools.assert_equal(len(incidence), 7)
 
         # All the facets of the cube should have 4 vertices.
         # The polyhedron is closed, so the last set should be empty
@@ -134,6 +126,6 @@ def test_facet_incidence_vtest_vo():
                           [5, 6, 7, 8, 9],
                           [0, 4, 7, 8]]
 
-        incidence = poly.get_facet_incidence()
+        incidence = poly.get_input_incidence()
         for i in range(7):
             nose.tools.assert_equal(sorted(list(incidence[i])), incidence_list[i])
