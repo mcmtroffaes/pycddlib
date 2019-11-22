@@ -178,7 +178,7 @@ end
 >>> print(poly.get_input_incidence())
 (frozenset({2, 3}), frozenset({0, 3}), frozenset({0, 1}), frozenset({1, 2}), frozenset())
 >>> # add a vertex, and construct new polyhedron
->>> gen.extend([1, 0, 2])
+>>> gen.extend([[1, 0, 2]])
 >>> vpoly = cdd.Polyhedron(gen)
 >>> print(vpoly.get_inequalities())
 H-representation
