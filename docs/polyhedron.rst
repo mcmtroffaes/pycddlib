@@ -133,8 +133,9 @@ The following example illustrates how to get adjacencies and incidences.
 >>> mat.rep_type = cdd.RepType.INEQUALITY
 >>> poly = cdd.Polyhedron(mat)
 >>> # The V-representation can be printed in the usual way:
->>> vpoly = poly.get_generators()
->>> print(vpoly)
+>>> gen = poly.get_generators()
+>>> vpoly = cdd.Polyhedron(gen)
+>>> print(gen)
 V-representation
 begin
  4 3 rational
