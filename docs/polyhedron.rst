@@ -41,42 +41,42 @@ Methods and Attributes
         column vector with `n` ones followed by `s` zeroes, and `V` is the
         stacked matrix of `n` vertex row vectors on top of `s` ray row vectors.
 
-.. method:: Polyhedron.get_vertex_adjacency_list()
+.. method:: Polyhedron.get_adjacency()
 
-        Get the vertex adjacency list for the polyhedron.
+        Get the adjacencies.
 
-        :returns: Vertex adjacency list.
-        :rtype: :class:`~cdd.SetFamily`
+        :returns: Adjacency list.
+        :rtype: :class:`tuple`
 
-	The vertex adjacency list of a polyhedron is the list of sets of vertices
+        The adjacency of a polyhedron in the V-representation is the
+        list of sets of vertices which are adjacent to each vertex.
+
+.. method:: Polyhedron.get_input_adjacency()
+
+        Get the input adjacencies.
+
+        :returns: Input adjacency list.
+        :rtype: :class:`tuple`
+
+        The adjacency of a polyhedron in the V-representation is the
+        list of sets of vertices which are adjacent to each vertex.
+
+.. method:: Polyhedron.get_incidence()
+
+        Get the incidences.
+
+        :returns: Incidence list.
+        :rtype: :class:`tuple`
+
+	The incidence of a polyhedron is the list of sets of facets
 	which are adjacent to each vertex.
 
-.. method:: Polyhedron.get_facet_adjacency_list()
+.. method:: Polyhedron.get_input_incidence()
 
-        Get the facet adjacency list for the polyhedron.
+        Get the incidences for the polyhedron.
 
-        :returns: Facet adjacency list.
-        :rtype: :class:`~cdd.SetFamily`
-
-	The facet adjacency list of a polyhedron is the list of sets of facets
-	which are adjacent to each facet.
-
-.. method:: Polyhedron.get_vertex_incidence()
-
-        Get the vertex incidences for the polyhedron.
-
-        :returns: Vertex incidences.
-        :rtype: :class:`~cdd.SetFamily`
-
-	The vertex incidence of a polyhedron is the list of sets of facets
-	which are adjacent to each vertex.
-
-.. method:: Polyhedron.get_facet_incidence()
-
-        Get the facet incidences for the polyhedron.
-
-        :returns: Facet incidences.
-        :rtype: :class:`~cdd.SetFamily`
+        :returns: Input incidence list.
+        :rtype: :class:`tuple`
 
 	The facet incidence of a polyhedron is the list of sets of vertices
 	which are adjacent to each facet.

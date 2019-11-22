@@ -151,27 +151,34 @@ cdef _set_set(set_type set_, pset):
             set_delelem(set_, elem)
 
 cdef _get_dd_setfam(dd_SetFamilyPtr setfam):
-    """Create tuple of Python frozensets from dd_SetFamilyPtr.  The
-    indexing of the sets start at 0, unlike the string output from
-    cddlib, which starts at 1.
+    """Create tuple of Python frozensets from dd_SetFamilyPtr, and
+    free the pointer. The indexing of the sets start at 0, unlike the
+    string output from cddlib, which starts at 1.
     """
     cdef long elem
-    return tuple(frozenset([elem - 1
-                            for elem from 1 <= elem <= setfam.setsize
-                            if set_member(elem, setfam.set[i])])
-                 for i in range(setfam.famsize))
+    if setfam == NULL:
+        raise ValueError("failed to get set family")
+    result = tuple(frozenset([elem - 1
+                              for elem from 1 <= elem <= setfam.setsize
+                              if set_member(elem, setfam.set[i])])
+                   for i in range(setfam.famsize))
+    dd_FreeSetFamily(setfam)
+    return result
 
 cdef _get_ddf_setfam(ddf_SetFamilyPtr setfam):
-    """Create tuple of Python frozensets from ddf_SetFamilyPtr.  The
-    indexing of the sets start at 0, unlike the string output from
-    cddlib, which starts at 1.
+    """Create tuple of Python frozensets from ddf_SetFamilyPtr, and
+    free the pointer. The indexing of the sets start at 0, unlike the
+    string output from cddlib, which starts at 1.
     """
-
     cdef long elem
-    return tuple(frozenset([elem - 1
-                            for elem from 1 <= elem <= setfam.setsize
-                            if set_member(elem, setfam.set[i])])
-                 for i in range(setfam.famsize))
+    if setfam == NULL:
+        raise ValueError("failed to get set family")
+    result = tuple(frozenset([elem - 1
+                              for elem from 1 <= elem <= setfam.setsize
+                              if set_member(elem, setfam.set[i])])
+                   for i in range(setfam.famsize))
+    ddf_FreeSetFamily(setfam)
+    return result
 
 cdef _raise_error(dd_ErrorType error, msg):
     """Convert error into string and raise it."""
@@ -868,72 +875,28 @@ cdef class Polyhedron(NumberTypeable):
             return _make_ddf_matrix(ddf_CopyGenerators(self.ddf_poly))
 
     def get_adjacency(self):
-        cdef dd_SetFamilyPtr dd_setfam
-        cdef ddf_SetFamilyPtr ddf_setfam
         if self.dd_poly:
-            dd_setfam = dd_CopyAdjacency(self.dd_poly)
-            if dd_setfam == NULL:
-                raise ValueError("failed to get adjacency")
-            result = _get_dd_setfam(dd_setfam)
-            dd_FreeSetFamily(dd_setfam)
+            return _get_dd_setfam(dd_CopyAdjacency(self.dd_poly))
         else:
-            ddf_setfam = ddf_CopyAdjacency(self.ddf_poly)
-            if ddf_setfam == NULL:
-                raise ValueError("failed to get adjacency")
-            result = _get_ddf_setfam(ddf_setfam)
-            ddf_FreeSetFamily(ddf_setfam)
-        return result
+            return _get_ddf_setfam(ddf_CopyAdjacency(self.ddf_poly))
 
     def get_input_adjacency(self):
-        cdef dd_SetFamilyPtr dd_setfam
-        cdef ddf_SetFamilyPtr ddf_setfam
         if self.dd_poly:
-            dd_setfam = dd_CopyInputAdjacency(self.dd_poly)
-            if dd_setfam == NULL:
-                raise ValueError("failed to get input adjacency")
-            result = _get_dd_setfam(dd_setfam)
-            dd_FreeSetFamily(dd_setfam)
+            return _get_dd_setfam(dd_CopyInputAdjacency(self.dd_poly))
         else:
-            ddf_setfam = ddf_CopyInputAdjacency(self.ddf_poly)
-            if ddf_setfam == NULL:
-                raise ValueError("failed to get input adjacency")
-            result = _get_ddf_setfam(ddf_setfam)
-            ddf_FreeSetFamily(ddf_setfam)
-        return result
+            return _get_ddf_setfam(ddf_CopyInputAdjacency(self.ddf_poly))
 
     def get_incidence(self):
-        cdef dd_SetFamilyPtr dd_setfam
-        cdef ddf_SetFamilyPtr ddf_setfam
         if self.dd_poly:
-            dd_setfam = dd_CopyIncidence(self.dd_poly)
-            if dd_setfam == NULL:
-                raise ValueError("failed to get incidence")
-            result = _get_dd_setfam(dd_setfam)
-            dd_FreeSetFamily(dd_setfam)
+            return _get_dd_setfam(dd_CopyIncidence(self.dd_poly))
         else:
-            ddf_setfam = ddf_CopyIncidence(self.ddf_poly)
-            if ddf_setfam == NULL:
-                raise ValueError("failed to get incidence")
-            result = _get_ddf_setfam(ddf_setfam)
-            ddf_FreeSetFamily(ddf_setfam)
-        return result
+            return _get_ddf_setfam(ddf_CopyIncidence(self.ddf_poly))
 
     def get_input_incidence(self):
-        cdef dd_SetFamilyPtr dd_setfam
-        cdef ddf_SetFamilyPtr ddf_setfam
         if self.dd_poly:
-            dd_setfam = dd_CopyInputIncidence(self.dd_poly)
-            if dd_setfam == NULL:
-                raise ValueError("failed to get input incidence")
-            result = _get_dd_setfam(dd_setfam)
-            dd_FreeSetFamily(dd_setfam)
+            return _get_dd_setfam(dd_CopyInputIncidence(self.dd_poly))
         else:
-            ddf_setfam = ddf_CopyInputIncidence(self.ddf_poly)
-            if ddf_setfam == NULL:
-                raise ValueError("failed to get input incidence")
-            result = _get_ddf_setfam(ddf_setfam)
-            ddf_FreeSetFamily(ddf_setfam)
-        return result
+            return _get_ddf_setfam(ddf_CopyInputIncidence(self.ddf_poly))
 
 # module initialization code comes here
 # initialize module constants
