@@ -2,7 +2,7 @@ import cdd
 import nose
 
 
-def make_test_vertex_adjacency_list(number_type):
+def _make_vertex_adjacency_list(number_type):
 
     # The following lines test that poly.get_adjacency_list()
     # returns the correct adjacencies.
@@ -40,7 +40,7 @@ def make_test_vertex_adjacency_list(number_type):
         nose.tools.assert_equal(list(adjacency_list[i]), adjacencies[i])
 
 
-def make_test_facet_adjacency_list(number_type):
+def _make_facet_adjacency_list(number_type):
     # This matrix is the same as in vtest_vo.ine
     mat = cdd.Matrix([[0, 0, 0, 1],
                       [5, -4, -2, 1],
@@ -65,7 +65,7 @@ def make_test_facet_adjacency_list(number_type):
         nose.tools.assert_equal(list(adjacency_list[i]), adjacencies[i])
 
 def test_all():
-    make_test_vertex_adjacency_list("fraction")
-    make_test_vertex_adjacency_list("float")
-    make_test_facet_adjacency_list("fraction")
-    make_test_facet_adjacency_list("float")
+    _make_vertex_adjacency_list("fraction")
+    _make_vertex_adjacency_list("float")
+    _make_facet_adjacency_list("fraction")
+    _make_facet_adjacency_list("float")
