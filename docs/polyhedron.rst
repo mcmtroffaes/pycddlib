@@ -97,7 +97,7 @@ Methods and Attributes
 Examples
 --------
 
-1) This is the sampleh1.ine example that comes with cddlib.
+This is the sampleh1.ine example that comes with cddlib.
 
 >>> import cdd
 >>> mat = cdd.Matrix([[2,-1,-1,0],[0,1,0,0],[0,0,1,0]], number_type='fraction')
@@ -125,14 +125,14 @@ end
 [3]
 
 
-2) The following example illustrates the use of the get_adjacency_list method.
+The following example illustrates the use of the get_adjacency method.
 
 >>> import cdd
 >>> # We start with the H-representation for a square
 >>> mat = cdd.Matrix([[1, 1, 0], [1, 0, 1], [1, -1, 0], [1, 0, -1]])
 >>> mat.rep_type = cdd.RepType.INEQUALITY
 >>> poly = cdd.Polyhedron(mat)
->>> adjacency_list = poly.get_vertex_adjacency_list()
+>>> adjacency_list = poly.get_adjacency()
 >>> # We can output to screen as done by cddlib
 >>> print(adjacency_list)
 begin
@@ -142,23 +142,8 @@ begin
  3 2 : 2 4
  4 2 : 1 3
 end
->>> # We can also use some attributes of the SetFamily class
->>> print(adjacency_list.family_size)
-4
->>> print(adjacency_list.set_size)
-4
->>> # The adjacencies are stored as a tuple of frozensets
->>> # The numbering in the sets starts from zero,
->>> # so the vertices adjacent to the first vertex (vertex 0)
->>> # have indices 1 and 3:
->>> print(list(adjacency_list[0]))
-[1, 3]
->>> # Finally, we can output the vertex adjacency matrix
->>> print(adjacency_list.set_family_matrix)
-[[0, 1, 0, 1], [1, 0, 1, 0], [0, 1, 0, 1], [1, 0, 1, 0]]
 
-
-2) The following example illustrates the use of the get_vertex_incidence method.
+The following example illustrates the use of the get_incidence method.
 
 >>> import cdd
 >>> # We again start with the H-representation for a square
@@ -175,7 +160,7 @@ begin
  1 -1 1
  1 -1 -1
 end
->>> vertex_incidence = poly.get_vertex_incidence()
+>>> vertex_incidence = poly.get_incidence()
 >>> # We can output to screen as done by cddlib
 >>> print(vertex_incidence)
 begin
@@ -185,20 +170,3 @@ begin
  3 2 : 1 4
  4 2 : 1 2
 end
->>> # Note that because this is a closed polyhedron, the last
->>> # element of the set is not adjacent to any vertex.
->>> # We can also use some attributes of the SetFamily class
->>> # First, the size of the family of sets
->>> print(vertex_incidence.family_size)
-4
->>> # Next, the set size.
->>> print(vertex_incidence.set_size)
-5
->>> # The adjacencies are stored as a tuple of frozensets
->>> # The numbering in the sets starts from zero,
->>> # so the facets adjacent to the first vertex
->>> # (vertex 0; [1, -1])
->>> # have indices 1 and 2 ([1, 0, 1], [1, -1, 0],
->>> # equivalent to x_0 < 1, -x_1 < 1):
->>> print(list(vertex_incidence[0]))
-[1, 2]
