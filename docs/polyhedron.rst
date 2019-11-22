@@ -134,7 +134,6 @@ The following example illustrates how to get adjacencies and incidences.
 >>> poly = cdd.Polyhedron(mat)
 >>> # The V-representation can be printed in the usual way:
 >>> gen = poly.get_generators()
->>> vpoly = cdd.Polyhedron(gen)
 >>> print(gen)
 V-representation
 begin
@@ -178,6 +177,8 @@ end
 >>> # face (3) intersects with vertices 1 and 2
 >>> print(poly.get_input_incidence())
 (frozenset({2, 3}), frozenset({0, 3}), frozenset({0, 1}), frozenset({1, 2}), frozenset())
+>>> vpoly = cdd.Polyhedron(gen)
+>>> print(vpoly.get_inequalities())
 >>> print(vpoly.get_adjacency())
 >>> print(vpoly.get_incidence())
 >>> print(vpoly.get_input_adjacency())
