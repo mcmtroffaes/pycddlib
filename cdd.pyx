@@ -26,7 +26,7 @@ cimport libc.stdlib
 from fractions import Fraction
 import numbers
 
-__version__ = "2.1.1a0"
+__version__ = "2.1.1a1"
 
 # also need time_t
 cdef extern from "time.h":
@@ -149,6 +149,36 @@ cdef _set_set(set_type set_, pset):
             set_addelem(set_, elem)
         else:
             set_delelem(set_, elem)
+
+cdef _get_dd_setfam(dd_SetFamilyPtr setfam):
+    """Create tuple of Python frozensets from dd_SetFamilyPtr, and
+    free the pointer. The indexing of the sets start at 0, unlike the
+    string output from cddlib, which starts at 1.
+    """
+    cdef long elem
+    if setfam == NULL:
+        raise ValueError("failed to get set family")
+    result = tuple(frozenset([elem - 1
+                              for elem from 1 <= elem <= setfam.setsize
+                              if set_member(elem, setfam.set[i])])
+                   for i in range(setfam.famsize))
+    dd_FreeSetFamily(setfam)
+    return result
+
+cdef _get_ddf_setfam(ddf_SetFamilyPtr setfam):
+    """Create tuple of Python frozensets from ddf_SetFamilyPtr, and
+    free the pointer. The indexing of the sets start at 0, unlike the
+    string output from cddlib, which starts at 1.
+    """
+    cdef long elem
+    if setfam == NULL:
+        raise ValueError("failed to get set family")
+    result = tuple(frozenset([elem - 1
+                              for elem from 1 <= elem <= setfam.setsize
+                              if set_member(elem, setfam.set[i])])
+                   for i in range(setfam.famsize))
+    ddf_FreeSetFamily(setfam)
+    return result
 
 cdef _raise_error(dd_ErrorType error, msg):
     """Convert error into string and raise it."""
@@ -843,6 +873,30 @@ cdef class Polyhedron(NumberTypeable):
             return _make_dd_matrix(dd_CopyGenerators(self.dd_poly))
         else:
             return _make_ddf_matrix(ddf_CopyGenerators(self.ddf_poly))
+
+    def get_adjacency(self):
+        if self.dd_poly:
+            return _get_dd_setfam(dd_CopyAdjacency(self.dd_poly))
+        else:
+            return _get_ddf_setfam(ddf_CopyAdjacency(self.ddf_poly))
+
+    def get_input_adjacency(self):
+        if self.dd_poly:
+            return _get_dd_setfam(dd_CopyInputAdjacency(self.dd_poly))
+        else:
+            return _get_ddf_setfam(ddf_CopyInputAdjacency(self.ddf_poly))
+
+    def get_incidence(self):
+        if self.dd_poly:
+            return _get_dd_setfam(dd_CopyIncidence(self.dd_poly))
+        else:
+            return _get_ddf_setfam(ddf_CopyIncidence(self.ddf_poly))
+
+    def get_input_incidence(self):
+        if self.dd_poly:
+            return _get_dd_setfam(dd_CopyInputIncidence(self.dd_poly))
+        else:
+            return _get_ddf_setfam(ddf_CopyInputIncidence(self.ddf_poly))
 
 # module initialization code comes here
 # initialize module constants
