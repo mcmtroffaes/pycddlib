@@ -1,9 +1,9 @@
 import cdd
-import nose
+import pytest
 
 
-def _make_vertex_adjacency_list(number_type):
-
+@pytest.mark.parametrize("number_type", ["fraction", "float"])
+def test_make_vertex_adjacency_list(number_type):
     # The following lines test that poly.get_adjacency_list()
     # returns the correct adjacencies.
 
@@ -20,10 +20,10 @@ def _make_vertex_adjacency_list(number_type):
     adjacency_list = poly.get_adjacency()
 
     # Family size should equal the number of vertices of the cube (8)
-    nose.tools.assert_equal(len(adjacency_list), 8)
+    assert len(adjacency_list) == 8
 
     # All the vertices of the cube should be connected by three other vertices
-    nose.tools.assert_equal([len(adj) for adj in adjacency_list], [3]*8)
+    assert [len(adj) for adj in adjacency_list] == [3]*8
 
     # The vertices must be numbered consistently
     # The first vertex is adjacent to the second, fourth and eighth
@@ -37,10 +37,11 @@ def _make_vertex_adjacency_list(number_type):
                    [1, 4, 7],
                    [0, 5, 6]]
     for i in range(8):
-        nose.tools.assert_equal(list(adjacency_list[i]), adjacencies[i])
+        assert list(adjacency_list[i]) == adjacencies[i]
 
 
-def _make_facet_adjacency_list(number_type):
+@pytest.mark.parametrize("number_type", ["fraction", "float"])
+def test_make_facet_adjacency_list(number_type):
     # This matrix is the same as in vtest_vo.ine
     mat = cdd.Matrix([[0, 0, 0, 1],
                       [5, -4, -2, 1],
@@ -62,10 +63,4 @@ def _make_facet_adjacency_list(number_type):
 
     adjacency_list = poly.get_input_adjacency()
     for i in range(7):
-        nose.tools.assert_equal(list(adjacency_list[i]), adjacencies[i])
-
-def test_all():
-    _make_vertex_adjacency_list("fraction")
-    _make_vertex_adjacency_list("float")
-    _make_facet_adjacency_list("fraction")
-    _make_facet_adjacency_list("float")
+        assert list(adjacency_list[i]) == adjacencies[i]
