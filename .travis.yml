@@ -17,9 +17,10 @@ install:
   - pip install --install-option="--no-cython-compile" Cython
   - "pip install Sphinx"
   - "pip install nose"
+  - "pip install pytest"
   - "pip install numpy"
   - "pip install ."
 script:
-  - "nosetests"
+  - "pytest"
   - "cd docs"
   - "make doctest"
