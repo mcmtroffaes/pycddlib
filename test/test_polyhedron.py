@@ -1,10 +1,7 @@
 import cdd
 import pytest
 from fractions import Fraction
-from test_matrix import assert_matrix_almost_equal
-
-def assert_matrix_exactly_equal(a, b):
-    assert list(a) == list(b)
+from test_matrix import assert_matrix_almost_equal, assert_matrix_exactly_equal
 
 @pytest.mark.parametrize(
     "number_type,assert_matrix_equal",

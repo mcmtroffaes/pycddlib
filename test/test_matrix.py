@@ -2,15 +2,27 @@ import cdd
 import pytest
 from fractions import Fraction
 
+def assert_almost_equal(x, y):
+    assert x == pytest.approx(y)
+
+def assert_exactly_equal(x, y):
+    assert x == y
+
 def assert_vector_almost_equal(vec1, vec2):
     assert len(vec1) == len(vec2)
     for (entry1, entry2) in zip(vec1, vec2):
         assert entry1 == pytest.approx(entry2)
 
+def assert_vector_exactly_equal(vec1, vec2):
+    assert list(vec1) == list(vec2)
+
 def assert_matrix_almost_equal(mat1, mat2):
     assert len(mat1) == len(mat2)
     for (row1, row2) in zip(mat1, mat2):
         assert_vector_almost_equal(row1, row2)
+
+def assert_matrix_exactly_equal(mat1, mat2):
+    assert list(mat1) == list(mat2)
 
 def test_large_number_1():
     mat = cdd.Matrix([[10 ** 100]])

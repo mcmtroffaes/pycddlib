@@ -1,8 +1,8 @@
 import cdd
-import nose.tools
+import pytest
+
 
 # Check that numerical inconsistency is reported properly.
-@nose.tools.raises(RuntimeError)
 def test_issue7():
     m = [
         [1.0, -4.0, -40.0, -4.0, 30.0677432, -0.93140119, -20.75373128],
@@ -18,4 +18,5 @@ def test_issue7():
         ]
     m2 = cdd.Matrix(m, number_type='float')
     m2.rep_type = cdd.RepType.GENERATOR
-    poly = cdd.Polyhedron(m2)
+    with pytest.raises(RuntimeError):
+        poly = cdd.Polyhedron(m2)
