@@ -4,6 +4,12 @@ Version 2.1.1 (in development)
 * exposed adjacency and incidence (see issues #33, #34, and #36,
   contributed by bobmyhill)
 
+* Add Python 3.8 support.
+
+* Drop Python 3.4 support.
+
+* Use pytest instead of nose for regression tests.
+
 Version 2.1.0 (15 October 2018)
 -------------------------------
 
