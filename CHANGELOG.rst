@@ -1,5 +1,5 @@
-Version 2.1.1 (in development)
-------------------------------
+Version 2.1.1 (16 January 2020)
+-------------------------------
 
 * exposed adjacency and incidence (see issues #33, #34, and #36,
   contributed by bobmyhill)
