@@ -126,15 +126,16 @@ cdef _tmpread(libc.stdio.FILE *pfile):
     cdef size_t length
     cdef size_t num_bytes
     cdef void *buffer
+    result = ""
     libc.stdio.fseek(pfile, 0, libc.stdio.SEEK_END)
     length = libc.stdio.ftell(pfile)
     buffer = cpython.mem.PyMem_RawMalloc(length)
     try:
         libc.stdio.fseek(pfile, 0, libc.stdio.SEEK_SET)
         num_bytes = libc.stdio.fread(buffer, 1, length, pfile)
-        libc.stdio.fclose(pfile)
         result = cpython.unicode.PyUnicode_DecodeUTF8(<char*>buffer, num_bytes, 'strict')
     finally:
+        libc.stdio.fclose(pfile)
         cpython.mem.PyMem_RawFree(buffer)
     return result
 
