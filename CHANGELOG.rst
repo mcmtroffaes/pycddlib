@@ -1,4 +1,4 @@
-Version 2.1.2 (in development)
+Version 2.1.2 (11 August 2020)
 ------------------------------
 
 * Drop Python 2.7 support.
