@@ -19,6 +19,7 @@
 # 51 Franklin Street, Fifth Floor, Boston, MA 02110-1301 USA.
 
 cimport cpython.bytes
+cimport cpython.mem
 cimport cpython.unicode
 cimport libc.stdio
 cimport libc.stdlib
@@ -121,18 +122,22 @@ cdef libc.stdio.FILE *_tmpfile() except NULL:
          raise RuntimeError("failed to create temporary file")
      return result
 
-DEF MAX_STR_LEN = 20000
-
 cdef _tmpread(libc.stdio.FILE *pfile):
-    cdef char result[MAX_STR_LEN]
+    cdef size_t length
     cdef size_t num_bytes
-    # read the file
-    libc.stdio.fseek(pfile, 0, libc.stdio.SEEK_SET)
-    num_bytes = libc.stdio.fread(result, 1, MAX_STR_LEN, pfile)
-    # close the file
-    libc.stdio.fclose(pfile)
-    # return result
-    return cpython.unicode.PyUnicode_DecodeUTF8(result, num_bytes, 'strict')
+    cdef void *buffer
+    result = ""
+    libc.stdio.fseek(pfile, 0, libc.stdio.SEEK_END)
+    length = libc.stdio.ftell(pfile)
+    buffer = cpython.mem.PyMem_RawMalloc(length)
+    try:
+        libc.stdio.fseek(pfile, 0, libc.stdio.SEEK_SET)
+        num_bytes = libc.stdio.fread(buffer, 1, length, pfile)
+        result = cpython.unicode.PyUnicode_DecodeUTF8(<char*>buffer, num_bytes, 'strict')
+    finally:
+        libc.stdio.fclose(pfile)
+        cpython.mem.PyMem_RawFree(buffer)
+    return result
 
 cdef _get_set(set_type set_):
     """Create Python frozenset from given set_type."""
