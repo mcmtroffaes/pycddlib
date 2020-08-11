@@ -13,7 +13,7 @@ representation of a polyhedron with cdd.  Also, it can solve a linear
 programming problem, i.e. a problem of maximizing and minimizing a
 linear function over a polyhedron.
 
-* Download: http://pypi.python.org/pypi/pycddlib/#downloads
+* Download: http://pypi.python.org/pypi/pycddlib/#files
 
 * Documentation: http://pycddlib.readthedocs.org/
 
