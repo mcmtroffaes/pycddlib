@@ -1,6 +1,10 @@
 Version 2.1.2 (in development)
 ------------------------------
 
+* Drop Python 2.7 support.
+
+* Fix string truncation issue (see issue #39).
+
 Version 2.1.1 (16 January 2020)
 -------------------------------
 
