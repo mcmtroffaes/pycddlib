@@ -1,6 +1,6 @@
 pycddlib is a Python wrapper for Komei Fukuda's cddlib.
 
-`cddlib <http://www.inf.ethz.ch/personal/fukudak/cdd_home/>`_ is
+`cddlib <https://people.inf.ethz.ch/fukudak/cdd_home/>`_ is
 an implementation of the Double Description Method of Motzkin et
 al. for generating all vertices (i.e. extreme points) and extreme rays
 of a general convex polyhedron given by a system of linear
@@ -13,11 +13,11 @@ representation of a polyhedron with cdd.  Also, it can solve a linear
 programming problem, i.e. a problem of maximizing and minimizing a
 linear function over a polyhedron.
 
-* Download: http://pypi.python.org/pypi/pycddlib/#files
+* Download: https://pypi.org/project/pycddlib/#files
 
-* Documentation: http://pycddlib.readthedocs.org/
+* Documentation: https://pycddlib.readthedocs.io/en/latest/
 
-* Development: http://github.com/mcmtroffaes/pycddlib/ |imagetravis| |appveyor|
+* Development: https://github.com/mcmtroffaes/pycddlib/ |imagetravis| |appveyor|
 
 .. |imagetravis| image:: https://travis-ci.org/mcmtroffaes/pycddlib.png?branch=develop
        :target: https://travis-ci.org/mcmtroffaes/pycddlib
