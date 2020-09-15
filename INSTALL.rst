@@ -2,7 +2,7 @@ Automatic Installer
 ~~~~~~~~~~~~~~~~~~~
 
 The simplest way to install pycddlib is to
-`install it with pip <https://packaging.python.org/en/latest/installing.html>`_::
+`install it with pip <https://packaging.python.org/tutorials/installing-packages/>`_::
 
     pip install pycddlib
 
@@ -11,7 +11,7 @@ On Windows, this will install from a binary wheel
 you will need to build from source, see below).
 
 On Linux, this will install from source,
-and you will need `GMP <http://gmplib.org/>`_. Your
+and you will need `GMP <https://gmplib.org/>`_. Your
 distribution probably has a pre-built package for it. For example, on
 Fedora, install it by running::
 
@@ -39,7 +39,7 @@ For versions of Python that require older versions of MSVC,
 such as Python 2.7 which requires MSVC 2008,
 you can use for instance::
 
-  msbuild mpir-x.x.x/build.vc10/lib_mpir_gc/lib_mpir_gc.vcxproj /p:PlatformToolset=v90
+    msbuild mpir-x.x.x/build.vc10/lib_mpir_gc/lib_mpir_gc.vcxproj /p:PlatformToolset=v90
 
 to instruct ``msbuild`` to use MSVC 2008 (i.e. ``v90``)
 for compiling and linking.
@@ -47,4 +47,4 @@ for compiling and linking.
 To tell Python where MPIR is located on your Windows machine,
 you can use::
 
-  python setup.py build build_ext -I<mpir_include_folder> -L<mpir_lib_folder>
+    python setup.py build build_ext -I<mpir_include_folder> -L<mpir_lib_folder>
