@@ -13,6 +13,29 @@ Sets of Linear Inequalities and Generators
     A class for working with sets of linear constraints and extreme
     points.
 
+    A matrix :math:`[b \quad -A]` in the H-representation corresponds to a
+    polyhedron described by
+
+    .. math::
+       A_i x &\le b_i \qquad \forall i\in\{1,\dots,n\}\setminus L \\
+       A_i x &=   b_i \qquad \forall i\in L
+
+    where :math:`L` is :attr:`~cdd.Matrix.lin_set` and :math:`A_i`
+    corresponds to the :math:`i`-th row of :math:`A`.
+
+    A matrix :math:`[t \quad V]` in the V-representation corresponds to a polyhedron
+    described by
+
+    .. math::
+       \mathrm{conv}\{V_i\colon t_i=1\}+\mathrm{nonnegspan}\{V_i\colon t_i=0,i\not\in L\}+\mathrm{linspan}\{V_i\colon t_i=0,i\in L\}
+
+    where :math:`L` is :attr:`~cdd.Matrix.lin_set` and :math:`V_i`
+    corresponds to the :math:`i`-th row of :math:`V`. Here
+    :math:`\mathrm{conv}` is the convex hull operator,
+    :math:`\mathrm{nonnegspan}` is the non-negative span operator, and
+    :math:`\mathrm{linspan}` is the linear span operator. All entries
+    of :math:`t` must be either :math:`0` or :math:`1`.
+
     Bases: :class:`~cdd.NumberTypeable`
 
     :param rows: The rows of the matrix. Each element can be an
@@ -92,8 +115,8 @@ Methods and Attributes
 .. attribute:: Matrix.lin_set
 
         A :class:`frozenset` containing the rows of linearity
-        (generators of linearity space for V-representation, and
-        equations for H-representation).
+        (linear generators for the V-representation, and
+        equalities for the H-representation).
 
 .. attribute:: Matrix.rep_type
 
