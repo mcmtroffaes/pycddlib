@@ -1,5 +1,4 @@
 language: python
-sudo: false
 dist: focal
 python:
   - "3.9-dev"
