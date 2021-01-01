@@ -1,3 +1,4 @@
+image: Visual Studio 2019
 environment:
   global:
     # SDK v7.0 MSVC Express 2008's SetEnv.cmd script will fail if the
@@ -73,6 +74,7 @@ install:
   - ps: ./cddlib-makefile-gmp.ps1
   - if "%PLATFORMTOOLSET%"=="v90" copy "stdint\\stdint.h" "cddlib\\lib-src\\"
   - "dir cddlib\\lib-src\\"
+  - "dir C:\Python*"
   - "SET PATH=%PYTHON%;%PYTHON%\\Scripts;%PATH%"
   - "python --version"
   - "python -c \"import struct; print(struct.calcsize('P') * 8)\""
