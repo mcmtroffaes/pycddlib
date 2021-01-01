@@ -72,9 +72,8 @@ environment:
 install:
   - "git submodule update --init --recursive"
   - ps: ./cddlib-makefile-gmp.ps1
-  - if "%PLATFORMTOOLSET%"=="v90" copy "stdint\\stdint.h" "cddlib\\lib-src\\"
   - "dir cddlib\\lib-src\\"
-  - "dir C:\Python*"
+  - "dir C:\\Python*"
   - "SET PATH=%PYTHON%;%PYTHON%\\Scripts;%PATH%"
   - "python --version"
   - "python -c \"import struct; print(struct.calcsize('P') * 8)\""
