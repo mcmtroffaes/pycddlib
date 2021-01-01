@@ -19,7 +19,7 @@ linear function over a polyhedron.
 
 * Development: https://github.com/mcmtroffaes/pycddlib/ |imagetravis| |appveyor|
 
-.. |imagetravis| image:: https://travis-ci.org/mcmtroffaes/pycddlib.png?branch=develop
+.. |imagetravis| image:: https://travis-ci.com/mcmtroffaes/pycddlib.png?branch=develop
        :target: https://travis-ci.org/mcmtroffaes/pycddlib
        :alt: travis-ci
 
