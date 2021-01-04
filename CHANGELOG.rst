@@ -1,7 +1,7 @@
-Version 2.1.3 (in development)
+Version 2.1.3 (4 January 2020)
 ------------------------------
 
-* update for cddlib 0.94m
+* Update for cddlib 0.94m.
 
 * Drop Python 3.5 support. Add Python 3.9 support.
 
@@ -15,8 +15,8 @@ Version 2.1.2 (11 August 2020)
 Version 2.1.1 (16 January 2020)
 -------------------------------
 
-* exposed adjacency and incidence (see issues #33, #34, and #36,
-  contributed by bobmyhill)
+* Expose adjacency and incidence (see issues #33, #34, and #36,
+  contributed by bobmyhill).
 
 * Add Python 3.8 support.
 
