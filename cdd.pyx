@@ -1,3 +1,5 @@
+# cython: language_level=3
+
 """Python wrapper for Komei Fukuda's cddlib."""
 
 
