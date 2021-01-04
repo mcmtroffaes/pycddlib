@@ -1,6 +1,10 @@
 Version 2.1.3 (in development)
 ------------------------------
 
+* update for cddlib 0.94m
+
+* Drop Python 3.5 support. Add Python 3.9 support.
+
 Version 2.1.2 (11 August 2020)
 ------------------------------
 

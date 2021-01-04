@@ -1,0 +1,8 @@
+venv/
+cdd.c
+cddlib.pxi
+cddlib_f.pxi
+docs/_build/
+.eggs/
+*.egg-info/
+.idea/
