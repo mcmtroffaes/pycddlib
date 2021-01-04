@@ -1,5 +1,7 @@
-Version 2.1.4 (in development)
+Version 2.1.4 (4 January 2020)
 ------------------------------
+
+* Extra release to fix botched tgz upload on pypi.
 
 Version 2.1.3 (4 January 2020)
 ------------------------------
