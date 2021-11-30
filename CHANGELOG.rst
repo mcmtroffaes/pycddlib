@@ -1,5 +1,7 @@
-Version 2.1.5 (in development)
-------------------------------
+Version 2.1.5 (30 November 2021)
+--------------------------------
+
+* Add Python 3.10 support.
 
 Version 2.1.4 (4 January 2020)
 ------------------------------
