@@ -16,7 +16,7 @@ jobs:
         os: ['ubuntu-latest', 'windows-latest', 'macos-latest']
         python-version: ['3.10'] # ['3.6', '3.7', '3.8', '3.9', '3.10', '3.11-dev']
         windows-platform: ['Win32', 'x64']
-        windows-platformtoolset: ['v140']  # all supported python versions can use this one
+        windows-platformtoolset: ['v143']  # all supported python versions can use this one
         exclude:
           - os: 'ubuntu-latest'
             windows-platform: 'Win32'
