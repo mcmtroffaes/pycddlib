@@ -33,6 +33,9 @@ jobs:
     - name: Install libgmp (Ubuntu)
       run: sudo apt-get install -y libgmp-dev
       if: matrix.os == 'ubuntu-latest'
+    - name: Setup msbuild (Windows)
+      uses: microsoft/setup-msbuild@v1.1
+      if: matrix.os == 'windows-latest'
     - name: Install mpir (Windows)
       run: |
         Invoke-WebRequest -Uri "http://mpir.org/mpir-3.0.0.zip" -OutFile "mpir-3.0.0.zip"
