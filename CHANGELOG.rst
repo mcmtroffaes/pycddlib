@@ -3,6 +3,8 @@ Version 2.1.6 (in development)
 
 * Bump cddlib to latest git (f83bdbcbefbef960d8fb5afc282ac7c32dcbb482).
 
+* Switch testing from appveyor to github actions.
+
 Version 2.1.5 (30 November 2021)
 --------------------------------
 
