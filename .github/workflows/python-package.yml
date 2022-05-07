@@ -1,0 +1,56 @@
+name: Python package
+
+on:
+  push:
+    branches: [ develop ]
+  pull_request:
+    branches: [ develop ]
+
+jobs:
+  build:
+
+    runs-on: ${{ matrix.platform }}
+    strategy:
+      fail-fast: false
+      matrix:
+        platform: ['ubuntu-latest', 'windows-latest', 'macos-latest']
+        python-version: ['3.6', '3.7', '3.8', '3.9', '3.10', '3.11-dev']
+    steps:
+    - uses: actions/checkout@v2
+    - name: Set up Python ${{ matrix.python-version }}
+      uses: actions/setup-python@v2
+      with:
+        python-version: ${{ matrix.python-version }}
+    - name: Install libgmp (Ubuntu)
+      run: sudo apt-get install -y libgmp-dev
+      if: matrix.os == 'ubuntu-latest'
+    - name: Generate Files (Windows)
+      if: matrix.os == 'windows-latest'
+      run: |
+        ./cddlib-makefile-gmp.sh
+        dir cddlib\\lib-src\\
+        dir C:\\Python*
+        SET PATH=%PYTHON%;%PYTHON%\\Scripts;%PATH%
+        python --version
+        python -c \"import struct; print(struct.calcsize('P') * 8)\"
+        appveyor DownloadFile http://mpir.org/mpir-3.0.0.zip
+        7z x mpir-3.0.0.zip > NUL
+        msbuild mpir-3.0.0/build.vc14/lib_mpir_gc/lib_mpir_gc.vcxproj /p:Configuration=Release /p:Platform=%PLATFORM% /p:PlatformToolset=%PLATFORMTOOLSET% /verbosity:normal
+        dir mpir-3.0.0\\lib\\%PLATFORM%\\Release\\"
+        python -m pip install --install-option=\"--no-cython-compile\" Cython
+        python -m pip install Sphinx pytest wheel twine numpy
+        python setup.py build build_ext -Impir-3.0.0/lib/%PLATFORM%/Release/ -Lmpir-3.0.0/build.vc14/lib_mpir_gc/%PLATFORM%/Release/
+        python setup.py bdist_wheel
+        dir dist
+        cd dist
+        pip install --pre --no-index --find-links=. pycddlib
+        cd ..
+    - name: Generate Files (Non-Windows)
+      if: matrix.os != 'windows-latest'
+      run: |
+        ./cddlib-makefile-gmp.ps1
+        python -m pip install --install-option="--no-cython-compile" Cython
+        python -m pip install Sphinx pytest numpy
+        python -m pip install .
+        cd docs
+        make doctest
