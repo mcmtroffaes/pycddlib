@@ -47,10 +47,7 @@ jobs:
         7z x mpir-3.0.0.zip > NUL
         if ("${{ matrix.architecture }}" -eq "x86") { $platform = "Win32" } else { $platform = "x64" }
         msbuild mpir-3.0.0/build.vc14/lib_mpir_gc/lib_mpir_gc.vcxproj /p:Configuration=Release /p:Platform=$platform /p:PlatformToolset=${{ matrix.windows-platformtoolset }} /verbosity:normal
-        echo "mpir-3.0.0/lib/$platform/Release/"
         dir mpir-3.0.0/lib/$platform/Release/
-        echo "mpir-3.0.0/build.vc14/lib_mpir_gc/$platform/Release/"
-        dir mpir-3.0.0/build.vc14/lib_mpir_gc/$platform/Release/
       if: matrix.os == 'windows-latest'
     - name: Install Python dependencies
       run: |
