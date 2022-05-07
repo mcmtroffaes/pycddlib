@@ -42,13 +42,19 @@ jobs:
       uses: microsoft/setup-msbuild@v1.1
       if: matrix.os == 'windows-latest'
     - name: Install mpir (Windows)
+      if: matrix.os == 'windows-latest'
       run: |
         Invoke-WebRequest -Uri "http://mpir.org/mpir-3.0.0.zip" -OutFile "mpir-3.0.0.zip"
         7z x mpir-3.0.0.zip > NUL
         if ("${{ matrix.architecture }}" -eq "x86") { $platform = "Win32" } else { $platform = "x64" }
         msbuild mpir-3.0.0/build.vc14/lib_mpir_gc/lib_mpir_gc.vcxproj /p:Configuration=Release /p:Platform=$platform /p:PlatformToolset=${{ matrix.windows-platformtoolset }} /verbosity:normal
         dir mpir-3.0.0/lib/$platform/Release/
+    - uses: actions/cache@v2
       if: matrix.os == 'windows-latest'
+      id: mpir-installed-cache
+      with:
+        path: mpir-3.0.0/lib/*/Release/
+        key: mpir-${{ matrix.os }}-${{ matrix.windows-platformtoolset }}-${{ matrix.architecture }}
     - name: Install Python dependencies
       run: |
         python -m pip install Cython Sphinx pytest wheel numpy
