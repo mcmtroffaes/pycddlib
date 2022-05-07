@@ -15,6 +15,13 @@ jobs:
       matrix:
         platform: ['ubuntu-latest', 'windows-latest', 'macos-latest']
         python-version: ['3.10'] # ['3.6', '3.7', '3.8', '3.9', '3.10', '3.11-dev']
+        windows-platform: ['Win32', 'x64']
+        windows-platformtoolset: ['v140']  # all supported python versions can use this one
+        exclude:
+          - platform: 'ubuntu-latest'
+            windows-platform: 'Win32'
+          - platform: 'macos-latest'
+            windows-platform: 'Win32'
     steps:
     - uses: actions/checkout@v2
       with:
@@ -31,17 +38,15 @@ jobs:
       run: |
         ./cddlib-makefile-gmp.ps1
         dir cddlib\\lib-src\\
-        dir C:\\Python*
-        SET PATH=%PYTHON%;%PYTHON%\\Scripts;%PATH%
         python --version
         python -c \"import struct; print(struct.calcsize('P') * 8)\"
-        appveyor DownloadFile http://mpir.org/mpir-3.0.0.zip
+        wget "http://mpir.org/mpir-3.0.0.zip" -outfile "mpir-3.0.0.zip"
         7z x mpir-3.0.0.zip > NUL
-        msbuild mpir-3.0.0/build.vc14/lib_mpir_gc/lib_mpir_gc.vcxproj /p:Configuration=Release /p:Platform=%PLATFORM% /p:PlatformToolset=%PLATFORMTOOLSET% /verbosity:normal
-        dir mpir-3.0.0\\lib\\%PLATFORM%\\Release\\"
+        msbuild mpir-3.0.0/build.vc14/lib_mpir_gc/lib_mpir_gc.vcxproj /p:Configuration=Release /p:Platform=${{ matrix.windows-platform }} /p:PlatformToolset=${{ matrix.windows-platformtoolset }} /verbosity:normal
+        dir mpir-3.0.0\\lib\\${{ matrix.windows-platform }}\\Release\\"
         python -m pip install --install-option=\"--no-cython-compile\" Cython
         python -m pip install Sphinx pytest wheel twine numpy
-        python setup.py build build_ext -Impir-3.0.0/lib/%PLATFORM%/Release/ -Lmpir-3.0.0/build.vc14/lib_mpir_gc/%PLATFORM%/Release/
+        python setup.py build build_ext -Impir-3.0.0/lib/${{ matrix.windows-platform }}/Release/ -Lmpir-3.0.0/build.vc14/lib_mpir_gc/${{ matrix.windows-platform }}/Release/
         python setup.py bdist_wheel
         dir dist
         cd dist
