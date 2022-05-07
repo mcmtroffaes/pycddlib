@@ -41,17 +41,18 @@ jobs:
         Invoke-WebRequest -Uri "http://mpir.org/mpir-3.0.0.zip" -OutFile "mpir-3.0.0.zip"
         7z x mpir-3.0.0.zip > NUL
         msbuild mpir-3.0.0/build.vc14/lib_mpir_gc/lib_mpir_gc.vcxproj /p:Configuration=Release /p:Platform=${{ matrix.windows-platform }} /p:PlatformToolset=${{ matrix.windows-platformtoolset }} /verbosity:normal
-        dir mpir-3.0.0\\lib\\${{ matrix.windows-platform }}\\Release\\
+        dir mpir-3.0.0/lib/${{ matrix.windows-platform }}/Release/
+        dir mpir-3.0.0/build.vc14/lib_mpir_gc/${{ matrix.windows-platform }}/Release/
       if: matrix.os == 'windows-latest'
     - name: Generate Files (Windows)
       if: matrix.os == 'windows-latest'
       run: |
         ./cddlib-makefile-gmp.ps1
-        dir cddlib\\lib-src\\
+        dir cddlib/lib-src/
         python --version
         python -c "import struct; print(struct.calcsize('P') * 8)"
         python -m pip install Cython Sphinx pytest wheel twine numpy
-        python setup.py build build_ext -I"mpir-3.0.0/lib/${{ matrix.windows-platform }}/Release/" -L"mpir-3.0.0/build.vc14/lib_mpir_gc/${{ matrix.windows-platform }}/Release/"
+        python setup.py build build_ext -I"mpir-3.0.0/lib/${{ matrix.windows-platform }}/Release/" -L"mpir-3.0.0/lib/${{ matrix.windows-platform }}/Release/"
         python setup.py bdist_wheel
         dir dist
         cd dist
