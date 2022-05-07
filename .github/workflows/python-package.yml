@@ -73,3 +73,7 @@ jobs:
         cd ..
         cd docs
         make doctest
+    - uses: actions/upload-artifact@v3
+      with:
+        name: dist
+        path: dist/*
