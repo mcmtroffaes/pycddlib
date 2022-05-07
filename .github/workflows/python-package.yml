@@ -44,7 +44,7 @@ jobs:
         7z x mpir-3.0.0.zip > NUL
         msbuild mpir-3.0.0/build.vc14/lib_mpir_gc/lib_mpir_gc.vcxproj /p:Configuration=Release /p:Platform=${{ matrix.windows-platform }} /p:PlatformToolset=${{ matrix.windows-platformtoolset }} /verbosity:normal
         dir mpir-3.0.0\\lib\\${{ matrix.windows-platform }}\\Release\\"
-        python -m pip install --install-option=\"--no-cython-compile\" Cython
+        python -m pip install --install-option=\\"--no-cython-compile\\" Cython
         python -m pip install Sphinx pytest wheel twine numpy
         python setup.py build build_ext -Impir-3.0.0/lib/${{ matrix.windows-platform }}/Release/ -Lmpir-3.0.0/build.vc14/lib_mpir_gc/${{ matrix.windows-platform }}/Release/
         python setup.py bdist_wheel
