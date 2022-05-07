@@ -55,7 +55,7 @@ jobs:
     - name: Install Python dependencies
       run: |
         python -m pip install Cython Sphinx pytest wheel numpy
-    - name: Create and install bdist_wheel (Windows)
+    - name: Create bdist_wheel (Windows)
       if: matrix.os == 'windows-latest'
       run: |
         ./cddlib-makefile-gmp.ps1
@@ -63,22 +63,21 @@ jobs:
         if ("${{ matrix.architecture }}" -eq "x86") { $platform = "Win32" } else { $platform = "x64" }
         python setup.py build build_ext -I"mpir-3.0.0/lib/$platform/Release/" -L"mpir-3.0.0/lib/$platform/Release/"
         python setup.py bdist_wheel
-        dir dist
-        cd dist
-        pip install --pre --no-index --find-links=. pycddlib
-    - name: Create and install sdist (Non-Windows)
+    - name: Create sdist (Non-Windows)
       if: matrix.os != 'windows-latest'
       run: |
         ./cddlib-makefile-gmp.sh
         python -m pip install Cython Sphinx pytest wheel numpy
         python setup.py sdist
-        ls dist
+    - name: Install
+      run: |
         cd dist
+        ls
         pip install --pre --no-index --find-links=. pycddlib
+        cd ..
     - name: Run test suite
       run: |
         pytest
-        cd ..
         cd docs
         make doctest
     - uses: actions/upload-artifact@v3
