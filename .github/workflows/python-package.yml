@@ -15,13 +15,13 @@ jobs:
       matrix:
         os: ['ubuntu-latest', 'windows-latest', 'macos-latest']
         python-version: ['3.10'] # ['3.6', '3.7', '3.8', '3.9', '3.10', '3.11-dev']
-        windows-platform: ['Win32', 'x64']
+        architecture: ['x86', 'x64']
         windows-platformtoolset: ['v143']  # all supported python versions can use this one
         exclude:
           - os: 'ubuntu-latest'
-            windows-platform: 'Win32'
+            architecture: 'x86'
           - os: 'macos-latest'
-            windows-platform: 'Win32'
+            architecture: 'x86'
     steps:
     - uses: actions/checkout@v2
       with:
@@ -30,6 +30,11 @@ jobs:
       uses: actions/setup-python@v2
       with:
         python-version: ${{ matrix.python-version }}
+        architecture: ${{ matrix.architecture }}
+    - name: Check Python
+      run: |
+        python --version
+        python -c "import struct; print(struct.calcsize('P') * 8)"
     - name: Install libgmp (Ubuntu)
       run: sudo apt-get install -y libgmp-dev
       if: matrix.os == 'ubuntu-latest'
@@ -40,27 +45,28 @@ jobs:
       run: |
         Invoke-WebRequest -Uri "http://mpir.org/mpir-3.0.0.zip" -OutFile "mpir-3.0.0.zip"
         7z x mpir-3.0.0.zip > NUL
-        msbuild mpir-3.0.0/build.vc14/lib_mpir_gc/lib_mpir_gc.vcxproj /p:Configuration=Release /p:Platform=${{ matrix.windows-platform }} /p:PlatformToolset=${{ matrix.windows-platformtoolset }} /verbosity:normal
-        dir mpir-3.0.0/lib/${{ matrix.windows-platform }}/Release/
-        dir mpir-3.0.0/build.vc14/lib_mpir_gc/${{ matrix.windows-platform }}/Release/
+        if ("${{ matrix.architecture }}" -eq "x86") { $platform = "Win32" } else { $platform = "x64" }
+        msbuild mpir-3.0.0/build.vc14/lib_mpir_gc/lib_mpir_gc.vcxproj /p:Configuration=Release /p:Platform=$platform /p:PlatformToolset=${{ matrix.windows-platformtoolset }} /verbosity:normal
+        echo "mpir-3.0.0/lib/$platform/Release/"
+        dir mpir-3.0.0/lib/$platform/Release/
+        echo "mpir-3.0.0/build.vc14/lib_mpir_gc/$platform/Release/"
+        dir mpir-3.0.0/build.vc14/lib_mpir_gc/$platform/Release/
       if: matrix.os == 'windows-latest'
-    - name: Generate Files (Windows)
+    - name: Install Python dependencies
+      run: |
+        python -m pip install Cython Sphinx pytest wheel numpy
+    - name: Create and install bdist_wheel (Windows)
       if: matrix.os == 'windows-latest'
       run: |
         ./cddlib-makefile-gmp.ps1
         dir cddlib/lib-src/
-        python --version
-        python -c "import struct; print(struct.calcsize('P') * 8)"
-        python -m pip install Cython Sphinx pytest wheel twine numpy
-        python setup.py build build_ext -I"mpir-3.0.0/lib/${{ matrix.windows-platform }}/Release/" -L"mpir-3.0.0/lib/${{ matrix.windows-platform }}/Release/"
+        if ("${{ matrix.architecture }}" -eq "x86") { $platform = "Win32" } else { $platform = "x64" }
+        python setup.py build build_ext -I"mpir-3.0.0/lib/$platform/Release/" -L"mpir-3.0.0/lib/$platform/Release/"
         python setup.py bdist_wheel
         dir dist
         cd dist
         pip install --pre --no-index --find-links=. pycddlib
-        cd ..
-        cd docs
-        make doctest
-    - name: Generate Files (Non-Windows)
+    - name: Create and install sdist (Non-Windows)
       if: matrix.os != 'windows-latest'
       run: |
         ./cddlib-makefile-gmp.sh
@@ -69,10 +75,14 @@ jobs:
         ls dist
         cd dist
         pip install --pre --no-index --find-links=. pycddlib
+    - name: Run test suite
+      run: |
+        pytest
         cd ..
         cd docs
         make doctest
     - uses: actions/upload-artifact@v3
+      if: matrix.os != 'macos-latest'
       with:
         name: dist
         path: dist/*
