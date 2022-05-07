@@ -58,6 +58,10 @@ jobs:
         ./cddlib-makefile-gmp.sh
         python -m pip install --install-option="--no-cython-compile" Cython
         python -m pip install Sphinx pytest numpy
-        python -m pip install .
+        python setup.py sdist
+        ls dist
+        cd dist
+        pip install --pre --no-index --find-links=. pycddlib
+        cd ..
         cd docs
         make doctest
