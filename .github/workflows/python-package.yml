@@ -50,9 +50,8 @@ jobs:
         dir cddlib\\lib-src\\
         python --version
         python -c "import struct; print(struct.calcsize('P') * 8)"
-        python -m pip install --install-option='--no-cython-compile' Cython
-        python -m pip install Sphinx pytest wheel twine numpy
-        python setup.py build build_ext -Impir-3.0.0/lib/${{ matrix.windows-platform }}/Release/ -Lmpir-3.0.0/build.vc14/lib_mpir_gc/${{ matrix.windows-platform }}/Release/
+        python -m pip install Cython Sphinx pytest wheel twine numpy
+        python setup.py build build_ext -I"mpir-3.0.0/lib/${{ matrix.windows-platform }}/Release/" -L"mpir-3.0.0/build.vc14/lib_mpir_gc/${{ matrix.windows-platform }}/Release/"
         python setup.py bdist_wheel
         dir dist
         cd dist
@@ -64,8 +63,7 @@ jobs:
       if: matrix.os != 'windows-latest'
       run: |
         ./cddlib-makefile-gmp.sh
-        python -m pip install --install-option="--no-cython-compile" Cython
-        python -m pip install Sphinx pytest wheel numpy
+        python -m pip install Cython Sphinx pytest wheel numpy
         python setup.py sdist
         ls dist
         cd dist
