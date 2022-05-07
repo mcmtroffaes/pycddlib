@@ -33,6 +33,13 @@ jobs:
     - name: Install libgmp (Ubuntu)
       run: sudo apt-get install -y libgmp-dev
       if: matrix.os == 'ubuntu-latest'
+    - name: Install mpir (Windows)
+      run: |
+        Invoke-WebRequest -Uri "http://mpir.org/mpir-3.0.0.zip" -OutFile "mpir-3.0.0.zip"
+        7z x mpir-3.0.0.zip > NUL
+        msbuild mpir-3.0.0/build.vc14/lib_mpir_gc/lib_mpir_gc.vcxproj /p:Configuration=Release /p:Platform=${{ matrix.windows-platform }} /p:PlatformToolset=${{ matrix.windows-platformtoolset }} /verbosity:normal
+        dir mpir-3.0.0\\lib\\${{ matrix.windows-platform }}\\Release\\
+      if: matrix.os == 'windows-latest'
     - name: Generate Files (Windows)
       if: matrix.os == 'windows-latest'
       run: |
@@ -40,10 +47,6 @@ jobs:
         dir cddlib\\lib-src\\
         python --version
         python -c "import struct; print(struct.calcsize('P') * 8)"
-        Invoke-WebRequest -Uri "http://mpir.org/mpir-3.0.0.zip" -OutFile "mpir-3.0.0.zip"
-        7z x mpir-3.0.0.zip > NUL
-        msbuild mpir-3.0.0/build.vc14/lib_mpir_gc/lib_mpir_gc.vcxproj /p:Configuration=Release /p:Platform=${{ matrix.windows-platform }} /p:PlatformToolset=${{ matrix.windows-platformtoolset }} /verbosity:normal
-        dir mpir-3.0.0\\lib\\${{ matrix.windows-platform }}\\Release\\
         python -m pip install --install-option='--no-cython-compile' Cython
         python -m pip install Sphinx pytest wheel twine numpy
         python setup.py build build_ext -Impir-3.0.0/lib/${{ matrix.windows-platform }}/Release/ -Lmpir-3.0.0/build.vc14/lib_mpir_gc/${{ matrix.windows-platform }}/Release/
@@ -52,12 +55,14 @@ jobs:
         cd dist
         pip install --pre --no-index --find-links=. pycddlib
         cd ..
+        cd docs
+        make doctest
     - name: Generate Files (Non-Windows)
       if: matrix.os != 'windows-latest'
       run: |
         ./cddlib-makefile-gmp.sh
         python -m pip install --install-option="--no-cython-compile" Cython
-        python -m pip install Sphinx pytest numpy
+        python -m pip install Sphinx pytest wheel numpy
         python setup.py sdist
         ls dist
         cd dist
