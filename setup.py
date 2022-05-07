@@ -40,8 +40,8 @@ libraries = ['mpir' if (sys.platform == 'win32') else 'gmp']
 # get version from Cython file (without requiring extensions to be compiled!)
 for line in open('cdd.pyx'):
     if line.startswith("__version__"):
-       version = line[line.find('"')+1:line.rfind('"')]
-       break
+        version = line[line.find('"')+1:line.rfind('"')]
+        break
 else:
     raise RuntimeError("failed to extract version from cdd.pyx")
 
@@ -105,27 +105,27 @@ cddlib_f_pxi.write(
 cddlib_f_pxi.close()
 
 setup(
-    name = "pycddlib",
-    version = version,
+    name="pycddlib",
+    version=version,
     ext_modules= [
         Extension("cdd",
                   ["cdd.pyx"] + cddgmp_sources,
-                  include_dirs = [cdd_dir],
+                  include_dirs=[cdd_dir],
                   depends=cddgmp_headers,
-                  define_macros = define_macros,
-                  libraries = libraries,
+                  define_macros=define_macros,
+                  libraries=libraries,
                   ),
         ],
-    author = "Matthias Troffaes",
-    author_email = "matthias.troffaes@gmail.com",
-    license = "GPL",
-    keywords = "convex, polyhedron, linear programming, double description method",
-    platforms = "any",
-    description = doclines[0],
-    long_description = "\n".join(doclines[2:]),
-    url = "http://pypi.python.org/pypi/pycddlib",
-    classifiers = classifiers.split('\n'),
-    setup_requires = [
+    author="Matthias Troffaes",
+    author_email="matthias.troffaes@gmail.com",
+    license="GPL",
+    keywords="convex, polyhedron, linear programming, double description method",
+    platforms="any",
+    description=doclines[0],
+    long_description="\n".join(doclines[2:]),
+    url="http://pypi.python.org/pypi/pycddlib",
+    classifiers=classifiers.split('\n'),
+    setup_requires=[
         # setuptools 18.0 properly handles Cython extensions.
         'setuptools>=18.0', 'Cython'],
     python_requires='>=3.6',
