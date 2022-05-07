@@ -18,9 +18,9 @@ jobs:
         windows-platform: ['Win32', 'x64']
         windows-platformtoolset: ['v140']  # all supported python versions can use this one
         exclude:
-          - platform: 'ubuntu-latest'
+          - os: 'ubuntu-latest'
             windows-platform: 'Win32'
-          - platform: 'macos-latest'
+          - os: 'macos-latest'
             windows-platform: 'Win32'
     steps:
     - uses: actions/checkout@v2
