@@ -20,7 +20,6 @@ jobs:
     - name: Create sdist
       run: |
         ./cddlib-makefile-gmp.sh
-        python -m pip install Cython Sphinx pytest wheel numpy
         python setup.py sdist
     - uses: actions/upload-artifact@v3
       with:
