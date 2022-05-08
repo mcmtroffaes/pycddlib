@@ -84,7 +84,7 @@ jobs:
       id: mpir-installed-cache
       with:
         path: mpir-3.0.0/lib/*/Release/
-        key: mpir-${{ matrix.os }}-${{ matrix.platformtoolset }}-${{ matrix.architecture }}
+        key: mpir-0-${{ matrix.platformtoolset }}-${{ matrix.architecture }}
     - name: Install mpir
       if: steps.mpir-installed-cache.outputs.cache-hit != 'true'
       run: |
