@@ -5,6 +5,8 @@ Version 2.1.6 (in development)
 
 * Switch testing from appveyor to github actions.
 
+* Fix release tarballs for recent linux/macos (see issues #49, #53, #54).
+
 Version 2.1.5 (30 November 2021)
 --------------------------------
 
