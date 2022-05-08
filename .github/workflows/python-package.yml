@@ -119,5 +119,5 @@ jobs:
         make doctest
     - uses: actions/upload-artifact@v3
       with:
-        name: dist
+        name: windows-wheels
         path: dist/*
