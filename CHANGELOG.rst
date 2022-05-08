@@ -1,5 +1,5 @@
-Version 2.1.6 (in development)
-------------------------------
+Version 2.1.6 (8 May 2022)
+--------------------------
 
 * Bump cddlib to latest git (f83bdbcbefbef960d8fb5afc282ac7c32dcbb482).
 
