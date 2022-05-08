@@ -21,7 +21,8 @@ jobs:
       run: |
         ./cddlib-makefile-gmp.sh
         python setup.py sdist
-    - uses: actions/upload-artifact@v3
+    - name: Upload sdist
+      uses: actions/upload-artifact@v3
       with:
         name: sdist
         path: dist/*
@@ -36,7 +37,7 @@ jobs:
         python-version: ['3.6', '3.7', '3.8', '3.9', '3.10']
     steps:
     - uses: actions/checkout@v2  # no submodules needed here, just checking out for the test suite
-    - name: Download a single artifact
+    - name: Download sdist
       uses: actions/download-artifact@v3
       with:
         name: sdist
@@ -106,6 +107,11 @@ jobs:
         if ("${{ matrix.architecture }}" -eq "x86") { $platform = "Win32" } else { $platform = "x64" }
         python setup.py build build_ext -I"mpir-3.0.0/lib/$platform/Release/" -L"mpir-3.0.0/lib/$platform/Release/"
         python setup.py bdist_wheel
+    - name: Upload wheel
+      uses: actions/upload-artifact@v3
+      with:
+        name: windows-wheels
+        path: dist/*
     - name: Install wheel
       run: |
         cd dist
@@ -117,7 +123,3 @@ jobs:
         pytest
         cd docs
         make doctest
-    - uses: actions/upload-artifact@v3
-      with:
-        name: windows-wheels
-        path: dist/*
