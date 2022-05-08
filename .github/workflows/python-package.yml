@@ -47,10 +47,13 @@ jobs:
     - name: Install libgmp (Ubuntu)
       if: matrix.os == 'ubuntu-latest'
       run: sudo apt-get install -y libgmp-dev
+    - name: Install Python dependencies
+      run: |
+        python -m pip install Cython Sphinx pytest wheel numpy
     - name: Install tarball
       run: |
         ls
-        pip install --pre --no-index --find-links=. pycddlib
+        python -m pip install --pre --no-index --find-links=. pycddlib
     - name: Run test suite
       run: |
         pytest
