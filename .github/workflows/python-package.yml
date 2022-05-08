@@ -69,6 +69,7 @@ jobs:
       matrix:
         architecture: ['x86', 'x64']
         platformtoolset: ['v143']  # all supported python versions can use this one
+    steps:
     - name: Setup msbuild (Windows)
       uses: microsoft/setup-msbuild@v1.1
     - uses: actions/cache@v2
