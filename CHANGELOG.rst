@@ -2,7 +2,7 @@ Version 2.1.7 (in development)
 ------------------------------
 
 * Specify minimum required Cython version in setup script
-  (see issue #55).
+  (see issue #55, reported by sguysc).
 
 Version 2.1.6 (8 May 2022)
 --------------------------
