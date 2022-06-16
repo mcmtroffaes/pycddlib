@@ -40,7 +40,7 @@ jobs:
         include:
           - os: 'ubuntu-latest'
             python-version: '3.10'
-            cython-version: '==0.29.14'
+            cython-version: '==0.29.24'
     steps:
     - uses: actions/checkout@v2  # no submodules needed here, just checking out for the test suite
     - name: Download sdist
