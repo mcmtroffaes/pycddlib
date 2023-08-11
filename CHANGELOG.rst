@@ -1,8 +1,12 @@
-Version 2.1.7 (in development)
+Version 2.1.7 (11 August 2023)
 ------------------------------
 
 * Specify minimum required Cython version in setup script
   (see issue #55, reported by sguysc).
+
+* Fix Cython DEF syntax warning.
+
+* Support Python 3.11, drop Python 3.6.
 
 Version 2.1.6 (8 May 2022)
 --------------------------
