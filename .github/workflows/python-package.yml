@@ -89,7 +89,7 @@ jobs:
     - name: Install mpir
       if: steps.mpir-installed-cache.outputs.cache-hit != 'true'
       run: |
-        "Invoke-WebRequest -Uri "https://github.com/wbhart/mpir/archive/refs/heads/mpir-3.0.0.zip" -OutFile "mpir-3.0.0.zip"
+        Invoke-WebRequest -Uri "https://github.com/wbhart/mpir/archive/refs/heads/mpir-3.0.0.zip" -OutFile "mpir-3.0.0.zip"
         7z x mpir-3.0.0.zip > NUL
         if ("${{ matrix.architecture }}" -eq "x86") { $platform = "Win32" } else { $platform = "x64" }
         msbuild mpir-mpir-3.0.0\build.vc14\lib_mpir_gc\lib_mpir_gc.vcxproj /p:Configuration=Release /p:Platform=$platform /p:PlatformToolset=${{ matrix.platformtoolset }} /verbosity:normal
