@@ -127,6 +127,6 @@ setup(
     classifiers=classifiers.split('\n'),
     setup_requires=[
         # setuptools 18.0 properly handles Cython extensions.
-        'setuptools>=18.0', 'Cython>=0.29.22'],
-    python_requires='>=3.6',
+        'setuptools>=18.0', 'Cython>=3.0.0'],
+    python_requires='>=3.7',
 )

@@ -11,10 +11,10 @@ jobs:
     runs-on: 'ubuntu-latest'
     steps:
     - name: Set up Python
-      uses: actions/setup-python@v2
+      uses: actions/setup-python@v4
       with:
-        python-version: '3.10'
-    - uses: actions/checkout@v2
+        python-version: '3.11'
+    - uses: actions/checkout@v3
       with:
         submodules: recursive
     - name: Create sdist
@@ -35,25 +35,21 @@ jobs:
       fail-fast: false
       matrix:
         os: ['ubuntu-latest', 'macos-latest']
-        python-version: ['3.6', '3.7', '3.8', '3.9', '3.10']
+        python-version: ['3.7', '3.8', '3.9', '3.10', '3.11']
         cython-version: ['']
         include:
+          # test oldest supported Cython version on most recent Python
           - os: 'ubuntu-latest'
-            python-version: '3.10'
-            cython-version: '==0.29.22'
-        exclude:
-          # cannot find gmp in this configuration; no idea why
-          # TODO fixme
-          - os: 'macos-latest'
-            python-version: '3.10'
+            python-version: '3.11'
+            cython-version: '==3.0.0'
     steps:
-    - uses: actions/checkout@v2  # no submodules needed here, just checking out for the test suite
+    - uses: actions/checkout@v3  # no submodules needed here, just checking out for the test suite
     - name: Download sdist
       uses: actions/download-artifact@v3
       with:
         name: sdist
     - name: Set up Python ${{ matrix.python-version }}
-      uses: actions/setup-python@v2
+      uses: actions/setup-python@v4
       with:
         python-version: ${{ matrix.python-version }}
     - name: Install libgmp (Ubuntu)
@@ -85,24 +81,24 @@ jobs:
     steps:
     - name: Setup msbuild (Windows)
       uses: microsoft/setup-msbuild@v1.1
-    - uses: actions/cache@v2
+    - uses: actions/cache@v3
       id: mpir-installed-cache
       with:
-        path: mpir-3.0.0/lib/*/Release/
+        path: mpir-mpir-3.0.0/lib/*/Release/
         key: mpir-0-${{ matrix.platformtoolset }}-${{ matrix.architecture }}
     - name: Install mpir
       if: steps.mpir-installed-cache.outputs.cache-hit != 'true'
       run: |
-        Invoke-WebRequest -Uri "http://mpir.org/mpir-3.0.0.zip" -OutFile "mpir-3.0.0.zip"
+        Invoke-WebRequest -Uri "https://github.com/wbhart/mpir/archive/refs/heads/mpir-3.0.0.zip" -OutFile "mpir-3.0.0.zip"
         7z x mpir-3.0.0.zip > NUL
         if ("${{ matrix.architecture }}" -eq "x86") { $platform = "Win32" } else { $platform = "x64" }
-        msbuild mpir-3.0.0/build.vc14/lib_mpir_gc/lib_mpir_gc.vcxproj /p:Configuration=Release /p:Platform=$platform /p:PlatformToolset=${{ matrix.platformtoolset }} /verbosity:normal
-        dir mpir-3.0.0/lib/$platform/Release/
+        msbuild mpir-mpir-3.0.0\build.vc14\lib_mpir_gc\lib_mpir_gc.vcxproj /p:Configuration=Release /p:Platform=$platform /p:PlatformToolset=${{ matrix.platformtoolset }} /verbosity:normal
+        dir mpir-mpir-3.0.0/lib/$platform/Release/
     - name: Upload mpir
       uses: actions/upload-artifact@v3
       with:
         name: mpir-${{ matrix.platformtoolset }}-${{ matrix.architecture }}
-        path: mpir-3.0.0/lib/*/Release/
+        path: mpir-mpir-3.0.0/lib/*/Release/
         if-no-files-found: error
 
   build-test-windows:
@@ -111,11 +107,11 @@ jobs:
     strategy:
       fail-fast: false
       matrix:
-        python-version: ['3.6', '3.7', '3.8', '3.9', '3.10']
+        python-version: ['3.7', '3.8', '3.9', '3.10', '3.11']
         architecture: ['x86', 'x64']
         platformtoolset: ['v143']  # all supported python versions can use this one
     steps:
-    - uses: actions/checkout@v2
+    - uses: actions/checkout@v3
       with:
         submodules: recursive
     - name: Download mpir
@@ -123,7 +119,7 @@ jobs:
       with:
         name: mpir-${{ matrix.platformtoolset }}-${{ matrix.architecture }}
     - name: Set up Python ${{ matrix.python-version }}
-      uses: actions/setup-python@v2
+      uses: actions/setup-python@v4
       with:
         python-version: ${{ matrix.python-version }}
         architecture: ${{ matrix.architecture }}
@@ -141,8 +137,8 @@ jobs:
         ./cddlib-makefile-gmp.ps1
         dir cddlib/lib-src/
         if ("${{ matrix.architecture }}" -eq "x86") { $platform = "Win32" } else { $platform = "x64" }
-        python setup.py build build_ext -I"$platform/Release/" -L"$platform/Release/"
-        python setup.py bdist_wheel
+        mkdir dist -Force
+        pip wheel -w dist --global-option="build_ext" --global-option="-I$platform/Release/" --global-option="-L$platform/Release/" .
     - name: Upload wheel
       uses: actions/upload-artifact@v3
       with:

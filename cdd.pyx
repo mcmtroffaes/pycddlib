@@ -29,7 +29,7 @@ cimport libc.stdlib
 from fractions import Fraction
 import numbers
 
-__version__ = "2.1.7a0"
+__version__ = "2.1.7"
 
 # also need time_t
 cdef extern from "time.h":
@@ -271,8 +271,9 @@ cdef _set_myfloat(myfloat target, value):
 
 # NumberTypeable class implementation
 
-DEF FLOAT = 1
-DEF FRACTION = 2
+cdef enum _FloatOrFraction:
+    FLOAT = 1
+    FRACTION = 2
 
 cdef int _get_number_type(str number_type) except -1:
     if number_type == 'float':
