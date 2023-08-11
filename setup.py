@@ -123,6 +123,7 @@ setup(
     platforms="any",
     description=doclines[0],
     long_description="\n".join(doclines[2:]),
+    long_description_content_type="text/x-rst",
     url="http://pypi.python.org/pypi/pycddlib",
     classifiers=classifiers.split('\n'),
     setup_requires=[
