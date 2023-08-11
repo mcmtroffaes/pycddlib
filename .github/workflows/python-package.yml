@@ -137,7 +137,7 @@ jobs:
         ./cddlib-makefile-gmp.ps1
         dir cddlib/lib-src/
         if ("${{ matrix.architecture }}" -eq "x86") { $platform = "Win32" } else { $platform = "x64" }
-        python setup.py bdist_wheel -I"$platform/Release/" -L"$platform/Release/"
+        pip wheel --global-option="build_ext" --global-option="-I$platform/Release/" --global-option="-L$platform/Release/" .
     - name: Upload wheel
       uses: actions/upload-artifact@v3
       with:
