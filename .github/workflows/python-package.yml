@@ -79,21 +79,21 @@ jobs:
     - uses: actions/cache@v2
       id: mpir-installed-cache
       with:
-        path: mpir-3.0.0/lib/*/Release/
+        path: mpir-mpir-3.0.0/lib/*/Release/
         key: mpir-0-${{ matrix.platformtoolset }}-${{ matrix.architecture }}
     - name: Install mpir
       if: steps.mpir-installed-cache.outputs.cache-hit != 'true'
       run: |
-        Invoke-WebRequest -Uri "http://mpir.org/mpir-3.0.0.zip" -OutFile "mpir-3.0.0.zip"
+        "Invoke-WebRequest -Uri "https://github.com/wbhart/mpir/archive/refs/heads/mpir-3.0.0.zip" -OutFile "mpir-3.0.0.zip"
         7z x mpir-3.0.0.zip > NUL
         if ("${{ matrix.architecture }}" -eq "x86") { $platform = "Win32" } else { $platform = "x64" }
-        msbuild mpir-3.0.0/build.vc14/lib_mpir_gc/lib_mpir_gc.vcxproj /p:Configuration=Release /p:Platform=$platform /p:PlatformToolset=${{ matrix.platformtoolset }} /verbosity:normal
-        dir mpir-3.0.0/lib/$platform/Release/
+        msbuild mpir-mpir-3.0.0\build.vc14\lib_mpir_gc\lib_mpir_gc.vcxproj /p:Configuration=Release /p:Platform=$platform /p:PlatformToolset=${{ matrix.platformtoolset }} /verbosity:normal
+        dir mpir-mpir-3.0.0/lib/$platform/Release/
     - name: Upload mpir
       uses: actions/upload-artifact@v3
       with:
         name: mpir-${{ matrix.platformtoolset }}-${{ matrix.architecture }}
-        path: mpir-3.0.0/lib/*/Release/
+        path: mpir-mpir-3.0.0/lib/*/Release/
         if-no-files-found: error
 
   build-test-windows:
