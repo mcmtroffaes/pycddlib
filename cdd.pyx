@@ -271,8 +271,9 @@ cdef _set_myfloat(myfloat target, value):
 
 # NumberTypeable class implementation
 
-cdef const int FLOAT = 1
-cdef const int FRACTION = 2
+cdef enum _FloatOrFraction:
+    FLOAT = 1
+    FRACTION = 2
 
 cdef int _get_number_type(str number_type) except -1:
     if number_type == 'float':
