@@ -137,7 +137,8 @@ jobs:
         ./cddlib-makefile-gmp.ps1
         dir cddlib/lib-src/
         if ("${{ matrix.architecture }}" -eq "x86") { $platform = "Win32" } else { $platform = "x64" }
-        pip wheel --global-option="build_ext" --global-option="-I$platform/Release/" --global-option="-L$platform/Release/" .
+        mkdir dist -Force
+        pip wheel -w dist --global-option="build_ext" --global-option="-I$platform/Release/" --global-option="-L$platform/Release/" .
     - name: Upload wheel
       uses: actions/upload-artifact@v3
       with:
