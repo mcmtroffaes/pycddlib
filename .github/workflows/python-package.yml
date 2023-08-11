@@ -41,7 +41,7 @@ jobs:
           # test oldest supported Cython version
           - os: 'ubuntu-latest'
             python-version: '3.11'
-            cython-version: '==0.29.22'
+            cython-version: '==0.29.25'
     steps:
     - uses: actions/checkout@v3  # no submodules needed here, just checking out for the test suite
     - name: Download sdist
