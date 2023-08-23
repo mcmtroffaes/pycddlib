@@ -107,7 +107,7 @@ cddlib_f_pxi.close()
 setup(
     name="pycddlib",
     version=version,
-    ext_modules=[
+    ext_modules= [
         Extension("cdd",
                   ["cdd.pyx"] + cddgmp_sources,
                   include_dirs=[cdd_dir],

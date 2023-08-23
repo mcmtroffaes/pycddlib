@@ -135,14 +135,14 @@ jobs:
         python -c "import struct; print(struct.calcsize('P') * 8)"
     - name: Install Python dependencies
       run: |
-        python -m pip install Cython Sphinx pytest wheel numpy twine build
+        python -m pip install Cython Sphinx pytest wheel numpy twine
     - name: Create bdist_wheel
       run: |
         ./cddlib-makefile-gmp.ps1
         dir cddlib/lib-src/
         if ("${{ matrix.architecture }}" -eq "x86") { $platform = "Win32" } else { $platform = "x64" }
         mkdir dist -Force
-        python -m build --no-isolation --wheel -C--build-option="build_ext -I$platform/Release -L$platform/Release"
+        pip wheel -w dist --global-option="build_ext" --global-option="-I$platform/Release/" --global-option="-L$platform/Release/" .
     - name: Check files
       run: twine check dist/*
     - name: Upload wheel
