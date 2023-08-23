@@ -19,6 +19,6 @@ linear function over a polyhedron.
 
 * Development: https://github.com/mcmtroffaes/pycddlib/ |ci|
 
-.. |ci| image:: https://github.com/mcmtroffaes/pycddlib/actions/workflows/python-package.yml/badge.svg
-       :target: https://github.com/mcmtroffaes/pycddlib/actions/workflows/python-package.yml
+.. |ci| image:: https://github.com/mcmtroffaes/pycddlib/actions/workflows/build.yml/badge.svg
+       :target: https://github.com/mcmtroffaes/pycddlib/actions/workflows/build.yml
        :alt: ci
