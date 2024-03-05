@@ -20,6 +20,7 @@ jobs:
     - name: Create sdist
       run: |
         ./cddlib-makefile-gmp.sh
+        pip install setuptools
         python setup.py sdist
     - name: Check files
       run: |
