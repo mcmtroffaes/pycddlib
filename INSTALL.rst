@@ -31,7 +31,7 @@ Building From Source
 ~~~~~~~~~~~~~~~~~~~~
 
 Full build instructions are in the git repository,
-under `python-package.yml <https://github.com/mcmtroffaes/pycddlib/blob/develop/.github/workflows/build.yml>`_.
+under `build.yml <https://github.com/mcmtroffaes/pycddlib/blob/develop/.github/workflows/build.yml>`_.
 
 For Windows, you must take care to use a compiler and platform toolset
 that is compatible with the one that was used
