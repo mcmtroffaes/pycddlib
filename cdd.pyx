@@ -29,7 +29,7 @@ cimport libc.stdlib
 from fractions import Fraction
 import numbers
 
-__version__ = "2.1.8a2"
+__version__ = "2.1.8a3"
 
 # also need time_t
 cdef extern from "time.h":

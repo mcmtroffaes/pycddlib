@@ -19,7 +19,7 @@ Fedora, install it by running::
 
     dnf install gmp-devel python3-devel
 
-on Ubuntu::
+whilst on Ubuntu::
 
     apt-get install libgmp-dev python3-dev
 
