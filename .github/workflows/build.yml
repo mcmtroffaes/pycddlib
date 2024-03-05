@@ -65,7 +65,7 @@ jobs:
       run: brew install gmp
     - name: Install Python dependencies
       run: |
-        python -m pip install Cython${{ matrix.cython-version }} Sphinx pytest wheel numpy
+        python -m pip install setuptools Cython${{ matrix.cython-version }} Sphinx pytest wheel numpy
     - name: Install tarball
       run: |
         ls
