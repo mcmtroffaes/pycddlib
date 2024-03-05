@@ -10,7 +10,7 @@ On Windows, this will install from a binary wheel
 (for Python 3.7 to 3.11; for other versions of Python
 you will need to build from source, see below).
 
-On Linux, this will install from source,
+On Linux and Mac, this will install from source,
 and you will need `GMP <https://gmplib.org/>`_
 as well as the Python development headers.
 Your
@@ -19,15 +19,19 @@ Fedora, install it by running::
 
     dnf install gmp-devel python3-devel
 
-and on Ubuntu::
+on Ubuntu::
 
     apt-get install libgmp-dev python3-dev
+
+and on Mac::
+
+    brew install gmp
 
 Building From Source
 ~~~~~~~~~~~~~~~~~~~~
 
 Full build instructions are in the git repository,
-under `python-package.yml <https://github.com/mcmtroffaes/pycddlib/blob/develop/.github/workflows/python-package.yml>`_.
+under `python-package.yml <https://github.com/mcmtroffaes/pycddlib/blob/develop/.github/workflows/build.yml>`_.
 
 For Windows, you must take care to use a compiler and platform toolset
 that is compatible with the one that was used
