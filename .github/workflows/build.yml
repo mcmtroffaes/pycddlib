@@ -62,15 +62,12 @@ jobs:
       run: sudo apt-get install -y libgmp-dev
     - name: Install libgmp (MacOS)
       if: matrix.os == 'macos-latest'
-      run: |
-        brew install gmp
+      run: brew install gmp
     - name: Install Python dependencies
-      run: |
-        python -m pip install setuptools Cython${{ matrix.cython-version }} Sphinx pytest wheel numpy
+      run: python -m pip install setuptools Cython${{ matrix.cython-version }} Sphinx pytest wheel numpy
     - name: Install tarball (Ubuntu)
       if: matrix.os == 'ubuntu-latest'
-      run: |
-        python -m pip install --pre --no-index --find-links=. pycddlib
+      run: python -m pip install --pre --no-index --find-links=. pycddlib
     - name: Install tarball (MacOS)
       if: matrix.os == 'macos-latest'
       run: |
