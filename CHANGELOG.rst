@@ -1,5 +1,5 @@
-Version 2.1.8 (in development)
-------------------------------
+Version 2.1.8 (4 September 2024)
+--------------------------------
 
 * Support Python 3.12, drop Python 3.7.
 
