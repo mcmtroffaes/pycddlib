@@ -148,7 +148,7 @@ jobs:
         dir cddlib/lib-src/
         if ("${{ matrix.architecture }}" -eq "x86") { $platform = "Win32" } else { $platform = "x64" }
         mkdir dist -Force
-        pip wheel -w dist --global-option="build_ext" --global-option="-I$platform/Release/" --global-option="-L$platform/Release/" .
+        pip wheel -w dist --global-option="build_ext" --global-option="-I$platform/Release/" --global-option="-L$platform/Release/" --only-binary Cython .
     - name: Check files
       run: twine check dist/*
     - name: Upload wheel
