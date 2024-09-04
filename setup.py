@@ -129,5 +129,5 @@ setup(
     setup_requires=[
         # setuptools 18.0 properly handles Cython extensions.
         'setuptools>=18.0', 'Cython>=3.0.0'],
-    python_requires='>=3.7',
+    python_requires='>=3.8',
 )

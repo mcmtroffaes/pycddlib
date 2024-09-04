@@ -27,6 +27,11 @@ and on Mac::
 
     brew install gmp
 
+You may have to specify the include and library folders.
+If you use homebrew on Mac, for instance, you may have to write::
+
+  env "CFLAGS=-I$(brew --prefix)/include -L$(brew --prefix)/lib" pip install pycddlib
+
 Building From Source
 ~~~~~~~~~~~~~~~~~~~~
 
