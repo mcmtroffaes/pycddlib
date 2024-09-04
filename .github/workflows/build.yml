@@ -27,7 +27,7 @@ jobs:
         python -m pip install twine
         twine check dist/*
     - name: Upload sdist
-      uses: actions/upload-artifact@v3
+      uses: actions/upload-artifact@v4
       with:
         name: sdist
         path: dist/*
@@ -50,7 +50,7 @@ jobs:
     steps:
     - uses: actions/checkout@v3  # no submodules needed here, just checking out for the test suite
     - name: Download sdist
-      uses: actions/download-artifact@v3
+      uses: actions/download-artifact@v4
       with:
         name: sdist
     - name: Set up Python ${{ matrix.python-version }}
@@ -100,7 +100,7 @@ jobs:
         msbuild mpir-mpir-3.0.0\build.vc14\lib_mpir_gc\lib_mpir_gc.vcxproj /p:Configuration=Release /p:Platform=$platform /p:PlatformToolset=${{ matrix.platformtoolset }} /verbosity:normal
         dir mpir-mpir-3.0.0/lib/$platform/Release/
     - name: Upload mpir
-      uses: actions/upload-artifact@v3
+      uses: actions/upload-artifact@v4
       with:
         name: mpir-${{ matrix.platformtoolset }}-${{ matrix.architecture }}
         path: mpir-mpir-3.0.0/lib/*/Release/
@@ -120,7 +120,7 @@ jobs:
       with:
         submodules: recursive
     - name: Download mpir
-      uses: actions/download-artifact@v3
+      uses: actions/download-artifact@v4
       with:
         name: mpir-${{ matrix.platformtoolset }}-${{ matrix.architecture }}
     - name: Set up Python ${{ matrix.python-version }}
@@ -147,7 +147,7 @@ jobs:
     - name: Check files
       run: twine check dist/*
     - name: Upload wheel
-      uses: actions/upload-artifact@v3
+      uses: actions/upload-artifact@v4
       with:
         name: windows-wheels
         path: dist/*
@@ -170,12 +170,12 @@ jobs:
     needs: [ build-sdist, test-ubuntu-macos, build-test-windows ]
     steps:
     - name: Download sdist
-      uses: actions/download-artifact@v3
+      uses: actions/download-artifact@v4
       with:
         name: sdist
         path: dist/
     - name: Download wheels
-      uses: actions/download-artifact@v3
+      uses: actions/download-artifact@v4
       with:
         name: windows-wheels
         path: dist/
