@@ -792,7 +792,7 @@ cdef class LinProg(NumberTypeable):
         self.dd_lp = NULL
         if self.ddf_lp:
             ddf_FreeLPData(self.ddf_lp)
-        self.dd_lp = NULL
+        self.ddf_lp = NULL
 
     def solve(self, dd_LPSolverType solver=dd_DualSimplex):
         cdef dd_ErrorType error = dd_NoError
