@@ -3,7 +3,7 @@ Version 2.1.8 (4 September 2024)
 
 * Support Python 3.12, drop Python 3.7.
 
-* Update cddlib to git hash aff2477 (fixes a segfault).
+* Update cddlib to git hash f83bdbc (fixes a segfault).
 
 Version 2.1.7 (11 August 2023)
 ------------------------------
