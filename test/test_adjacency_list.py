@@ -2,8 +2,7 @@ import cdd
 import pytest
 
 
-@pytest.mark.parametrize("number_type", ["fraction", "float"])
-def test_make_vertex_adjacency_list(number_type):
+def test_make_vertex_adjacency_list():
     # The following lines test that poly.get_adjacency_list()
     # returns the correct adjacencies.
 
@@ -13,8 +12,7 @@ def test_make_vertex_adjacency_list(number_type):
                       [1, 0, 0, 1],
                       [1, -1, 0, 0],
                       [1, 0, -1, 0],
-                      [1, 0, 0, -1]],
-                     number_type=number_type)
+                      [1, 0, 0, -1]])
     mat.rep_type = cdd.RepType.INEQUALITY
     poly = cdd.Polyhedron(mat)
     adjacency_list = poly.get_adjacency()
@@ -40,15 +38,14 @@ def test_make_vertex_adjacency_list(number_type):
         assert list(adjacency_list[i]) == adjacencies[i]
 
 
-@pytest.mark.parametrize("number_type", ["fraction", "float"])
-def test_make_facet_adjacency_list(number_type):
+def test_make_facet_adjacency_list():
     # This matrix is the same as in vtest_vo.ine
     mat = cdd.Matrix([[0, 0, 0, 1],
                       [5, -4, -2, 1],
                       [5, -2, -4, 1],
                       [16, -8, 0, 1],
                       [16, 0, -8, 1],
-                      [32, -8, -8, 1]], number_type=number_type)
+                      [32, -8, -8, 1]])
 
     mat.rep_type = cdd.RepType.INEQUALITY
     poly = cdd.Polyhedron(mat)

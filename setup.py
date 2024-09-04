@@ -33,9 +33,6 @@ import sys
 from setuptools import setup
 from setuptools.extension import Extension
 
-define_macros = [('GMPRATIONAL', None)]
-libraries = ['mpir' if (sys.platform == 'win32') else 'gmp']
-
 # get version from Cython file (without requiring extensions to be compiled!)
 for line in open('cdd.pyx'):
     if line.startswith("__version__"):
@@ -68,51 +65,14 @@ cdd_headers = [
         ]
     ]
 
-cddgmp_sources = cdd_sources + [
-    '{0}/{1}'.format(cdd_dir, srcfile) for srcfile in [
-        'cddcore_f.c',
-        'cddio_f.c',
-        'cddlib_f.c',
-        'cddlp_f.c',
-        'cddmp_f.c',
-        'cddproj_f.c',
-        ]
-    ]
-cddgmp_headers = cdd_headers + [
-    '{0}/{1}'.format(cdd_dir, hdrfile) for hdrfile in [
-        'cdd_f.h',
-        'cddmp_f.h',
-        'cddtypes_f.h',
-        ]
-    ]
-
-# generate include files from template
-cddlib_pxi_in = open("cddlib.pxi.in", "r").read()
-cddlib_pxi = open("cddlib.pxi", "w")
-cddlib_pxi.write(
-    cddlib_pxi_in
-    .replace("@cddhdr@", "cdd.h")
-    .replace("@dd@", "dd")
-    .replace("@mytype@", "mytype"))
-cddlib_pxi.close()
-cddlib_f_pxi = open("cddlib_f.pxi", "w")
-cddlib_f_pxi.write(
-    cddlib_pxi_in
-    .replace("@cddhdr@", "cdd_f.h")
-    .replace("@dd@", "ddf")
-    .replace("@mytype@", "myfloat"))
-cddlib_f_pxi.close()
-
 setup(
     name="pycddlib",
     version=version,
     ext_modules=[
         Extension("cdd",
-                  ["cdd.pyx"] + cddgmp_sources,
+                  ["cdd.pyx"] + cdd_sources,
                   include_dirs=[cdd_dir],
-                  depends=cddgmp_headers,
-                  define_macros=define_macros,
-                  libraries=libraries,
+                  depends=cdd_headers,
                   extra_compile_args=["/std:c11"] if (sys.platform == 'win32') else [],
                   ),
         ],

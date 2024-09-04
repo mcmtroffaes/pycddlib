@@ -8,7 +8,7 @@ include cddlib/COPYING
 include cddlib/README
 include cddlib/AUTHORS
 include cddlib/ChangeLog
-include cddlib.pxi.in cdd.pyx cdd.c
+include cddlib.pxi cdd.pyx cdd.c
 recursive-include cddlib/lib-src *.h *.c
 graft docs/_build/html
 prune docs/_build/html/.git

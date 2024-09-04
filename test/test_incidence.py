@@ -3,8 +3,7 @@ import pytest
 from fractions import Fraction
 
 
-@pytest.mark.parametrize("number_type", ["fraction", "float"])
-def test_vertex_incidence_cube(number_type):
+def test_vertex_incidence_cube():
     # The following lines test that poly.get_vertex_incidence()
     # returns the correct incidences.
 
@@ -14,8 +13,7 @@ def test_vertex_incidence_cube(number_type):
                       [1, 0, 0, 1],
                       [1, -1, 0, 0],
                       [1, 0, -1, 0],
-                      [1, 0, 0, -1]],
-                     number_type=number_type)
+                      [1, 0, 0, -1]])
     mat.rep_type = cdd.RepType.INEQUALITY
     poly = cdd.Polyhedron(mat)
     incidence = poly.get_incidence()
@@ -41,15 +39,15 @@ def test_vertex_incidence_cube(number_type):
         assert sorted(list(incidence[i])) == incidence_list[i]
 
 
-@pytest.mark.parametrize("number_type", ["fraction", "float"])
-def test_vertex_incidence_vtest_vo(number_type):
+
+def test_vertex_incidence_vtest_vo():
     # This matrix is the same as in vtest_vo.ine
     mat = cdd.Matrix([[0, 0, 0, 1],
                       [5, -4, -2, 1],
                       [5, -2, -4, 1],
                       [16, -8, 0, 1],
                       [16, 0, -8, 1],
-                      [32, -8, -8, 1]], number_type=number_type)
+                      [32, -8, -8, 1]])
 
     mat.rep_type = cdd.RepType.INEQUALITY
     poly = cdd.Polyhedron(mat)
@@ -70,16 +68,15 @@ def test_vertex_incidence_vtest_vo(number_type):
         assert sorted(list(incidence[i])) == incidence_list[i]
 
 
-@pytest.mark.parametrize("number_type", ["fraction", "float"])
-def test_facet_incidence_cube(number_type):
+
+def test_facet_incidence_cube():
     # We start with the H-representation for a cube
     mat = cdd.Matrix([[1, 1, 0 ,0],
                       [1, 0, 1, 0],
                       [1, 0, 0, 1],
                       [1, -1, 0, 0],
                       [1, 0, -1, 0],
-                      [1, 0, 0, -1]],
-                     number_type=number_type)
+                      [1, 0, 0, -1]])
     mat.rep_type = cdd.RepType.INEQUALITY
     poly = cdd.Polyhedron(mat)
     incidence = poly.get_input_incidence()
@@ -104,15 +101,15 @@ def test_facet_incidence_cube(number_type):
     for i in range(7):
         assert sorted(list(incidence[i])) == incidence_list[i]
 
-@pytest.mark.parametrize("number_type", ["fraction", "float"])
-def test_facet_incidence_vtest_vo(number_type):
+
+def test_facet_incidence_vtest_vo():
     # This matrix is the same as in vtest_vo.ine
     mat = cdd.Matrix([[0, 0, 0, 1],
                       [5, -4, -2, 1],
                       [5, -2, -4, 1],
                       [16, -8, 0, 1],
                       [16, 0, -8, 1],
-                      [32, -8, -8, 1]], number_type=number_type)
+                      [32, -8, -8, 1]])
 
     mat.rep_type = cdd.RepType.INEQUALITY
     poly = cdd.Polyhedron(mat)
