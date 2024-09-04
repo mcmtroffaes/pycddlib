@@ -29,7 +29,6 @@ Programming Language :: Python :: 3
 Operating System :: OS Independent"""
 
 import sys
-import os.path
 
 from setuptools import setup
 from setuptools.extension import Extension
@@ -114,6 +113,7 @@ setup(
                   depends=cddgmp_headers,
                   define_macros=define_macros,
                   libraries=libraries,
+                  extra_compile_args=["/std:c11"] if (sys.platform == 'win32') else [],
                   ),
         ],
     author="Matthias Troffaes",
