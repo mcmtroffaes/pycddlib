@@ -26,9 +26,6 @@ cimport cpython.unicode
 cimport libc.stdio
 cimport libc.stdlib
 
-from fractions import Fraction
-import numbers
-
 __version__ = "3.0.0a0"
 
 # also need time_t
