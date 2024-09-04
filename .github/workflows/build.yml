@@ -153,9 +153,15 @@ jobs:
     - name: Upload wheel
       uses: actions/upload-artifact@v4
       with:
-        name: windows-wheels
+        name: windows-wheels-${{ matrix.python-version }}-${{ matrix.architecture }}
         path: dist/*
         if-no-files-found: error
+    - name: Merge wheel
+      uses: actions/upload-artifact/merge@v4
+      with:
+        name: windows-wheels
+        pattern: windows-wheels-*
+        delete-merged: true
     - name: Install wheel
       run: |
         cd dist
