@@ -160,12 +160,6 @@ jobs:
         name: windows-wheels-${{ matrix.python-version }}-${{ matrix.architecture }}
         path: dist/*
         if-no-files-found: error
-    - name: Merge wheel
-      uses: actions/upload-artifact/merge@v4
-      with:
-        name: windows-wheels
-        pattern: windows-wheels-*
-        delete-merged: true
     - name: Install wheel
       run: |
         cd dist
@@ -191,8 +185,9 @@ jobs:
     - name: Download wheels
       uses: actions/download-artifact@v4
       with:
-        name: windows-wheels
+        pattern: windows-wheels-*
         path: dist/
+        merge-multiple: true
     - name: List files
       run: ls -R dist/
     - name: Publish to Test PyPI
