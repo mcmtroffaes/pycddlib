@@ -131,17 +131,17 @@ cdef _set_set(set_type set_, pset):
             set_delelem(set_, elem + 1)
 
 cdef _get_dd_setfam(dd_SetFamilyPtr setfam):
-    """Create tuple of Python frozensets from dd_SetFamilyPtr, and
+    """Create list of Python sets from dd_SetFamilyPtr, and
     free the pointer. The indexing of the sets start at 0, unlike the
     string output from cddlib, which starts at 1.
     """
     cdef long elem
     if setfam == NULL:
         raise ValueError("failed to get set family")
-    result = tuple(frozenset([elem
-                              for elem from 0 <= elem < setfam.setsize
-                              if set_member(elem + 1, setfam.set[i])])
-                   for i in range(setfam.famsize))
+    result = [{elem
+               for elem from 0 <= elem < setfam.setsize
+               if set_member(elem + 1, setfam.set[i])}
+              for i in range(setfam.famsize)]
     dd_FreeSetFamily(setfam)
     return result
 
