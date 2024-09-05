@@ -13,7 +13,7 @@ def test_sampleh1():
         list(ext),
         [(1, 0, 0, 0), (1, 2, 0, 0), (1, 0, 2, 0), (0, 0, 0, 1)])
     # note: first row is 0, so fourth row is 3
-    assert list(ext.lin_set) == [3]
+    assert ext.lin_set == {3}
 
 def test_testcdd2():
     mat = cdd.Matrix([[7,-3,-0],[7,0,-3],[1,1,0],[1,0,1]])
@@ -33,7 +33,7 @@ def test_testcdd2():
     mat.extend([[7, -3, 1]])
     assert_matrix_almost_equal(
         list(mat), [(7,-3,-0),(7,0,-3),(1,1,0),(1,0,1),(7,1,-3),(7,-3,1)])
-    assert list(mat.lin_set) == [4]
+    assert mat.lin_set == {4}
     gen2 = cdd.Polyhedron(mat).get_generators()
     assert gen2.rep_type == cdd.RepType.GENERATOR
     assert_matrix_almost_equal(
