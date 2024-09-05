@@ -241,25 +241,17 @@ cdef class Matrix:
 
     cdef dd_MatrixPtr dd_mat
 
-    cdef int _get_row_size(self):
-        """Quick implementation of row_size property, for Cython use."""
-        return self.dd_mat.rowsize
-
-    cdef int _get_col_size(self):
-        """Quick implementation of col_size property, for Cython use."""
-        return self.dd_mat.colsize
-
     property row_size:
         def __get__(self):
-            return self._get_row_size()
+            return self.dd_mat.rowsize
 
     def __len__(self):
-        return self._get_row_size()
+        return self.dd_mat.rowsize
 
 
     property col_size:
         def __get__(self):
-            return self._get_col_size()
+            return self.dd_mat.colsize
 
     property lin_set:
         def __get__(self):
@@ -287,7 +279,7 @@ cdef class Matrix:
                           for 0 <= colindex < self.dd_mat.colsize])
         def __set__(self, obj_func):
             cdef int colindex
-            if len(obj_func) != self._get_col_size():
+            if len(obj_func) != self.dd_mat.colsize:
                 raise ValueError(
                     "objective function does not match matrix column size")
             for colindex, value in enumerate(obj_func):
@@ -358,7 +350,7 @@ cdef class Matrix:
             return tuple([self.__getitem__(i) for i in xrange(*indices)])
         else:
             rownum = key
-            if rownum < 0 or rownum >= self._get_row_size():
+            if rownum < 0 or rownum >= self.dd_mat.rowsize:
                 raise IndexError("row index out of range")
             # return an immutable tuple to prohibit item assignment
             return tuple([dd_get_d(self.dd_mat.matrix[rownum][j])
