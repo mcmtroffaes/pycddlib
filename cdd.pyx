@@ -115,11 +115,11 @@ cdef _tmpread(libc.stdio.FILE *pfile):
     return result
 
 cdef _get_set(set_type set_):
-    """Create Python frozenset from given set_type."""
+    """Create Python set from given set_type."""
     cdef unsigned long elem
-    return frozenset([elem
-                      for elem from 0 <= elem < set_[0]
-                      if set_member(elem + 1, set_)])
+    return {elem
+            for elem from 0 <= elem < set_[0]
+            if set_member(elem + 1, set_)}
 
 cdef _set_set(set_type set_, pset):
     """Set elements of set_type by elements from Python set."""
