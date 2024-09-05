@@ -116,19 +116,19 @@ cdef _tmpread(libc.stdio.FILE *pfile):
 
 cdef _get_set(set_type set_):
     """Create Python frozenset from given set_type."""
-    cdef long elem
-    return frozenset([elem - 1
-                      for elem from 1 <= elem <= set_[0]
-                      if set_member(elem, set_)])
+    cdef unsigned long elem
+    return frozenset([elem
+                      for elem from 0 <= elem < set_[0]
+                      if set_member(elem + 1, set_)])
 
 cdef _set_set(set_type set_, pset):
     """Set elements of set_type by elements from Python set."""
-    cdef long elem
-    for elem from 1 <= elem <= set_[0]:
-        if elem - 1 in pset:
-            set_addelem(set_, elem)
+    cdef unsigned long elem
+    for elem from 0 <= elem < set_[0]:
+        if elem in pset:
+            set_addelem(set_, elem + 1)
         else:
-            set_delelem(set_, elem)
+            set_delelem(set_, elem + 1)
 
 cdef _get_dd_setfam(dd_SetFamilyPtr setfam):
     """Create tuple of Python frozensets from dd_SetFamilyPtr, and
@@ -138,9 +138,9 @@ cdef _get_dd_setfam(dd_SetFamilyPtr setfam):
     cdef long elem
     if setfam == NULL:
         raise ValueError("failed to get set family")
-    result = tuple(frozenset([elem - 1
-                              for elem from 1 <= elem <= setfam.setsize
-                              if set_member(elem, setfam.set[i])])
+    result = tuple(frozenset([elem
+                              for elem from 0 <= elem < setfam.setsize
+                              if set_member(elem + 1, setfam.set[i])])
                    for i in range(setfam.famsize))
     dd_FreeSetFamily(setfam)
     return result
