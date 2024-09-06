@@ -17,7 +17,7 @@
 
 from fractions import Fraction
 
-cdef extern from "cdd.h" nogil:
+cdef extern from "cddmp_f.h" nogil:
     ctypedef double myfloat[1]
 
 cdef _get_mytype(myfloat target):
