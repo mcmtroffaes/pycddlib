@@ -1,5 +1,5 @@
 venv/
-cdd.c
+cdd*.c
 docs/_build/
 .eggs/
 *.egg-info/
