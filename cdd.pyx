@@ -27,22 +27,22 @@ include "extern_cddlib_f.pxi"
 
 # wrapper classes to expose enums
 
-cdef class AdjacencyTestType:
+cpdef enum AdjacencyTestType:
     COMBINATORIAL = ddf_Combinatorial
     ALGEBRAIC     = ddf_Algebraic
 
-cdef class NumberType:
+cpdef enum NumberType:
     UNKNOWN  = ddf_Unknown
     REAL     = ddf_Real
     RATIONAL = ddf_Rational
     INTEGER  = ddf_Integer
 
-cdef class RepType:
+cpdef enum RepType:
     UNSPECIFIED = ddf_Unspecified
     INEQUALITY  = ddf_Inequality
     GENERATOR   = ddf_Generator
 
-cdef class RowOrderType:
+cpdef enum RowOrderType:
     MAX_INDEX  = ddf_MaxIndex
     MIN_INDEX  = ddf_MinIndex
     MIN_CUTOFF = ddf_MinCutoff
@@ -52,7 +52,7 @@ cdef class RowOrderType:
     LEX_MAX    = ddf_LexMax
     RANDOM_ROW = ddf_RandomRow
 
-cdef class Error:
+cpdef enum Error:
     DIMENSION_TOO_LARGE      = ddf_DimensionTooLarge
     IMPROPER_INPUT_FORMAT    = ddf_ImproperInputFormat
     NEGATIVE_MATRIX_SIZE     = ddf_NegativeMatrixSize
@@ -72,21 +72,21 @@ cdef class Error:
     NUMERICALLY_INCONSISTENT = ddf_NumericallyInconsistent
     NO_ERROR                 = ddf_NoError
 
-cdef class CompStatus:
+cpdef enum CompStatus:
     IN_PROGRESS  = ddf_InProgress
     ALL_FOUND    = ddf_AllFound
     REGION_EMPTY = ddf_RegionEmpty
 
-cdef class LPObjType:
+cpdef enum LPObjType:
     NONE = ddf_LPnone
     MAX  = ddf_LPmax
     MIN  = ddf_LPmin
 
-cdef class LPSolverType:
+cpdef enum LPSolverType:
     CRISS_CROSS  = ddf_CrissCross
     DUAL_SIMPLEX = ddf_DualSimplex
 
-cdef class LPStatusType:
+cpdef enum LPStatusType:
     UNDECIDED             = ddf_LPSundecided
     OPTIMAL               = ddf_Optimal
     INCONSISTENT          = ddf_Inconsistent
