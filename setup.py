@@ -83,13 +83,20 @@ setup(
     ext_modules=[
         Extension(
             "cdd",
-            ["cdd.pyx"] + cdd_sources,
+            ["cdd.pyx"],
             include_dirs=[cdd_dir],
             depends=cdd_headers,
             extra_compile_args=["/std:c11"] if (sys.platform == "win32") else [],
         ),
         Extension(
-            "cddmpq",
+            "cdd.flt",
+            ["cddflt.pyx"] + cdd_sources,
+            include_dirs=[cdd_dir],
+            depends=cdd_headers,
+            extra_compile_args=["/std:c11"] if (sys.platform == "win32") else [],
+        ),
+        Extension(
+            "cdd.mpq",
             ["cddmpq.pyx"] + cddgmp_sources,
             include_dirs=[cdd_dir],
             depends=cddgmp_headers,

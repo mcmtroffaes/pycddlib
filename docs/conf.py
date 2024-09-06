@@ -56,7 +56,7 @@ copyright = "2008-2015, Matthias C. M. Troffaes"
 #
 # The full version, including alpha/beta/rc tags.
 # get version from Cython file (without requiring extensions to be compiled!)
-for line in open("../cdd.pyx"):
+for line in open("../cddflt.pyx"):
     if line.startswith("__version__"):
         release = line[line.find('"') + 1 : line.rfind('"')]
         break
