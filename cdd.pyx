@@ -22,7 +22,7 @@
 # to avoid compilation errors, includes must follow this order
 
 include "extern_preamble.pxi"
-include "extern_mytype_flt.pxi"
+include "extern_myfloat.pxi"
 include "extern_cddlib_f.pxi"
 
 # wrapper classes to expose enums

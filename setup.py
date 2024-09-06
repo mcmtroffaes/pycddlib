@@ -97,9 +97,11 @@ setup(
     name="pycddlib",
     version="3.0.0a0",
     ext_modules=[
+        # intentionally do not compile cdd.pyx against gmp
+        # to allow installation without gmp
         Extension(
             "cdd",
-            ["cddflt.pyx"] + cdd_sources,
+            ["cdd.pyx"] + cdd_sources,
             include_dirs=[cdd_dir],
             depends=cdd_headers,
             define_macros=[("GMPRATIONAL", None)],
