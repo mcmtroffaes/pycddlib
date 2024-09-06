@@ -59,6 +59,24 @@ cdd_headers = [
     ]
 ]
 
+cddgmp_sources = cdd_sources + [
+    '{0}/{1}'.format(cdd_dir, srcfile) for srcfile in [
+        'cddcore_f.c',
+        'cddio_f.c',
+        'cddlib_f.c',
+        'cddlp_f.c',
+        'cddmp_f.c',
+        'cddproj_f.c',
+        ]
+    ]
+cddgmp_headers = cdd_headers + [
+    '{0}/{1}'.format(cdd_dir, hdrfile) for hdrfile in [
+        'cdd_f.h',
+        'cddmp_f.h',
+        'cddtypes_f.h',
+        ]
+    ]
+
 setup(
     name="pycddlib",
     version="3.0.0a0",
@@ -72,10 +90,11 @@ setup(
         ),
         Extension(
             "cddmpq",
-            ["cddmpq.pyx"] + cdd_sources,
+            ["cddmpq.pyx"] + cddgmp_sources,
             include_dirs=[cdd_dir],
-            depends=cdd_headers,
+            depends=cddgmp_headers,
             define_macros=[("GMPRATIONAL", None)],
+            libraries=['mpir' if (sys.platform == 'win32') else 'gmp'],
             extra_compile_args=["/std:c11"] if (sys.platform == "win32") else [],
         ),
     ],
