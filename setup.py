@@ -88,7 +88,7 @@ setup(
             ["cdd.pyx"] + cdd_sources,
             include_dirs=[cdd_dir],
             depends=cdd_headers,
-            # TODO replace include_dirs & depends with libraries=['cdd']
+            # TODO replace sources, include_dirs, depends with libraries=['cdd']
             extra_compile_args=["/std:c11"] if (sys.platform == "win32") else [],
         ),
         Extension(
@@ -97,7 +97,7 @@ setup(
             include_dirs=[cdd_dir],
             depends=cddgmp_headers,
             define_macros=[("GMPRATIONAL", None)],
-            # TODO replace include_dirs & depends with libraries=['cddgmp'] + ...
+            # TODO replace sources, include_dirs, depends with libraries=['cddgmp']
             libraries=['mpir' if (sys.platform == 'win32') else 'gmp'],
             extra_compile_args=["/std:c11"] if (sys.platform == "win32") else [],
         ),
