@@ -606,10 +606,6 @@ cdef class Matrix:
         dd_WriteMatrix(pfile, self.dd_mat)
         return _tmpread(pfile).rstrip('\n')
 
-    def __init__(self, *args, **kwargs):
-        # overriding this to prevent base class constructor to be called
-        pass
-
     def __cinit__(self, rows, linear=False):
         """Load matrix data from the rows (which is a list of lists)."""
         cdef Py_ssize_t numrows, numcols, rowindex, colindex
@@ -738,10 +734,6 @@ cdef class LinProg:
         dd_WriteLPResult(pfile, self.dd_lp, dd_NoError)
         return _tmpread(pfile).rstrip('\n')
 
-    def __init__(self, *args, **kwargs):
-        # overriding this to prevent base class constructor to be called
-        pass
-
     def __cinit__(self, Matrix mat):
         """Initialize linear program solution from solved linear program in
         the given matrix.
@@ -785,10 +777,6 @@ cdef class Polyhedron:
         pfile = _tmpfile()
         dd_WritePolyFile(pfile, self.dd_poly)
         return _tmpread(pfile).rstrip('\n')
-
-    def __init__(self, *args, **kwargs):
-        # overriding this to prevent base class constructor to be called
-        pass
 
     def __cinit__(self, Matrix mat):
         """Initialize polyhedra from given matrix."""
