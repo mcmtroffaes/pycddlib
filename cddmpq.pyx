@@ -24,4 +24,4 @@
 include "extern_preamble.pxi"
 include "extern_mytype_mpq.pxi"
 include "extern_cddlib.pxi"
-include "cdd.pxi"
+include "cddlib_classes.pxi"
