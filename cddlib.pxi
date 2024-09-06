@@ -19,8 +19,6 @@
 
 cdef extern from "cdd.h" nogil:
 
-    # set operations and enums are already imported from _common.pxd
-
     # typedefs
     ###########
 
