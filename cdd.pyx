@@ -292,7 +292,7 @@ cdef class Matrix:
 
     def __cinit__(self, rows, linear=False):
         """Load matrix data from the rows (which is a list of lists)."""
-        cdef int numrows, numcols, rowindex, colindex
+        cdef Py_ssize_t numrows, numcols, rowindex, colindex
         # reset pointers
         self.dd_mat = NULL
         # determine dimension
@@ -301,8 +301,12 @@ cdef class Matrix:
             numcols = len(rows[0])
         else:
             numcols = 0
-        # create new matrix
-        self.dd_mat = dd_CreateMatrix(numrows, numcols)
+        # create new matrix, safely casting ranges
+        cdef dd_rowrange numrows2 = <dd_rowrange>numrows
+        cdef dd_colrange numcols2 = <dd_colrange>numcols
+        if numrows2 != numrows or numcols2 != numcols:
+            raise ValueError("matrix too large")
+        self.dd_mat = dd_CreateMatrix(numrows2, numcols2)
         # load data
         for rowindex, row in enumerate(rows):
             if len(row) != numcols:
