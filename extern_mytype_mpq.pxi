@@ -17,13 +17,35 @@
 
 cdef extern from *:
     """
-#ifdef GMPRATIONAL
-#error "GMPRATIONAL must not be defined"
+#ifndef GMPRATIONAL
+#error "GMPRATIONAL must be defined"
 #endif
 #ifdef GMPFLOAT
 #error "GMPFLOAT must not be defined"
 #endif
     """
 
+# gmp integer and rational functions
+# note: mpir.h/gmp.h will be included via cdd.h later, so use from * form
+cdef extern from * nogil:
+    ctypedef struct mpz_t:
+        pass
+    signed long int mpz_get_si(mpz_t op)
+    unsigned long int mpz_get_ui(mpz_t op)
+    int mpz_fits_slong_p(mpz_t op)
+    int mpz_fits_ulong_p(mpz_t op)
+    size_t mpz_sizeinbase(mpz_t op, int base)
+
+    # note: need to add this internal detail to the header (compilation
+    # fails otherwise)
+    ctypedef struct __mpq_struct:
+        pass
+    ctypedef __mpq_struct mpq_t[1]
+
+    mpz_t mpq_numref(mpq_t op)
+    mpz_t mpq_denref(mpq_t op)
+    char *mpq_get_str(char *str, int base, mpq_t op)
+    int mpq_set_str(mpq_t rop, char *str, int base)
+
 cdef extern from "cdd.h" nogil:
-    ctypedef double mytype[1]
+    ctypedef mpq_t mytype

@@ -34,40 +34,51 @@ from setuptools import setup
 from setuptools.extension import Extension
 
 # get documentation from README.rst file
-doclines = open('README.rst').read().split('\n')
+doclines = open("README.rst").read().split("\n")
 
-cdd_dir = 'cddlib/lib-src'
+cdd_dir = "cddlib/lib-src"
 cdd_sources = [
-    '{0}/{1}'.format(cdd_dir, srcfile) for srcfile in [
-        'cddcore.c',
-        'cddio.c',
-        'cddlib.c',
-        'cddlp.c',
-        'cddmp.c',
-        'cddproj.c',
-        'setoper.c',
-        ]
+    "{0}/{1}".format(cdd_dir, srcfile)
+    for srcfile in [
+        "cddcore.c",
+        "cddio.c",
+        "cddlib.c",
+        "cddlp.c",
+        "cddmp.c",
+        "cddproj.c",
+        "setoper.c",
     ]
+]
 cdd_headers = [
-    '{0}/{1}'.format(cdd_dir, hdrfile) for hdrfile in [
-        'cdd.h',
-        'cddmp.h',
-        'cddtypes.h',
-        'setoper.h',
-        ]
+    "{0}/{1}".format(cdd_dir, hdrfile)
+    for hdrfile in [
+        "cdd.h",
+        "cddmp.h",
+        "cddtypes.h",
+        "setoper.h",
     ]
+]
 
 setup(
     name="pycddlib",
     version="3.0.0a0",
     ext_modules=[
-        Extension("cdd",
-                  ["cdd.pyx"] + cdd_sources,
-                  include_dirs=[cdd_dir],
-                  depends=cdd_headers,
-                  extra_compile_args=["/std:c11"] if (sys.platform == 'win32') else [],
-                  ),
-        ],
+        Extension(
+            "cdd",
+            ["cdd.pyx"] + cdd_sources,
+            include_dirs=[cdd_dir],
+            depends=cdd_headers,
+            extra_compile_args=["/std:c11"] if (sys.platform == "win32") else [],
+        ),
+        Extension(
+            "cddmpq",
+            ["cddmpq.pyx"] + cdd_sources,
+            include_dirs=[cdd_dir],
+            depends=cdd_headers,
+            define_macros=[("GMPRATIONAL", None)],
+            extra_compile_args=["/std:c11"] if (sys.platform == "win32") else [],
+        ),
+    ],
     author="Matthias Troffaes",
     author_email="matthias.troffaes@gmail.com",
     license="GPL",
@@ -77,9 +88,11 @@ setup(
     long_description="\n".join(doclines[2:]),
     long_description_content_type="text/x-rst",
     url="http://pypi.python.org/pypi/pycddlib",
-    classifiers=classifiers.split('\n'),
+    classifiers=classifiers.split("\n"),
     setup_requires=[
         # setuptools 18.0 properly handles Cython extensions.
-        'setuptools>=18.0', 'Cython>=3.0.0'],
-    python_requires='>=3.8',
+        "setuptools>=18.0",
+        "Cython>=3.0.0",
+    ],
+    python_requires=">=3.8",
 )
