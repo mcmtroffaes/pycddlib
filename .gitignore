@@ -9,3 +9,4 @@ docs/_build/
 x64/
 out/
 build/
+dist/
