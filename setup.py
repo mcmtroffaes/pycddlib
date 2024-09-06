@@ -108,7 +108,7 @@ setup(
             extra_compile_args=["/std:c11"] if (sys.platform == "win32") else [],
         ),
         Extension(
-            "cdd.mpq",
+            "cddmpq",
             ["cddmpq.pyx"] + cddgmp_sources,
             include_dirs=[cdd_dir],
             depends=cddgmp_headers,
