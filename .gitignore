@@ -8,3 +8,4 @@ docs/_build/
 .idea/
 x64/
 out/
+build/
