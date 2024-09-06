@@ -26,8 +26,6 @@ cimport cpython.unicode
 cimport libc.stdio
 cimport libc.stdlib
 
-__version__ = "3.0.0a0"
-
 # also need time_t
 cdef extern from "time.h":
     ctypedef long time_t

@@ -33,14 +33,6 @@ import sys
 from setuptools import setup
 from setuptools.extension import Extension
 
-# get version from Cython file (without requiring extensions to be compiled!)
-for line in open('cdd.pyx'):
-    if line.startswith("__version__"):
-        version = line[line.find('"')+1:line.rfind('"')]
-        break
-else:
-    raise RuntimeError("failed to extract version from cdd.pyx")
-
 # get documentation from README.rst file
 doclines = open('README.rst').read().split('\n')
 
@@ -67,7 +59,7 @@ cdd_headers = [
 
 setup(
     name="pycddlib",
-    version=version,
+    version="3.0.0a0",
     ext_modules=[
         Extension("cdd",
                   ["cdd.pyx"] + cdd_sources,
