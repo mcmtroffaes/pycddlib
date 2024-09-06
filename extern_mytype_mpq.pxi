@@ -15,6 +15,9 @@
 # with this program; if not, write to the Free Software Foundation, Inc.,
 # 51 Franklin Street, Fifth Floor, Boston, MA 02110-1301 USA.
 
+import numbers
+from fractions import Fraction
+
 cdef extern from *:
     """
 #ifndef GMPRATIONAL
@@ -49,3 +52,40 @@ cdef extern from * nogil:
 
 cdef extern from "cdd.h" nogil:
     ctypedef mpq_t mytype
+
+
+# get Python Fraction or int from target
+cdef _get_mytype(mytype target):
+    cdef signed long int num
+    cdef unsigned long int den
+    cdef char *buf_ptr
+    if mpz_fits_slong_p(mpq_numref(target)) and mpz_fits_ulong_p(mpq_denref(target)):
+        num = mpz_get_si(mpq_numref(target))
+        den = mpz_get_ui(mpq_denref(target))
+        if den == 1:
+            return num
+        else:
+            return Fraction(num, den)
+    else:
+        buf = cpython.bytes.PyBytes_FromStringAndSize(NULL, mpz_sizeinbase(mpq_numref(target), 10) + mpz_sizeinbase(mpq_denref(target), 10) + 3)
+        buf_ptr = cpython.bytes.PyBytes_AsString(buf)
+        mpq_get_str(buf_ptr, 10, target)
+        # trick: bytes(buf_ptr) removes everything after the null
+        return Fraction(bytes(buf_ptr).decode('ascii'))
+
+# set target to value
+cdef _set_mytype(mytype target, value):
+    # convert string to fraction
+    if isinstance(value, str):
+        value = Fraction(value)
+    # set target to value
+    if isinstance(value, numbers.Rational):
+        try:
+            dd_set_si2(target, value.numerator, value.denominator)
+        except OverflowError:
+            # in case of overflow, set it using mpq_set_str
+            buf = str(value).encode('ascii')
+            if mpq_set_str(target, buf, 10) == -1:
+                raise ValueError('could not convert %s to mpq_t' % value)
+    elif isinstance(value, numbers.Real):
+        dd_set_d(target, float(value))

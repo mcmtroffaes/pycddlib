@@ -15,6 +15,8 @@
 # with this program; if not, write to the Free Software Foundation, Inc.,
 # 51 Franklin Street, Fifth Floor, Boston, MA 02110-1301 USA.
 
+from fractions import Fraction
+
 cdef extern from *:
     """
 #ifdef GMPRATIONAL
@@ -27,3 +29,12 @@ cdef extern from *:
 
 cdef extern from "cdd.h" nogil:
     ctypedef double mytype[1]
+
+cdef _get_mytype(mytype target):
+    return target[0]
+
+cdef _set_mytype(mytype target, value):
+    if isinstance(value, str):
+        target[0] = Fraction(value)
+    else:
+        target[0] = float(value)

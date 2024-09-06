@@ -233,7 +233,7 @@ cdef class Matrix:
                 raise ValueError(
                     "objective function does not match matrix column size")
             for colindex, value in enumerate(obj_func):
-                dd_set_d(self.dd_mat.rowvec[colindex], value)
+                _set_mytype(self.dd_mat.rowvec[colindex], value)
 
     def __str__(self):
         cdef libc.stdio.FILE *pfile
@@ -267,7 +267,7 @@ cdef class Matrix:
             if len(row) != numcols:
                 raise ValueError("rows have different lengths")
             for colindex, value in enumerate(row):
-                dd_set_d(self.dd_mat.matrix[rowindex][colindex], value)
+                _set_mytype(self.dd_mat.matrix[rowindex][colindex], value)
         if linear:
             # set all constraints as linear
             set_compl(self.dd_mat.linset, self.dd_mat.linset)
@@ -307,7 +307,7 @@ cdef class Matrix:
             if rownum < 0 or rownum >= self.dd_mat.rowsize:
                 raise IndexError("row index out of range")
             # return an immutable tuple to prohibit item assignment
-            return tuple([dd_get_d(self.dd_mat.matrix[rownum][j])
+            return tuple([_get_mytype(self.dd_mat.matrix[rownum][j])
                           for 0 <= j < self.dd_mat.colsize])
 
     def canonicalize(self):
@@ -349,18 +349,18 @@ cdef class LinProg:
 
     property obj_value:
         def __get__(self):
-            return dd_get_d(self.dd_lp.optvalue)
+            return _get_mytype(self.dd_lp.optvalue)
 
     property primal_solution:
         def __get__(self):
             cdef int colindex
-            return tuple([dd_get_d(self.dd_lp.sol[colindex])
+            return tuple([_get_mytype(self.dd_lp.sol[colindex])
                           for 1 <= colindex < self.dd_lp.d])
 
     property dual_solution:
         def __get__(self):
             cdef int colindex
-            return tuple([dd_get_d(self.dd_lp.dsol[colindex])
+            return tuple([_get_mytype(self.dd_lp.dsol[colindex])
                           for 1 <= colindex < self.dd_lp.d])
 
     def __str__(self):
