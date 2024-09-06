@@ -509,7 +509,7 @@ cdef class Matrix:
         def __get__(self):
             return self.dd_mat.objective
         def __set__(self, @dd@_LPObjectiveType value):
-            self.@dd@_mat.objective = value
+            self.dd_mat.objective = value
 
     property obj_func:
         def __get__(self):
