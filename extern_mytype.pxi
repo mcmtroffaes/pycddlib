@@ -24,7 +24,4 @@ cdef _get_mytype(mytype target):
     return target[0]
 
 cdef _set_mytype(mytype target, value):
-    if isinstance(value, str):
-        target[0] = Fraction(value)
-    else:
-        target[0] = float(value)
+    target[0] = float(value)

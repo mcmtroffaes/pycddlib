@@ -65,9 +65,6 @@ cdef _get_mytype(mytype target):
 
 # set target to value
 cdef _set_mytype(mytype target, value):
-    # convert string to fraction
-    if isinstance(value, str):
-        value = Fraction(value)
     # set target to value
     if isinstance(value, numbers.Rational):
         try:
@@ -77,5 +74,5 @@ cdef _set_mytype(mytype target, value):
             buf = str(value).encode('ascii')
             if mpq_set_str(target, buf, 10) == -1:
                 raise ValueError('could not convert %s to mpq_t' % value)
-    elif isinstance(value, numbers.Real):
-        dd_set_d(target, float(value))
+    else:
+        raise TypeError("value {value!r} is not Rational")
