@@ -1,5 +1,7 @@
 venv/
 cdd*.c
+extern_cddlib.pxi
+extern_cddlib_f.pxi
 docs/_build/
 .eggs/
 *.egg-info/

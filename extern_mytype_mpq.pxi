@@ -18,16 +18,6 @@
 import numbers
 from fractions import Fraction
 
-cdef extern from *:
-    """
-#ifndef GMPRATIONAL
-#error "GMPRATIONAL must be defined"
-#endif
-#ifdef GMPFLOAT
-#error "GMPFLOAT must not be defined"
-#endif
-    """
-
 # gmp integer and rational functions
 # note: mpir.h/gmp.h will be included via cdd.h later, so use from * form
 cdef extern from * nogil:

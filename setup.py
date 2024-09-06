@@ -40,42 +40,58 @@ cdd_dir = "cddlib/lib-src"
 cdd_sources = [
     "{0}/{1}".format(cdd_dir, srcfile)
     for srcfile in [
-        "cddcore.c",
-        "cddio.c",
-        "cddlib.c",
-        "cddlp.c",
-        "cddmp.c",
-        "cddproj.c",
+        "cddcore_f.c",
+        "cddio_f.c",
+        "cddlib_f.c",
+        "cddlp_f.c",
+        "cddmp_f.c",
+        "cddproj_f.c",
         "setoper.c",
     ]
 ]
 cdd_headers = [
     "{0}/{1}".format(cdd_dir, hdrfile)
     for hdrfile in [
-        "cdd.h",
-        "cddmp.h",
-        "cddtypes.h",
+        "cdd_f.h",
+        "cddmp_f.h",
+        "cddtypes_f.h",
         "setoper.h",
     ]
 ]
 
 cddgmp_sources = cdd_sources + [
     '{0}/{1}'.format(cdd_dir, srcfile) for srcfile in [
-        'cddcore_f.c',
-        'cddio_f.c',
-        'cddlib_f.c',
-        'cddlp_f.c',
-        'cddmp_f.c',
-        'cddproj_f.c',
+        'cddcore.c',
+        'cddio.c',
+        'cddlib.c',
+        'cddlp.c',
+        'cddmp.c',
+        'cddproj.c',
         ]
     ]
 cddgmp_headers = cdd_headers + [
     '{0}/{1}'.format(cdd_dir, hdrfile) for hdrfile in [
-        'cdd_f.h',
-        'cddmp_f.h',
-        'cddtypes_f.h',
+        'cdd.h',
+        'cddmp.h',
+        'cddtypes.h',
         ]
     ]
+
+cddlib_pxi_in = open("extern_cddlib.pxi.in", "r").read()
+cddlib_pxi = open("extern_cddlib.pxi", "w")
+cddlib_pxi.write(
+    cddlib_pxi_in
+    .replace("@cddhdr@", "cdd.h")
+    .replace("@dd@", "dd")
+    .replace("@mytype@", "mytype"))
+cddlib_pxi.close()
+cddlib_f_pxi = open("extern_cddlib_f.pxi", "w")
+cddlib_f_pxi.write(
+    cddlib_pxi_in
+    .replace("@cddhdr@", "cdd_f.h")
+    .replace("@dd@", "ddf")
+    .replace("@mytype@", "myfloat"))
+cddlib_f_pxi.close()
 
 setup(
     name="pycddlib",
@@ -83,16 +99,10 @@ setup(
     ext_modules=[
         Extension(
             "cdd",
-            ["cdd.pyx"],
-            include_dirs=[cdd_dir],
-            depends=cdd_headers,
-            extra_compile_args=["/std:c11"] if (sys.platform == "win32") else [],
-        ),
-        Extension(
-            "cdd.flt",
             ["cddflt.pyx"] + cdd_sources,
             include_dirs=[cdd_dir],
             depends=cdd_headers,
+            define_macros=[("GMPRATIONAL", None)],
             extra_compile_args=["/std:c11"] if (sys.platform == "win32") else [],
         ),
         Extension(

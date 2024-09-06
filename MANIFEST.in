@@ -9,6 +9,9 @@ include cddlib/README
 include cddlib/AUTHORS
 include cddlib/ChangeLog
 include *.pxi cdd.pyx cdd.c
+include extern_cddlib.pxi.in
+exclude extern_cddlib.pxi
+exclude extern_cddlib_f.pxi
 recursive-include cddlib/lib-src *.h *.c
 graft docs/_build/html
 prune docs/_build/html/.git

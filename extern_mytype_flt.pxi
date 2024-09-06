@@ -17,23 +17,13 @@
 
 from fractions import Fraction
 
-cdef extern from *:
-    """
-#ifdef GMPRATIONAL
-#error "GMPRATIONAL must not be defined"
-#endif
-#ifdef GMPFLOAT
-#error "GMPFLOAT must not be defined"
-#endif
-    """
-
 cdef extern from "cdd.h" nogil:
-    ctypedef double mytype[1]
+    ctypedef double myfloat[1]
 
-cdef _get_mytype(mytype target):
+cdef _get_mytype(myfloat target):
     return target[0]
 
-cdef _set_mytype(mytype target, value):
+cdef _set_mytype(myfloat target, value):
     if isinstance(value, str):
         target[0] = Fraction(value)
     else:
