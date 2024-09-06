@@ -22,6 +22,6 @@
 # to avoid compilation errors, includes must follow this order
 
 include "extern_preamble.pxi"
-include "extern_mytype_double.pxi"
+include "extern_mytype_flt.pxi"
 include "extern_cddlib.pxi"
 include "cddlib_classes.pxi"

@@ -18,7 +18,7 @@
 # extension types to wrap the cddlib enums
 
 include "extern_preamble.pxi"
-include "extern_mytype_double.pxi"
+include "extern_mytype_flt.pxi"
 include "extern_cddlib.pxi"
 
 cdef class AdjacencyTestType:
