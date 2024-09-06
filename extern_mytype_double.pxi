@@ -1,9 +1,5 @@
-# cython: language_level=3
-
-"""Python wrapper for Komei Fukuda's cddlib."""
-
 # pycddlib is a Python wrapper for Komei Fukuda's cddlib
-# Copyright (c) 2008-2015, Matthias C. M. Troffaes
+# Copyright (c) 2008, Matthias Troffaes
 #
 # This program is free software; you can redistribute it and/or modify
 # it under the terms of the GNU General Public License as published by
@@ -19,9 +15,15 @@
 # with this program; if not, write to the Free Software Foundation, Inc.,
 # 51 Franklin Street, Fifth Floor, Boston, MA 02110-1301 USA.
 
-# to avoid compilation errors, includes must follow this order
+cdef extern from *:
+    """
+#ifdef GMPRATIONAL
+#error "Cannot compile pycddlib with GMPRATIONAL defined"
+#endif
+#ifdef GMPFLOAT
+#error "Cannot compile pycddlib with GMPFLOAT defined"
+#endif
+    """
 
-include "extern_preamble.pxi"
-include "extern_mytype_double.pxi"
-include "extern_cddlib.pxi"
-include "cdd.pxi"
+cdef extern from "cdd.h" nogil:
+    ctypedef double mytype[1]

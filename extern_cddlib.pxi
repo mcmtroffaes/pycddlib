@@ -1,4 +1,4 @@
-# this is an include file for both cdd.h and cdd_f.h
+# this is an include file for cdd.h
 
 # pycddlib is a Python wrapper for Komei Fukuda's cddlib
 # Copyright (c) 2008, Matthias Troffaes

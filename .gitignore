@@ -1,6 +1,6 @@
 venv/
 cdd.c
-cddlib.pxi
+extern_cddlib.pxi
 cddlib_f.pxi
 docs/_build/
 .eggs/
