@@ -1,5 +1,5 @@
 # pycddlib is a Python wrapper for Komei Fukuda's cddlib
-# Copyright (c) 2008, Matthias Troffaes
+# Copyright (c) 2008-2024, Matthias Troffaes
 #
 # This program is free software; you can redistribute it and/or modify
 # it under the terms of the GNU General Public License as published by
