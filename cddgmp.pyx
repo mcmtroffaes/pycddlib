@@ -1,5 +1,9 @@
+# cython: language_level=3
+
+"""Python wrapper for Komei Fukuda's cddlib."""
+
 # pycddlib is a Python wrapper for Komei Fukuda's cddlib
-# Copyright (c) 2008-2024, Matthias Troffaes
+# Copyright (c) 2008-2024, Matthias C. M. Troffaes
 #
 # This program is free software; you can redistribute it and/or modify
 # it under the terms of the GNU General Public License as published by
@@ -15,16 +19,8 @@
 # with this program; if not, write to the Free Software Foundation, Inc.,
 # 51 Franklin Street, Fifth Floor, Boston, MA 02110-1301 USA.
 
-from fractions import Fraction
+# to avoid compilation errors, includes must follow this order
 
-cdef extern from "cddmp_f.h" nogil:
-    ctypedef double myfloat[1]
-
-cdef _get_mytype(myfloat target):
-    return target[0]
-
-cdef _set_mytype(myfloat target, value):
-    if isinstance(value, str):
-        target[0] = Fraction(value)
-    else:
-        target[0] = float(value)
+include "extern_preamble.pxi"
+include "extern_mytype_gmp.pxi"
+include "extern_cddlib.pxi"

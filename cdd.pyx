@@ -22,76 +22,76 @@
 # to avoid compilation errors, includes must follow this order
 
 include "extern_preamble.pxi"
-include "extern_myfloat.pxi"
-include "extern_cddlib_f.pxi"
+include "extern_mytype.pxi"
+include "extern_cddlib.pxi"
 
 # wrapper classes to expose enums
 
 cpdef enum AdjacencyTestType:
-    COMBINATORIAL = ddf_Combinatorial
-    ALGEBRAIC     = ddf_Algebraic
+    COMBINATORIAL = dd_Combinatorial
+    ALGEBRAIC     = dd_Algebraic
 
 cpdef enum NumberType:
-    UNKNOWN  = ddf_Unknown
-    REAL     = ddf_Real
-    RATIONAL = ddf_Rational
-    INTEGER  = ddf_Integer
+    UNKNOWN  = dd_Unknown
+    REAL     = dd_Real
+    RATIONAL = dd_Rational
+    INTEGER  = dd_Integer
 
 cpdef enum RepType:
-    UNSPECIFIED = ddf_Unspecified
-    INEQUALITY  = ddf_Inequality
-    GENERATOR   = ddf_Generator
+    UNSPECIFIED = dd_Unspecified
+    INEQUALITY  = dd_Inequality
+    GENERATOR   = dd_Generator
 
 cpdef enum RowOrderType:
-    MAX_INDEX  = ddf_MaxIndex
-    MIN_INDEX  = ddf_MinIndex
-    MIN_CUTOFF = ddf_MinCutoff
-    MAX_CUTOFF = ddf_MaxCutoff
-    MIX_CUTOFF = ddf_MixCutoff
-    LEX_MIN    = ddf_LexMin
-    LEX_MAX    = ddf_LexMax
-    RANDOM_ROW = ddf_RandomRow
+    MAX_INDEX  = dd_MaxIndex
+    MIN_INDEX  = dd_MinIndex
+    MIN_CUTOFF = dd_MinCutoff
+    MAX_CUTOFF = dd_MaxCutoff
+    MIX_CUTOFF = dd_MixCutoff
+    LEX_MIN    = dd_LexMin
+    LEX_MAX    = dd_LexMax
+    RANDOM_ROW = dd_RandomRow
 
 cpdef enum Error:
-    DIMENSION_TOO_LARGE      = ddf_DimensionTooLarge
-    IMPROPER_INPUT_FORMAT    = ddf_ImproperInputFormat
-    NEGATIVE_MATRIX_SIZE     = ddf_NegativeMatrixSize
-    EMPTY_V_REPRESENTATION   = ddf_EmptyVrepresentation
-    EMPTY_H_REPRESENTATION   = ddf_EmptyHrepresentation
-    EMPTY_REPRESENTATION     = ddf_EmptyRepresentation
-    I_FILE_NOT_FOUND         = ddf_IFileNotFound
-    O_FILE_NOT_FOUND         = ddf_OFileNotOpen
-    NO_LP_OBJECTIVE          = ddf_NoLPObjective
-    NO_REAL_NUMBER_SUPPORT   = ddf_NoRealNumberSupport
-    NOT_AVAIL_FOR_H          = ddf_NotAvailForH
-    NOT_AVAIL_FOR_V          = ddf_NotAvailForV
-    CANNOT_HANDLE_LINEARITY  = ddf_CannotHandleLinearity
-    ROW_INDEX_OUT_OF_RANGE   = ddf_RowIndexOutOfRange
-    COL_INDEX_OUT_OF_RANGE   = ddf_ColIndexOutOfRange
-    LP_CYCLING               = ddf_LPCycling
-    NUMERICALLY_INCONSISTENT = ddf_NumericallyInconsistent
-    NO_ERROR                 = ddf_NoError
+    DIMENSION_TOO_LARGE      = dd_DimensionTooLarge
+    IMPROPER_INPUT_FORMAT    = dd_ImproperInputFormat
+    NEGATIVE_MATRIX_SIZE     = dd_NegativeMatrixSize
+    EMPTY_V_REPRESENTATION   = dd_EmptyVrepresentation
+    EMPTY_H_REPRESENTATION   = dd_EmptyHrepresentation
+    EMPTY_REPRESENTATION     = dd_EmptyRepresentation
+    I_FILE_NOT_FOUND         = dd_IFileNotFound
+    O_FILE_NOT_FOUND         = dd_OFileNotOpen
+    NO_LP_OBJECTIVE          = dd_NoLPObjective
+    NO_REAL_NUMBER_SUPPORT   = dd_NoRealNumberSupport
+    NOT_AVAIL_FOR_H          = dd_NotAvailForH
+    NOT_AVAIL_FOR_V          = dd_NotAvailForV
+    CANNOT_HANDLE_LINEARITY  = dd_CannotHandleLinearity
+    ROW_INDEX_OUT_OF_RANGE   = dd_RowIndexOutOfRange
+    COL_INDEX_OUT_OF_RANGE   = dd_ColIndexOutOfRange
+    LP_CYCLING               = dd_LPCycling
+    NUMERICALLY_INCONSISTENT = dd_NumericallyInconsistent
+    NO_ERROR                 = dd_NoError
 
 cpdef enum CompStatus:
-    IN_PROGRESS  = ddf_InProgress
-    ALL_FOUND    = ddf_AllFound
-    REGION_EMPTY = ddf_RegionEmpty
+    IN_PROGRESS  = dd_InProgress
+    ALL_FOUND    = dd_AllFound
+    REGION_EMPTY = dd_RegionEmpty
 
 cpdef enum LPObjType:
-    NONE = ddf_LPnone
-    MAX  = ddf_LPmax
-    MIN  = ddf_LPmin
+    NONE = dd_LPnone
+    MAX  = dd_LPmax
+    MIN  = dd_LPmin
 
 cpdef enum LPSolverType:
-    CRISS_CROSS  = ddf_CrissCross
-    DUAL_SIMPLEX = ddf_DualSimplex
+    CRISS_CROSS  = dd_CrissCross
+    DUAL_SIMPLEX = dd_DualSimplex
 
 cpdef enum LPStatusType:
-    UNDECIDED             = ddf_LPSundecided
-    OPTIMAL               = ddf_Optimal
-    INCONSISTENT          = ddf_Inconsistent
-    DUAL_INCONSISTENT      = ddf_DualInconsistent
-    STRUC_INCONSISTENT     = ddf_StrucInconsistent
-    STRUC_DUAL_INCONSISTENT = ddf_StrucDualInconsistent
-    UNBOUNDED             = ddf_Unbounded
-    DUAL_UNBOUNDED         = ddf_DualUnbounded
+    UNDECIDED             = dd_LPSundecided
+    OPTIMAL               = dd_Optimal
+    INCONSISTENT          = dd_Inconsistent
+    DUAL_INCONSISTENT      = dd_DualInconsistent
+    STRUC_INCONSISTENT     = dd_StrucInconsistent
+    STRUC_DUAL_INCONSISTENT = dd_StrucDualInconsistent
+    UNBOUNDED             = dd_Unbounded
+    DUAL_UNBOUNDED         = dd_DualUnbounded
