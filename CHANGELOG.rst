@@ -1,5 +1,48 @@
-Version 2.1.9 (in development)
+Version 3.0.0 (in development)
 ------------------------------
+
+* BACKWARDS INCOMPATIBLE:
+  The ``number_type`` arguments are gone.
+  The ``cdd`` module now only exposes the floating point interface
+  (formerly accessible with ``number_type="float"``).
+  The new ``cddgmp`` module exposes the rational numbers interface
+  (formerly accessible with ``number_type="fraction"``).
+  This change enables more straightforward type checking for the library,
+  and also better reflects how the upstream C libraries are organized.
+  It also enables easier switching between the two interfaces,
+  by simply changing ``import cdd`` to ``import cddgmp as cdd``.
+
+* Thanks to the reorganization, there now is a standalone Python package that
+  installs just the floating point interface without needing the gmp or cddlib
+  libraries installed.
+  This is useful for installation on systems where the user cannot easily install
+  libraries, such as for instance on google colab.
+  To install it, use ``pip install pycddlib-standalone``.
+  Naturally, you cannot install ``pycddlib`` and ``pycddlib-standalone``
+  at the same time.
+
+* Use vcpkg to compile cddlib and gmp.
+  This updates the library from mpir 3.0.0 (dating back from 2017)
+  to gmp 6.3.0 (the most recent release at the time of writing).
+
+* Simplify setup script to no longer compile cddlib.
+  This allows the module to make use cddlib and gmp
+  as installed by the system (e.g. vcpkg, rpm, ...).
+  To build the extension, you may need to point Python to the correct folders.
+  For instance, when using ``setup.py``:
+
+  ```
+  python setup.py build_ext -I<include-folder> -L<lib-folder>
+  ```
+
+  or, when building a wheel using ``build``:
+
+  ```
+  python -m build -w -C="--global-option=build_ext" -C="--global-option=-I<include-folder>" -C="--global-option=-L<lib-folder>" .
+  ```
+
+* Drop x86 binary wheels on Windows.
+  These can still be built but they are no longer distributed in PyPI.
 
 Version 2.1.8 (4 September 2024)
 --------------------------------
