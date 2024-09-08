@@ -140,7 +140,7 @@ jobs:
     - name: Create wheel
       run: |
         mkdir dist -Force
-        python -m build --wheel -C="--global-option=build_ext" -C="--global-option=-Ivcpkg/installed/x64-windows-static-md-release/include/" -C="--global-option=-Lvcpkg/installed/x64-windows-static-md-release/include/" .
+        python -m build --wheel -C="--global-option=build_ext" -C="--global-option=-Ivcpkg/installed/x64-windows-static-md-release/include/" -C="--global-option=-Lvcpkg/installed/x64-windows-static-md-release/lib/" .
     - name: Check files
       run: twine check dist/*
     - name: Upload wheel
