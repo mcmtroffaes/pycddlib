@@ -53,6 +53,7 @@ Sets of Linear Inequalities and Generators
 
        >>> cddgmp.Matrix([[1.12]])[0][0]
        Traceback (most recent call last):
+           ...
        TypeError: value 1.12 is not Rational
 
        If the float represents a fraction, you must pass it as a fraction explicitly:
@@ -138,6 +139,7 @@ Examples
 Note that the following examples presume:
 
 >>> import cdd
+>>> import cddgmp
 >>> from fractions import Fraction
 
 Fractions

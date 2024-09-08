@@ -3,7 +3,6 @@ extensions = [
     "sphinx.ext.autodoc",
     "sphinx.ext.doctest",
     "sphinx.ext.coverage",
-    "sphinx.ext.imgmath",
     "sphinx.ext.intersphinx",
     "sphinx.ext.mathjax",
 ]
