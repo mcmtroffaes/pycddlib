@@ -86,16 +86,12 @@ jobs:
 
   build-vcpkg:
     runs-on: 'windows-latest'
-    strategy:
-      fail-fast: false
-      matrix:
-        architecture: ['x64']
     steps:
     - uses: actions/cache@v3
       id: vcpkg-installed-cache
       with:
-        path: installed/
-        key: vcpkg-0-${{ matrix.architecture }}-${{ env.VCPKG_HASH }}
+        path: installed/x64-windows-static-md-release
+        key: vcpkg-0-${{ env.VCPKG_HASH }}
     - uses: actions/checkout@v4
       if: steps.vcpkg-installed-cache.outputs.cache-hit != 'true'
       with:
@@ -105,14 +101,14 @@ jobs:
       if: steps.vcpkg-installed-cache.outputs.cache-hit != 'true'
       run: |
         ./bootstrap-vcpkg.bat -disableMetrics
-        ./vcpkg.exe install cddlib:${{ matrix.architecture }}-windows-static-md-release
-        ls installed/${{ matrix.architecture }}-windows-static-md-release/include/ -r
-        ls installed/${{ matrix.architecture }}-windows-static-md-release/lib/ -r
+        ./vcpkg.exe install cddlib:x64-windows-static-md-release
+        ls installed/x64-windows-static-md-release/include/ -r
+        ls installed/x64-windows-static-md-release/lib/ -r
     - name: Upload vcpkg
       uses: actions/upload-artifact@v4
       with:
-        name: vcpkg-${{ matrix.architecture }}
-        path: installed/
+        name: vcpkg-x64
+        path: installed/x64-windows-static-md-release/
         if-no-files-found: error
 
   build-test-windows:
@@ -122,23 +118,21 @@ jobs:
       fail-fast: false
       matrix:
         python-version: ['3.8', '3.9', '3.10', '3.11', '3.12']
-        architecture: ['x64']
     steps:
     - uses: actions/checkout@v3
     - name: Download vcpkg
       uses: actions/download-artifact@v4
       with:
-        name: vcpkg-${{ matrix.architecture }}
+        name: vcpkg-x64
     - name: Set up Python ${{ matrix.python-version }}
       uses: actions/setup-python@v4
       with:
         python-version: ${{ matrix.python-version }}
-        architecture: ${{ matrix.architecture }}
+        architecture: x64
     - name: Check Python environment
       run: |
-        ls .
-        ls x64-windows-static-md-release/include/ -r
-        ls x64-windows-static-md-release/lib/ -r
+        ls include/ -r
+        ls lib/ -r
         python --version
         python -c "import struct; print(struct.calcsize('P') * 8)"
     - name: Install Python dependencies
@@ -146,13 +140,13 @@ jobs:
     - name: Create wheel
       run: |
         mkdir dist -Force
-        python -m build --wheel -C="--global-option=build_ext" -C="--global-option=-Iinstalled/x64-windows-static-md-release/include/" -C="--global-option=-Linstalled/x64-windows-static-md-release/lib/" .
+        python -m build --wheel -C="--global-option=build_ext" -C="--global-option=-Iinclude/" -C="--global-option=-Llib/" .
     - name: Check files
       run: twine check dist/*
     - name: Upload wheel
       uses: actions/upload-artifact@v4
       with:
-        name: windows-wheels-${{ matrix.python-version }}-${{ matrix.architecture }}
+        name: windows-wheels-${{ matrix.python-version }}
         path: dist/*
         if-no-files-found: error
     - name: Install wheel
