@@ -1,8 +1,5 @@
-Installation Instructions
-=========================
-
 From Binary Wheel
------------------
+~~~~~~~~~~~~~~~~~
 
 The simplest way to install pycddlib is to
 `install it with pip <https://packaging.python.org/tutorials/installing-packages/>`_::
@@ -16,13 +13,12 @@ you will need to build from the source distribution,
 or directly from the repository.
 
 From Source
------------
+~~~~~~~~~~~
 
 Installing cddlib and GMP
-~~~~~~~~~~~~~~~~~~~~~~~~~
+*************************
 
-First, you will need `GMP <https://gmplib.org/>`_,
-`cddlib <https://github.com/cddlib/cddlib>`_
+First, you will need cddlib, GMP,
 as well as the Python development headers.
 If you have Linux or Mac, then your
 distribution probably has pre-built packages for it. For example, on
@@ -51,7 +47,7 @@ whilst on Linux::
 This will install both cddlib and gmp (as the latter is a dependency).
 
 Invoking Pip
-~~~~~~~~~~~~
+************
 
 You may have to specify the include and library folders.
 If you use homebrew on Mac, for instance, you may have to write::
@@ -62,13 +58,13 @@ This should not be needed on Linux, but if you do,
 you can also use the above command,
 substituting the appropriate folders for ``-I`` and ``-L``.
 
-Unfortunately, there appears to be no way to pass the include and lib folders
+Unfortunately, there appears to be no reliable way to pass the include and lib folders
 to pip on Windows.
 In this case, you need to run the ``setup.py`` script from the repository,
 as documented below.
 
 Invoking The Setup Script
--------------------------
+*************************
 
 From the source repository,
 pycddlib can be compiled and installed straight from the ``setup.py`` script.
@@ -104,7 +100,7 @@ Alternatively, you can also build a wheel and install that::
     pip install dist/pycddlib-<...>.whl
 
 Build Scripts
--------------
+~~~~~~~~~~~~~
 
 Build scripts for Windows, Linux, and Mac,
 can be found in the git repository,
