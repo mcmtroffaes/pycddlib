@@ -1,6 +1,7 @@
 .. testsetup::
 
    import cdd
+   import cddgmp
 
 .. currentmodule:: cdd
 
@@ -10,8 +11,6 @@ Working With Polyhedron Representations
 .. class:: Polyhedron(mat)
 
     A class for converting between representations of a polyhedron.
-
-    Bases: :class:`~cdd.NumberTypeable`
 
     :param mat: The matrix to load the polyhedron from.
     :type mat: :class:`~cdd.Matrix`
@@ -95,23 +94,22 @@ Examples
 
 This is the sampleh1.ine example that comes with cddlib.
 
->>> import cdd
->>> mat = cdd.Matrix([[2,-1,-1,0],[0,1,0,0],[0,0,1,0]], number_type='fraction')
+>>> mat = cdd.Matrix([[2,-1,-1,0],[0,1,0,0],[0,0,1,0]])
 >>> mat.rep_type = cdd.RepType.INEQUALITY
 >>> poly = cdd.Polyhedron(mat)
->>> print(poly)
+>>> print(poly) # doctest: +NORMALIZE_WHITESPACE
 begin
- 3 4 rational
+ 3 4 real
  2 -1 -1 0
  0 1 0 0
  0 0 1 0
 end
 >>> ext = poly.get_generators()
->>> print(ext)
+>>> print(ext) # doctest: +NORMALIZE_WHITESPACE
 V-representation
 linearity 1  4
 begin
- 4 4 rational
+ 4 4 real
  1 0 0 0
  1 2 0 0
  1 0 2 0
@@ -123,7 +121,6 @@ end
 
 The following example illustrates how to get adjacencies and incidences.
 
->>> import cdd
 >>> # We start with the H-representation for a square
 >>> # 0 <= 1 + x1 (face 0)
 >>> # 0 <= 1 + x2 (face 1)
@@ -134,10 +131,10 @@ The following example illustrates how to get adjacencies and incidences.
 >>> poly = cdd.Polyhedron(mat)
 >>> # The V-representation can be printed in the usual way:
 >>> gen = poly.get_generators()
->>> print(gen)
+>>> print(gen) # doctest: +NORMALIZE_WHITESPACE
 V-representation
 begin
- 4 3 rational
+ 4 3 real
  1 1 -1
  1 1 1
  1 -1 1
@@ -180,10 +177,10 @@ end
 >>> # add a vertex, and construct new polyhedron
 >>> gen.extend([[1, 0, 2]])
 >>> vpoly = cdd.Polyhedron(gen)
->>> print(vpoly.get_inequalities())
+>>> print(vpoly.get_inequalities()) # doctest: +NORMALIZE_WHITESPACE
 H-representation
 begin
- 5 3 rational
+ 5 3 real
  1 0 1
  2 1 -1
  1 1 0

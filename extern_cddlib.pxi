@@ -288,11 +288,6 @@ cdef extern from "cddlib/cdd.h" nogil:
     # not everything is defined here, just most common operations
     # add more as needed...
 
-    cdef void dd_set_d(mytype, double)
-    cdef void dd_set_si(mytype, signed long int)
-    cdef void dd_set_si2(mytype, signed long int, unsigned long int)
-    cdef double dd_get_d(mytype)
-
     cdef void dd_set_global_constants()
     cdef void dd_free_global_constants()
 
@@ -520,14 +515,15 @@ cdef _get_dd_setfam(dd_SetFamilyPtr setfam):
     cdef long elem
     if setfam == NULL:
         raise ValueError("failed to get set family")
-    result = [
+    # note: must return immutable object
+    result = tuple(
         frozenset(
             elem
             for elem from 0 <= elem < setfam.setsize
             if set_member(elem + 1, setfam.set[i])
         )
         for i from 0 <= i < setfam.famsize
-    ]
+    )
     dd_FreeSetFamily(setfam)
     return result
 
@@ -590,7 +586,7 @@ cdef class Matrix:
         def __get__(self):
             # return an immutable tuple to prohibit item assignment
             cdef int colindex
-            return tuple([dd_get_d(self.dd_mat.rowvec[colindex])
+            return tuple([_get_mytype(self.dd_mat.rowvec[colindex])
                           for 0 <= colindex < self.dd_mat.colsize])
         def __set__(self, obj_func):
             cdef int colindex

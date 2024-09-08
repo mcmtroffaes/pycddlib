@@ -39,6 +39,7 @@ cdef extern from * nogil:
     mpz_t mpq_denref(mpq_t op)
     char *mpq_get_str(char *str, int base, mpq_t op)
     int mpq_set_str(mpq_t rop, char *str, int base)
+    void mpq_set_si(mpq_t, signed long int, unsigned long int)
 
 cdef extern from "cddlib/cddmp.h" nogil:
     ctypedef mpq_t mytype
@@ -68,11 +69,11 @@ cdef _set_mytype(mytype target, value):
     # set target to value
     if isinstance(value, numbers.Rational):
         try:
-            dd_set_si2(target, value.numerator, value.denominator)
+            mpq_set_si(target, value.numerator, value.denominator)
         except OverflowError:
             # in case of overflow, set it using mpq_set_str
             buf = str(value).encode('ascii')
             if mpq_set_str(target, buf, 10) == -1:
                 raise ValueError('could not convert %s to mpq_t' % value)
     else:
-        raise TypeError("value {value!r} is not Rational")
+        raise TypeError(f"value {value!r} is not Rational")

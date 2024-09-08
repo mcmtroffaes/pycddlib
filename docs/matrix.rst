@@ -1,6 +1,7 @@
 .. testsetup::
 
    import cdd
+   import cddgmp
    from fractions import Fraction
 
 .. currentmodule:: cdd
@@ -8,7 +9,7 @@
 Sets of Linear Inequalities and Generators
 ==========================================
 
-.. class:: Matrix(rows, linear=False, number_type=None)
+.. class:: Matrix(rows, linear=False)
 
     A class for working with sets of linear constraints and extreme
     points.
@@ -36,38 +37,29 @@ Sets of Linear Inequalities and Generators
     :math:`\mathrm{linspan}` is the linear span operator. All entries
     of :math:`t` must be either :math:`0` or :math:`1`.
 
-    Bases: :class:`~cdd.NumberTypeable`
-
-    :param rows: The rows of the matrix. Each element can be an
-        :class:`int`, :class:`float`, :class:`~fractions.Fraction`, or
-        :class:`str`.
+    :param rows: The rows of the matrix.
+        For :module:`cdd`, each element must be a :class:`float`.
+        For :module:`cddgmp`, each element must be a :class:`~fractions.Fraction`.
     :type rows: :class:`list` of :class:`list`\ s.
     :param linear: Whether to add the rows to the
         :attr:`~cdd.Matrix.lin_set` or not.
     :type linear: :class:`bool`
-    :param number_type: The number type (``'float'`` or
-        ``'fraction'``). If omitted,
-        :func:`~cdd.get_number_type_from_sequences` is used to
-        determine the number type.
-    :type number_type: :class:`str`
 
     .. warning::
 
-       With the fraction number type, beware when using floats:
+       With :module:`cddgmp`, beware when using floats:
 
-       >>> print(cdd.Matrix([[1.12]], number_type='fraction')[0][0])
-       1261007895663739/1125899906842624
+       >>> cddgmp.Matrix([[1.12]])[0][0]
+       Traceback (most recent call last):
+       TypeError: value 1.12 is not Rational
 
        If the float represents a fraction, it is better to pass it as a
-       string, so it gets automatically converted to its exact fraction
-       representation:
+       fraction explicitly:
 
-       >>> print(cdd.Matrix([['1.12']])[0][0])
+       >>> print(cddgmp.Matrix([[Fraction(112, 100)]])[0][0])
        28/25
-
-       Of course, for the float number type, both ``1.12`` and
-       ``'1.12'`` will yield the same result, namely the
-       :class:`float` ``1.12``.
+       >>> print(cddgmp.Matrix([[Fraction('1.12')]])[0][0])
+       28/25
 
 Methods and Attributes
 ----------------------
@@ -78,7 +70,7 @@ Methods and Attributes
 
         :param key: The row number, or slice of row numbers, to get.
         :type key: :class:`int` or :class:`slice`
-        :rtype: :class:`tuple` of :attr:`~cdd.NumberTypeable.NumberType`, or :class:`tuple` of :class:`tuple` of :attr:`~cdd.NumberTypeable.NumberType`
+        :rtype: :class:`tuple` of :class:`float` or :class:`~fractions.Fraction`
 
 .. method:: Matrix.canonicalize()
 
@@ -140,28 +132,12 @@ Note that the following examples presume:
 >>> import cdd
 >>> from fractions import Fraction
 
-Number Types
-~~~~~~~~~~~~
-
->>> cdd.Matrix([[1.5,2]]).number_type
-'float'
->>> cdd.Matrix([['1.5',2]]).number_type
-'fraction'
->>> cdd.Matrix([[Fraction(3, 2),2]]).number_type
-'fraction'
->>> cdd.Matrix([['1.5','2']]).number_type
-'fraction'
->>> cdd.Matrix([[Fraction(3, 2), Fraction(2, 1)]]).number_type
-'fraction'
-
 Fractions
 ~~~~~~~~~
 
 Declaring matrices, and checking some attributes:
 
->>> mat1 = cdd.Matrix([['1','2'],['3','4']])
->>> mat1.NumberType
-<class 'fractions.Fraction'>
+>>> mat1 = cddgmp.Matrix([[1, 2],[3, 4]])
 >>> print(mat1)
 begin
  2 2 rational
@@ -203,7 +179,7 @@ end
 
 Canonicalizing:
 
->>> mat = cdd.Matrix([[2, 1, 2, 3], [0, 1, 2, 3], [3, 0, 1, 2], [0, -2, -4, -6]], number_type='fraction')
+>>> mat = cddgmp.Matrix([[2, 1, 2, 3], [0, 1, 2, 3], [3, 0, 1, 2], [0, -2, -4, -6]])
 >>> mat.canonicalize()  # oops... must specify rep_type!
 Traceback (most recent call last):
     ...
@@ -222,19 +198,19 @@ end
 
 Large number tests:
 
->>> print(cdd.Matrix([[10 ** 100]], number_type='fraction'))
+>>> print(cddgmp.Matrix([[10 ** 100]]))
 begin
  1 1 rational
  10000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000
 end
->>> print(cdd.Matrix([[Fraction(10 ** 100, 13 ** 102)]], number_type='fraction'))
+>>> print(cddgmp.Matrix([[Fraction(10 ** 100, 13 ** 102)]]))
 begin
  1 1 rational
  10000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000/419007633753249358163371317520192208024352885070865054318259957799640820272617869666750277036856988452476999386169
 end
->>> cdd.Matrix([['10000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000']], number_type='fraction')[0][0]
+>>> cddgmp.Matrix([[10000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000]])[0][0]
 Fraction(10000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000, 1)
->>> cdd.Matrix([['10000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000/419007633753249358163371317520192208024352885070865054318259957799640820272617869666750277036856988452476999386169']], number_type='fraction')[0][0]
+>>> cddgmp.Matrix([[Fraction(10000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000, 419007633753249358163371317520192208024352885070865054318259957799640820272617869666750277036856988452476999386169)]])[0][0]
 Fraction(10000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000, 419007633753249358163371317520192208024352885070865054318259957799640820272617869666750277036856988452476999386169)
 
 Floats
@@ -243,11 +219,9 @@ Floats
 Declaring matrices, and checking some attributes:
 
 >>> mat1 = cdd.Matrix([[1,2],[3,4]])
->>> mat1.NumberType
-<... 'fractions.Fraction'>
 >>> print(mat1) # doctest: +NORMALIZE_WHITESPACE
 begin
- 2 2 rational
+ 2 2 real
  1 2
  3 4
 end
@@ -256,9 +230,9 @@ end
 >>> mat1.col_size
 2
 >>> print(mat1[0])
-(1, 2)
+(1.0, 2.0)
 >>> print(mat1[1])
-(3, 4)
+(3.0, 4.0)
 >>> print(mat1[2]) # doctest: +ELLIPSIS
 Traceback (most recent call last):
   ...
@@ -268,21 +242,21 @@ IndexError: row index out of range
 3
 >>> print(mat1) # doctest: +NORMALIZE_WHITESPACE
 begin
- 3 2 rational
+ 3 2 real
  1 2
  3 4
  5 6
 end
 >>> print(mat1[0])
-(1, 2)
+(1.0, 2.0)
 >>> print(mat1[1])
-(3, 4)
+(3.0, 4.0)
 >>> print(mat1[2])
-(5, 6)
+(5.0, 6.0)
 >>> mat1[1:3]
-((3, 4), (5, 6))
+((3.0, 4.0), (5.0, 6.0))
 >>> mat1[:-1]
-((1, 2), (3, 4))
+((1.0, 2.0), (3.0, 4.0))
 
 Canonicalizing:
 
@@ -298,7 +272,7 @@ ValueError: rep_type unspecified
 H-representation
 linearity 1  1
 begin
- 2 4 rational
+ 2 4 real
  0 1 2 3
  3 0 1 2
 end

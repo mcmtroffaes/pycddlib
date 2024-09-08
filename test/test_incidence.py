@@ -35,7 +35,7 @@ def test_vertex_incidence_cube():
                       {0, 2, 4},
                       {0, 1, 5},
                       {0, 1, 2}]
-    assert incidence == incidence_list
+    assert incidence == tuple(frozenset(x) for x in incidence_list)
 
 
 
@@ -63,7 +63,7 @@ def test_vertex_incidence_vtest_vo():
                       {2, 4, 5}]
 
     incidence = poly.get_incidence()
-    assert incidence == incidence_list
+    assert incidence == tuple(frozenset(x) for x in incidence_list)
 
 
 
@@ -96,7 +96,7 @@ def test_facet_incidence_cube():
                       {2, 3, 4, 5},
                       {1, 2, 4, 6},
                       set()]
-    assert incidence == incidence_list
+    assert incidence == tuple(frozenset(x) for x in incidence_list)
 
 
 def test_facet_incidence_vtest_vo():
@@ -119,4 +119,4 @@ def test_facet_incidence_vtest_vo():
                       {5, 6, 7, 8, 9},
                       {0, 4, 7, 8}]
 
-    assert poly.get_input_incidence() == incidence_list
+    assert poly.get_input_incidence() == tuple(frozenset(x) for x in incidence_list)
