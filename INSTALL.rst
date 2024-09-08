@@ -1,20 +1,30 @@
-Automatic Installer
-~~~~~~~~~~~~~~~~~~~
+Installation Instructions
+=========================
+
+From Binary Wheel
+-----------------
 
 The simplest way to install pycddlib is to
 `install it with pip <https://packaging.python.org/tutorials/installing-packages/>`_::
 
     pip install pycddlib
 
-On Windows, this will install from a binary wheel
-(for Python 3.8 to 3.12; for other versions of Python
-you will need to build from source, see below).
+On Windows, this will install from a binary wheel,
+for Python 3.8 to 3.12.
+For other versions of Python or other operating systems
+you will need to build from the source distribution,
+or directly from the repository.
 
-On Linux and Mac, this will install from source,
-and you will need `GMP <https://gmplib.org/>`_,
+From Source
+-----------
+
+Installing cddlib and GMP
+~~~~~~~~~~~~~~~~~~~~~~~~~
+
+First, you will need `GMP <https://gmplib.org/>`_,
 `cddlib <https://github.com/cddlib/cddlib>`_
 as well as the Python development headers.
-Your
+If you have Linux or Mac, then your
 distribution probably has pre-built packages for it. For example, on
 Fedora, install it by running::
 
@@ -28,28 +38,50 @@ and on Mac::
 
     brew install cddlib gmp
 
+If your distribution does not have pre-built packages,
+you may be able to use `vcpkg <https://github.com/microsoft/vcpkg>`_.
+For instance, on Windows::
+
+    ./vcpkg.exe install cddlib:x64-windows-static-md-release
+
+whilst on Linux::
+
+    ./vcpkg install cddlib:x64-linux
+
+This will install both cddlib and gmp (as the latter is a dependency).
+
+Invoking Pip
+~~~~~~~~~~~~
+
 You may have to specify the include and library folders.
 If you use homebrew on Mac, for instance, you may have to write::
 
   env "CFLAGS=-I$(brew --prefix)/include -L$(brew --prefix)/lib" pip install pycddlib
 
-Building From Source
-~~~~~~~~~~~~~~~~~~~~
+This should not be needed on Linux, but if you do,
+you can also use the above command,
+substituting the appropriate folders for ``-I`` and ``-L``.
 
-Full build instructions are in the git repository,
-under `build.yml <https://github.com/mcmtroffaes/pycddlib/blob/develop/.github/workflows/build.yml>`_.
+Unfortunately, there appears to be no way to pass the include and lib folders
+to pip on Windows.
+In this case, you need to run the ``setup.py`` script from the repository,
+as documented below.
 
-For Windows, first install `vcpkg <https://github.com/microsoft/vcpkg>`_, and run::
+Invoking The Setup Script
+-------------------------
 
-    ./vcpkg.exe install cddlib:x64-windows-static-md-release
+From the source repository,
+pycddlib can be compiled and installed straight from the ``setup.py`` script.
+As with the pip method, ensure you have cddlib and gmp installed first.
 
-This will install both cddlib and gmp (as the latter is a dependency).
-
-When building pycddlib,
-to tell Python where cddlib and gmp are located on your Windows machine, you can use::
+To tell the ``setup.py`` script where cddlib and gmp are located,
+for instance assuming you have installed them via ``vcpkg`` on Windows
+using the ``x64-windows-static-md-release`` triplet,
+you can use::
 
     python setup.py build_ext -I<...\vcpkg\installed\x64-windows-static-md-release\include\> -L<...\vcpkg\installed\x64-windows-static-md-release\lib\>
 
+You can adjust the ``-I`` and ``-L`` arguments as needed.
 If you get an error similar to::
 
     cdd.c(1102): fatal error C1083: Cannot open include file: 'cddlib/setoper.h': No such file or directory
@@ -70,3 +102,10 @@ Alternatively, you can also build a wheel and install that::
 
     python setup.py bdist_wheel
     pip install dist/pycddlib-<...>.whl
+
+Build Scripts
+-------------
+
+Build scripts for Windows, Linux, and Mac,
+can be found in the git repository,
+under `build.yml <https://github.com/mcmtroffaes/pycddlib/blob/develop/.github/workflows/build.yml>`_.
