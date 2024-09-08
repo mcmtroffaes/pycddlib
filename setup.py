@@ -1,7 +1,7 @@
 """Setup script for pycddlib."""
 
 # pycddlib is a Python wrapper for Komei Fukuda's cddlib
-# Copyright (c) 2008, Matthias Troffaes
+# Copyright (c) 2008-2024, Matthias Troffaes
 #
 # This program is free software; you can redistribute it and/or modify
 # it under the terms of the GNU General Public License as published by
@@ -28,95 +28,31 @@ Programming Language :: Python
 Programming Language :: Python :: 3
 Operating System :: OS Independent"""
 
-import sys
-
 from setuptools import setup
 from setuptools.extension import Extension
 
-define_macros = [('GMPRATIONAL', None)]
-libraries = ['mpir' if (sys.platform == 'win32') else 'gmp']
-
-# get version from Cython file (without requiring extensions to be compiled!)
-for line in open('cdd.pyx'):
-    if line.startswith("__version__"):
-        version = line[line.find('"')+1:line.rfind('"')]
-        break
-else:
-    raise RuntimeError("failed to extract version from cdd.pyx")
-
 # get documentation from README.rst file
-doclines = open('README.rst').read().split('\n')
+doclines = open("README.rst").read().split("\n")
 
-cdd_dir = 'cddlib/lib-src'
-cdd_sources = [
-    '{0}/{1}'.format(cdd_dir, srcfile) for srcfile in [
-        'cddcore.c',
-        'cddio.c',
-        'cddlib.c',
-        'cddlp.c',
-        'cddmp.c',
-        'cddproj.c',
-        'setoper.c',
-        ]
-    ]
-cdd_headers = [
-    '{0}/{1}'.format(cdd_dir, hdrfile) for hdrfile in [
-        'cdd.h',
-        'cddmp.h',
-        'cddtypes.h',
-        'setoper.h',
-        ]
-    ]
-
-cddgmp_sources = cdd_sources + [
-    '{0}/{1}'.format(cdd_dir, srcfile) for srcfile in [
-        'cddcore_f.c',
-        'cddio_f.c',
-        'cddlib_f.c',
-        'cddlp_f.c',
-        'cddmp_f.c',
-        'cddproj_f.c',
-        ]
-    ]
-cddgmp_headers = cdd_headers + [
-    '{0}/{1}'.format(cdd_dir, hdrfile) for hdrfile in [
-        'cdd_f.h',
-        'cddmp_f.h',
-        'cddtypes_f.h',
-        ]
-    ]
-
-# generate include files from template
-cddlib_pxi_in = open("cddlib.pxi.in", "r").read()
-cddlib_pxi = open("cddlib.pxi", "w")
-cddlib_pxi.write(
-    cddlib_pxi_in
-    .replace("@cddhdr@", "cdd.h")
-    .replace("@dd@", "dd")
-    .replace("@mytype@", "mytype"))
-cddlib_pxi.close()
-cddlib_f_pxi = open("cddlib_f.pxi", "w")
-cddlib_f_pxi.write(
-    cddlib_pxi_in
-    .replace("@cddhdr@", "cdd_f.h")
-    .replace("@dd@", "ddf")
-    .replace("@mytype@", "myfloat"))
-cddlib_f_pxi.close()
 
 setup(
     name="pycddlib",
-    version=version,
+    version="3.0.0a0",
     ext_modules=[
-        Extension("cdd",
-                  ["cdd.pyx"] + cddgmp_sources,
-                  include_dirs=[cdd_dir],
-                  depends=cddgmp_headers,
-                  define_macros=define_macros,
-                  libraries=libraries,
-                  extra_compile_args=["/std:c11"] if (sys.platform == 'win32') else [],
-                  ),
-        ],
-    author="Matthias Troffaes",
+        Extension(
+            name="cdd",
+            sources=["cdd.pyx"],
+            undef_macros=["GMPRATIONAL"],
+            libraries=['cdd'],
+        ),
+        Extension(
+            name="cddgmp",
+            sources=["cddgmp.pyx"],
+            define_macros=[("GMPRATIONAL", None)],
+            libraries=['cddgmp', 'gmp'],
+        ),
+    ],
+    author="Matthias C. M. Troffaes",
     author_email="matthias.troffaes@gmail.com",
     license="GPL",
     keywords="convex, polyhedron, linear programming, double description method",
@@ -125,9 +61,11 @@ setup(
     long_description="\n".join(doclines[2:]),
     long_description_content_type="text/x-rst",
     url="http://pypi.python.org/pypi/pycddlib",
-    classifiers=classifiers.split('\n'),
+    classifiers=classifiers.split("\n"),
     setup_requires=[
         # setuptools 18.0 properly handles Cython extensions.
-        'setuptools>=18.0', 'Cython>=3.0.0'],
-    python_requires='>=3.8',
+        "setuptools>=18.0",
+        "Cython>=3.0.0",
+    ],
+    python_requires=">=3.8",
 )

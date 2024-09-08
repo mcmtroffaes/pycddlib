@@ -1,7 +1,7 @@
 import cdd
 
 def test_large_string():
-    mat = cdd.Matrix([[1]*100]*100, number_type='float')
+    mat = cdd.Matrix([[1]*100]*100)
     assert(str(mat) == """begin
  100 100 real
   1  1  1  1  1  1  1  1  1  1  1  1  1  1  1  1  1  1  1  1  1  1  1  1  1  1  1  1  1  1  1  1  1  1  1  1  1  1  1  1  1  1  1  1  1  1  1  1  1  1  1  1  1  1  1  1  1  1  1  1  1  1  1  1  1  1  1  1  1  1  1  1  1  1  1  1  1  1  1  1  1  1  1  1  1  1  1  1  1  1  1  1  1  1  1  1  1  1  1  1

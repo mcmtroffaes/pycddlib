@@ -13,10 +13,6 @@ def test_issue20():
 
     mat = cdd.Matrix(arr)
     mat.rep_type = cdd.RepType.GENERATOR
-    assert mat.number_type == 'fraction'
-
     cdd_poly = cdd.Polyhedron(mat)
-
     ineq = np.array(cdd_poly.get_inequalities())
-
     assert ((ref_ineq - ineq) == 0).all()

@@ -1,6 +1,8 @@
 .. testsetup::
 
    import cdd
+   import cddgmp
+   from fractions import Fraction
 
 .. currentmodule:: cdd
 
@@ -10,8 +12,6 @@ Solving Linear Programs
 .. class:: LinProg(mat)
 
     A class for solving linear programs.
-
-    Bases: :class:`~cdd.NumberTypeable`
 
     :param mat: The matrix to load the linear program from.
     :type mat: :class:`~cdd.Matrix`
@@ -56,9 +56,8 @@ Methods and Attributes
 Example
 -------
 
->>> import cdd
->>> mat = cdd.Matrix([['4/3',-2,-1],['2/3',0,-1],[0,1,0],[0,0,1]], number_type='fraction')
->>> mat.obj_type = cdd.LPObjType.MAX
+>>> mat = cddgmp.Matrix([[Fraction(4, 3),-2,-1],[Fraction(2, 3),0,-1],[0,1,0],[0,0,1]])
+>>> mat.obj_type = cddgmp.LPObjType.MAX
 >>> mat.obj_func = (0,3,4)
 >>> print(mat)
 begin
@@ -72,9 +71,9 @@ maximize
  0 3 4
 >>> print(mat.obj_func)
 (0, 3, 4)
->>> lp = cdd.LinProg(mat)
+>>> lp = cddgmp.LinProg(mat)
 >>> lp.solve()
->>> lp.status == cdd.LPStatusType.OPTIMAL
+>>> lp.status == cddgmp.LPStatusType.OPTIMAL
 True
 >>> print(lp.obj_value)
 11/3
