@@ -38,8 +38,10 @@ Sets of Linear Inequalities and Generators
     of :math:`t` must be either :math:`0` or :math:`1`.
 
     :param rows: The rows of the matrix.
-        For :module:`cdd`, each element must be a :class:`float`.
-        For :module:`cddgmp`, each element must be a :class:`~fractions.Fraction`.
+        For :mod:`cdd`, each element must be a :class:`~typing.SupportsFloat`
+        (such as :class:`float` or :class:`~fractions.Fraction`).
+        For :mod:`cddgmp`, each element must be a :class:`~numbers.Rational`
+        (such as :class:`~fractions.Fraction`).
     :type rows: :class:`list` of :class:`list`\ s.
     :param linear: Whether to add the rows to the
         :attr:`~cdd.Matrix.lin_set` or not.
@@ -47,19 +49,25 @@ Sets of Linear Inequalities and Generators
 
     .. warning::
 
-       With :module:`cddgmp`, beware when using floats:
+       With :mod:`cddgmp`, passing a :class:`float` will result in a :exc:`TypeError`:
 
        >>> cddgmp.Matrix([[1.12]])[0][0]
        Traceback (most recent call last):
        TypeError: value 1.12 is not Rational
 
-       If the float represents a fraction, it is better to pass it as a
-       fraction explicitly:
+       If the float represents a fraction, you must pass it as a fraction explicitly:
 
        >>> print(cddgmp.Matrix([[Fraction(112, 100)]])[0][0])
        28/25
-       >>> print(cddgmp.Matrix([[Fraction('1.12')]])[0][0])
-       28/25
+
+       If you really must use a float as a fraction,
+       pass it explicitly to the :class:`~fractions.Fraction` constructor:
+
+       >>> print(cddgmp.Matrix([[Fraction(1.12)]])[0][0])
+       1261007895663739/1125899906842624
+
+       As you can see from the output above, for typical use cases,
+       you will not want to do this.
 
 Methods and Attributes
 ----------------------

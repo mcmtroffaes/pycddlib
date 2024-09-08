@@ -8,7 +8,6 @@ Welcome to pycddlib's documentation!
    :maxdepth: 2
 
    quickstart
-   numbertype
    constants
    matrix
    linprog
