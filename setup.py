@@ -28,81 +28,31 @@ Programming Language :: Python
 Programming Language :: Python :: 3
 Operating System :: OS Independent"""
 
-import sys
-
 from setuptools import setup
 from setuptools.extension import Extension
 
 # get documentation from README.rst file
 doclines = open("README.rst").read().split("\n")
 
-cdd_dir = "cddlib/lib-src"
-cdd_sources = [
-    "{0}/{1}".format(cdd_dir, srcfile)
-    for srcfile in [
-        "cddcore.c",
-        "cddio.c",
-        "cddlib.c",
-        "cddlp.c",
-        "cddmp.c",
-        "cddproj.c",
-        "setoper.c",
-    ]
-]
-cdd_headers = [
-    "{0}/{1}".format(cdd_dir, hdrfile)
-    for hdrfile in [
-        "cdd.h",
-        "cddmp.h",
-        "cddtypes.h",
-        "setoper.h",
-    ]
-]
-
-cddgmp_sources = cdd_sources + [
-    '{0}/{1}'.format(cdd_dir, srcfile) for srcfile in [
-        'cddcore_f.c',
-        'cddio_f.c',
-        'cddlib_f.c',
-        'cddlp_f.c',
-        'cddmp_f.c',
-        'cddproj_f.c',
-        ]
-    ]
-cddgmp_headers = cdd_headers + [
-    '{0}/{1}'.format(cdd_dir, hdrfile) for hdrfile in [
-        'cdd_f.h',
-        'cddmp_f.h',
-        'cddtypes_f.h',
-        ]
-    ]
 
 setup(
     name="pycddlib",
     version="3.0.0a0",
     ext_modules=[
-        # intentionally do not compile cdd.pyx against gmp
-        # to allow installation without gmp
         Extension(
-            "cdd",
-            ["cdd.pyx"] + cdd_sources,
-            include_dirs=[cdd_dir],
-            depends=cdd_headers,
-            # TODO replace sources, include_dirs, depends with libraries=['cdd']
-            extra_compile_args=["/std:c11"] if (sys.platform == "win32") else [],
+            name="cdd",
+            sources=["cdd.pyx"],
+            undef_macros=["GMPRATIONAL"],
+            libraries=['cdd'],
         ),
         Extension(
-            "cddgmp",
-            ["cddgmp.pyx"] + cddgmp_sources,
-            include_dirs=[cdd_dir],
-            depends=cddgmp_headers,
+            name="cddgmp",
+            sources=["cddgmp.pyx"],
             define_macros=[("GMPRATIONAL", None)],
-            # TODO replace sources, include_dirs, depends with libraries=['cddgmp']
-            libraries=['mpir' if (sys.platform == 'win32') else 'gmp'],
-            extra_compile_args=["/std:c11"] if (sys.platform == "win32") else [],
+            libraries=['cddgmp', 'gmp'],
         ),
     ],
-    author="Matthias Troffaes",
+    author="Matthias C. M. Troffaes",
     author_email="matthias.troffaes@gmail.com",
     license="GPL",
     keywords="convex, polyhedron, linear programming, double description method",

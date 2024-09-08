@@ -40,7 +40,7 @@ cdef extern from * nogil:
     char *mpq_get_str(char *str, int base, mpq_t op)
     int mpq_set_str(mpq_t rop, char *str, int base)
 
-cdef extern from "cddmp.h" nogil:
+cdef extern from "cddlib/cddmp.h" nogil:
     ctypedef mpq_t mytype
 
 

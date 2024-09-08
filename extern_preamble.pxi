@@ -22,10 +22,10 @@ cimport libc.stdio
 cimport libc.stdlib
 
 # also need time_t
-cdef extern from "time.h":
+cdef extern from "time.h" nogil:
     ctypedef long time_t
 
-cdef extern from "setoper.h":
+cdef extern from "cddlib/setoper.h" nogil:
     ctypedef unsigned long *set_type
     cdef unsigned long set_blocks(long len)
     cdef void set_initialize(set_type *setp,long len)

@@ -17,7 +17,7 @@
 # with this program; if not, write to the Free Software Foundation, Inc.,
 # 51 Franklin Street, Fifth Floor, Boston, MA 02110-1301 USA.
 
-cdef extern from "cdd.h" nogil:
+cdef extern from "cddlib/cdd.h" nogil:
 
     # typedefs
     ###########
@@ -450,11 +450,11 @@ cpdef enum LPStatusType:
 # helper functions
 
 ### begin windows hack (broken libc.stdio.tmpfile)
-cdef extern from *:
+cdef extern from * nogil:
      cdef void _emit_ifdef_msc_ver "#ifdef _MSC_VER //" ()
      cdef void _emit_else "#else //" ()
      cdef void _emit_endif "#endif //" ()
-cdef extern from "stdio.h":
+cdef extern from "stdio.h" nogil:
     char *_tempnam(char *dir, char *prefix)
 cdef libc.stdio.FILE *libc_stdio_tmpfile() except NULL:
      cdef libc.stdio.FILE *result
