@@ -55,10 +55,10 @@ jobs:
       uses: actions/setup-python@v4
       with:
         python-version: ${{ matrix.python-version }}
-    - name: Install cddlib and gmp (Ubuntu)
+    - name: Install cddlib (Ubuntu)
       if: matrix.os == 'ubuntu-latest'
       run: sudo apt-get install -y libcdd-dev libgmp-dev
-    - name: Install libgmp (MacOS)
+    - name: Install cddlib (MacOS)
       if: matrix.os == 'macos-latest'
       run: brew install cddlib gmp
     - name: Install Python dependencies
@@ -71,8 +71,8 @@ jobs:
       run: |
         brew --prefix
         ls $(brew --prefix)/include/cddlib/
-        ls $(brew --prefix)/lib/cddlib/
         ls $(brew --prefix)/include/*gmp*
+        ls $(brew --prefix)/lib/*cdd*
         ls $(brew --prefix)/lib/*gmp*
         env "CFLAGS=-I$(brew --prefix)/include -L$(brew --prefix)/lib" python -m pip install --pre --no-index --find-links=. pycddlib
     - name: Run test suite
