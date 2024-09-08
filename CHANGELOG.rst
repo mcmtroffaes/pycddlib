@@ -29,13 +29,7 @@ Version 3.0.0 (in development)
   This allows the module to make use cddlib and gmp
   as installed by the system (e.g. vcpkg, rpm, ...).
   To build the extension, you may need to point Python to the correct folders.
-  For instance, when using ``setup.py``::
-
-    python setup.py build_ext -I<include-folder> -L<lib-folder>
-
-  or, when building a wheel using ``build``::
-
-    python -m build -w -C="--global-option=build_ext" -C="--global-option=-I<include-folder>" -C="--global-option=-L<lib-folder>" .
+  Check the installation instructions for more details.
 
 * Drop x86 binary wheels on Windows.
   These can still be built but they are no longer distributed in PyPI.

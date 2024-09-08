@@ -7,25 +7,26 @@ The simplest way to install pycddlib is to
     pip install pycddlib
 
 On Windows, this will install from a binary wheel
-(for Python 3.7 to 3.11; for other versions of Python
+(for Python 3.8 to 3.12; for other versions of Python
 you will need to build from source, see below).
 
 On Linux and Mac, this will install from source,
-and you will need `GMP <https://gmplib.org/>`_
+and you will need `GMP <https://gmplib.org/>`_,
+`cddlib <https://github.com/cddlib/cddlib>`_
 as well as the Python development headers.
 Your
 distribution probably has pre-built packages for it. For example, on
 Fedora, install it by running::
 
-    dnf install gmp-devel python3-devel
+    dnf install cddlib-devel gmp-devel python3-devel
 
 whilst on Ubuntu::
 
-    apt-get install libgmp-dev python3-dev
+    apt-get install libcdd-dev libgmp-dev python3-dev
 
 and on Mac::
 
-    brew install gmp
+    brew install cddlib gmp
 
 You may have to specify the include and library folders.
 If you use homebrew on Mac, for instance, you may have to write::
@@ -38,20 +39,34 @@ Building From Source
 Full build instructions are in the git repository,
 under `build.yml <https://github.com/mcmtroffaes/pycddlib/blob/develop/.github/workflows/build.yml>`_.
 
-For Windows, you must take care to use a compiler and platform toolset
-that is compatible with the one that was used
-to compile Python. For Python 3.7 to 3.11, you can use
-`Visual Studio <https://visualstudio.microsoft.com/>`_ 2022
-with platform toolset v143.
+For Windows, first install `vcpkg <https://github.com/microsoft/vcpkg>`_, and run::
 
-Next, you must build MPIR using its provided project file.
-For instance, for Python 3.7 to 3.11, this should work::
+    ./vcpkg.exe install cddlib:x64-windows-static-md-release
 
-     Invoke-WebRequest -Uri "https://github.com/wbhart/mpir/archive/refs/heads/mpir-3.0.0.zip" -OutFile "mpir-3.0.0.zip"
-     Expand-Archive mpir-3.0.0.zip
-     msbuild mpir-3.0.0\mpir-mpir-3.0.0\build.vc14\lib_mpir_gc\lib_mpir_gc.vcxproj /p:Configuration=Release /p:Platform=x64 /p:PlatformToolset=v143
+This will install both cddlib and gmp (as the latter is a dependency).
 
 When building pycddlib,
-to tell Python where MPIR is located on your Windows machine, you can use::
+to tell Python where cddlib and gmp are located on your Windows machine, you can use::
 
-    python setup.py build build_ext -I<mpir_include_folder> -L<mpir_lib_folder>
+    python setup.py build_ext -I<...\vcpkg\installed\x64-windows-static-md-release\include\> -L<...\vcpkg\installed\x64-windows-static-md-release\lib\>
+
+If you get an error similar to::
+
+    cdd.c(1102): fatal error C1083: Cannot open include file: 'cddlib/setoper.h': No such file or directory
+
+then the include folder that you passed (it should contain all cddlib and gmp ``.h`` files).
+
+If you get an error similar to::
+
+    LINK : fatal error LNK1181: cannot open input file 'cdd.lib'
+
+then check the lib folder that you passed (it should contain the cddlib and gmp ``.lib`` files).
+
+Once this completes successfully, you can then install with::
+
+    python setup.py install
+
+Alternatively, you can also build a wheel and install that::
+
+    python setup.py bdist_wheel
+    pip install dist/pycddlib-<...>.whl
