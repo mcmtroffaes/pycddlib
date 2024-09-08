@@ -93,18 +93,19 @@ jobs:
     - uses: actions/cache@v3
       id: vcpkg-installed-cache
       with:
-        path: c:/vcpkg/installed/
+        path: vcpkg/installed/
         key: vcpkg-0-${{ matrix.architecture }}
     - name: Install cddlib
       if: steps.vcpkg-installed-cache.outputs.cache-hit != 'true'
       run: |
-        /vcpkg/vcpkg.exe install cddlib:x64-windows-static-md-release
-        dir /vcpkg/installed/
+        ./vcpkg/vcpkg.exe install cddlib:${{ matrix.architecture }}-windows-static-md-release
+        ls vcpkg/installed/${{ matrix.architecture }}-windows-static-md-release/include/ -r
+        ls vcpkg/installed/${{ matrix.architecture }}-windows-static-md-release/lib/ -r
     - name: Upload vcpkg
       uses: actions/upload-artifact@v4
       with:
         name: vcpkg-${{ matrix.architecture }}
-        path: /vcpkg/installed/
+        path: vcpkg/installed/
         if-no-files-found: error
 
   build-test-windows:
@@ -130,8 +131,8 @@ jobs:
         architecture: ${{ matrix.architecture }}
     - name: Check Python
       run: |
-        ls /vcpkg/installed/x64-windows-static-md-release/include/ -r
-        ls /vcpkg/installed/x64-windows-static-md-release/lib/ -r
+        ls vcpkg/installed/x64-windows-static-md-release/include/ -r
+        ls vcpkg/installed/x64-windows-static-md-release/lib/ -r
         python --version
         python -c "import struct; print(struct.calcsize('P') * 8)"
     - name: Install Python dependencies
@@ -139,7 +140,7 @@ jobs:
     - name: Create wheel
       run: |
         mkdir dist -Force
-        python -m build --wheel -C="--global-option=build_ext" -C="--global-option=-I/vcpkg/installed/x64-windows-static-md-release/include/" -C="--global-option=-L/vcpkg/installed/x64-windows-static-md-release/include/" .
+        python -m build --wheel -C="--global-option=build_ext" -C="--global-option=-Ivcpkg/installed/x64-windows-static-md-release/include/" -C="--global-option=-Lvcpkg/installed/x64-windows-static-md-release/include/" .
     - name: Check files
       run: twine check dist/*
     - name: Upload wheel
