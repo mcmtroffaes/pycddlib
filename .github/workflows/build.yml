@@ -87,7 +87,7 @@ jobs:
       fail-fast: false
       matrix:
         architecture: ['x86', 'x64']
-        vcpkg_ref: ['dee8b7d2c']
+        vcpkg_ref: ['dee8b7d2c350a79e40a85d64a270812dc8278ff8']
     steps:
     - uses: actions/cache@v3
       id: vcpkg-installed-cache
