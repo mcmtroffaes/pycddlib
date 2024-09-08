@@ -89,10 +89,6 @@ jobs:
         architecture: ['x86', 'x64']
         vcpkg_ref: ['dee8b7d2c']
     steps:
-    - uses: actions/checkout@v3
-      with:
-        repository: mcmtroffaes/vcpkg
-        ref: ${{ matrix.vcpkg_ref }}
     - uses: actions/cache@v3
       id: vcpkg-installed-cache
       with:
@@ -101,6 +97,11 @@ jobs:
     - name: Install cddlib
       if: steps.vcpkg-installed-cache.outputs.cache-hit != 'true'
       run: |
+        # shallow clone: https://stackoverflow.com/a/3489576
+        git init
+        git remote add origin https://github.com/mcmtroffaes/vcpkg.git
+        git fetch origin ${{ matrix.vcpkg_ref }} --depth=1
+        git reset --hard FETCH_HEAD
         ./bootstrap-vcpkg.bat -disableMetrics
         ./vcpkg.exe install cddlib:${{ matrix.architecture }}-windows-static-md-release
         ls installed/${{ matrix.architecture }}-windows-static-md-release/include/ -r
