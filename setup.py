@@ -19,7 +19,7 @@
 
 classifiers = """\
 Development Status :: 4 - Beta
-License :: OSI Approved :: GNU General Public License (GPL)
+License :: OSI Approved :: GNU General Public License v2 or later (GPLv2+)
 Intended Audience :: Science/Research
 Topic :: Scientific/Engineering :: Mathematics
 Programming Language :: C
