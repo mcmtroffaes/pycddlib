@@ -7,6 +7,9 @@ on:
   pull_request:
     branches: [ develop ]
 
+env:
+  VCPKG_HASH: 'dee8b7d2c350a79e40a85d64a270812dc8278ff8'
+
 jobs:
   build-sdist:
     runs-on: 'ubuntu-latest'
@@ -87,21 +90,20 @@ jobs:
       fail-fast: false
       matrix:
         architecture: ['x64']
-        vcpkg_ref: ['dee8b7d2c350a79e40a85d64a270812dc8278ff8']
     steps:
     - uses: actions/cache@v3
       id: vcpkg-installed-cache
       with:
         path: installed/
-        key: vcpkg-0-${{ matrix.architecture }}-${{ matrix.vcpkg_ref }}
+        key: vcpkg-0-${{ matrix.architecture }}-${{ env.VCPKG_HASH }}
+    - uses: actions/checkout@v4
+      if: steps.vcpkg-installed-cache.outputs.cache-hit != 'true'
+      with:
+        repository: mcmtroffaes/vcpkg.git
+        ref: ${{ env.VCPKG_HASH }}
     - name: Install cddlib
       if: steps.vcpkg-installed-cache.outputs.cache-hit != 'true'
       run: |
-        # shallow clone: https://stackoverflow.com/a/3489576
-        git init
-        git remote add origin https://github.com/mcmtroffaes/vcpkg.git
-        git fetch origin ${{ matrix.vcpkg_ref }} --depth=1
-        git reset --hard FETCH_HEAD
         ./bootstrap-vcpkg.bat -disableMetrics
         ./vcpkg.exe install cddlib:${{ matrix.architecture }}-windows-static-md-release
         ls installed/${{ matrix.architecture }}-windows-static-md-release/include/ -r
@@ -120,7 +122,7 @@ jobs:
       fail-fast: false
       matrix:
         python-version: ['3.8', '3.9', '3.10', '3.11', '3.12']
-        architecture: ['x86', 'x64']
+        architecture: ['x64']
     steps:
     - uses: actions/checkout@v3
     - name: Download vcpkg
@@ -132,10 +134,11 @@ jobs:
       with:
         python-version: ${{ matrix.python-version }}
         architecture: ${{ matrix.architecture }}
-    - name: Check Python
+    - name: Check Python environment
       run: |
-        ls installed/x64-windows-static-md-release/include/ -r
-        ls installed/x64-windows-static-md-release/lib/ -r
+        ls .
+        ls x64-windows-static-md-release/include/ -r
+        ls x64-windows-static-md-release/lib/ -r
         python --version
         python -c "import struct; print(struct.calcsize('P') * 8)"
     - name: Install Python dependencies
