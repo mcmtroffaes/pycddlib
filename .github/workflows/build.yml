@@ -16,8 +16,6 @@ jobs:
       with:
         python-version: '3.x'
     - uses: actions/checkout@v3
-      with:
-        submodules: recursive
     - name: Create sdist
       run: |
         pip install setuptools
@@ -48,7 +46,7 @@ jobs:
             python-version: '3.12'
             cython-version: '==3.0.0'
     steps:
-    - uses: actions/checkout@v3  # no submodules needed here, just checking out for the test suite
+    - uses: actions/checkout@v3
     - name: Download sdist
       uses: actions/download-artifact@v4
       with:
@@ -89,24 +87,29 @@ jobs:
       fail-fast: false
       matrix:
         architecture: ['x86', 'x64']
+        vcpkg_ref: ['dee8b7d2c']
     steps:
+    - uses: actions/checkout@v3
+      with:
+        repository: mcmtroffaes/vcpkg
+        ref: ${{ matrix.vcpkg_ref }}
     - uses: actions/cache@v3
       id: vcpkg-installed-cache
       with:
-        path: vcpkg/installed/
-        key: vcpkg-0-${{ matrix.architecture }}
+        path: installed/
+        key: vcpkg-0-${{ matrix.architecture }}-${{ matrix.vcpkg_ref }}
     - name: Install cddlib
       if: steps.vcpkg-installed-cache.outputs.cache-hit != 'true'
       run: |
-        ./vcpkg/bootstrap-vcpkg.bat -disableMetrics
-        ./vcpkg/vcpkg.exe install cddlib:${{ matrix.architecture }}-windows-static-md-release
-        ls vcpkg/installed/${{ matrix.architecture }}-windows-static-md-release/include/ -r
-        ls vcpkg/installed/${{ matrix.architecture }}-windows-static-md-release/lib/ -r
+        ./bootstrap-vcpkg.bat -disableMetrics
+        ./vcpkg.exe install cddlib:${{ matrix.architecture }}-windows-static-md-release
+        ls installed/${{ matrix.architecture }}-windows-static-md-release/include/ -r
+        ls installed/${{ matrix.architecture }}-windows-static-md-release/lib/ -r
     - name: Upload vcpkg
       uses: actions/upload-artifact@v4
       with:
         name: vcpkg-${{ matrix.architecture }}
-        path: vcpkg/installed/
+        path: installed/
         if-no-files-found: error
 
   build-test-windows:
@@ -119,8 +122,6 @@ jobs:
         architecture: ['x86', 'x64']
     steps:
     - uses: actions/checkout@v3
-      with:
-        submodules: recursive
     - name: Download vcpkg
       uses: actions/download-artifact@v4
       with:
@@ -132,8 +133,8 @@ jobs:
         architecture: ${{ matrix.architecture }}
     - name: Check Python
       run: |
-        ls vcpkg/installed/x64-windows-static-md-release/include/ -r
-        ls vcpkg/installed/x64-windows-static-md-release/lib/ -r
+        ls installed/x64-windows-static-md-release/include/ -r
+        ls installed/x64-windows-static-md-release/lib/ -r
         python --version
         python -c "import struct; print(struct.calcsize('P') * 8)"
     - name: Install Python dependencies
@@ -141,7 +142,7 @@ jobs:
     - name: Create wheel
       run: |
         mkdir dist -Force
-        python -m build --wheel -C="--global-option=build_ext" -C="--global-option=-Ivcpkg/installed/x64-windows-static-md-release/include/" -C="--global-option=-Lvcpkg/installed/x64-windows-static-md-release/lib/" .
+        python -m build --wheel -C="--global-option=build_ext" -C="--global-option=-Iinstalled/x64-windows-static-md-release/include/" -C="--global-option=-Linstalled/x64-windows-static-md-release/lib/" .
     - name: Check files
       run: twine check dist/*
     - name: Upload wheel
