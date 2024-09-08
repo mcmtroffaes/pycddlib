@@ -24,4 +24,4 @@ cdef _get_mytype(mytype target):
     return target[0]
 
 cdef _set_mytype(mytype target, value):
-    target[0] = float(value)
+    target[0] = value
