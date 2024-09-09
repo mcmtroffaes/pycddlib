@@ -152,8 +152,7 @@ jobs:
     - name: Install wheel
       run: |
         ls dist/
-        $wheel = (Get-ChildItem -Path dist/ -Filter *.whl)[0].FullName
-        pip install $wheel
+        pip install ((Get-ChildItem -Path dist/ -Filter *.whl)[0].FullName)
     - name: Run test suite
       run: |
         pytest
