@@ -10,7 +10,7 @@ On Windows, for currently supported versions of Python,
 this will install from a binary wheel.
 For other versions of Python or other operating systems
 you will need to build from the source distribution,
-or directly from the repository.
+or directly from the source repository.
 
 From Source
 ~~~~~~~~~~~
@@ -60,22 +60,24 @@ substituting the appropriate folders for ``-I`` and ``-L``.
 
 Unfortunately, there appears to be no reliable way to pass the include and lib folders
 to pip on Windows.
-In this case, you need to run the ``setup.py`` script from the repository,
+In this case, you need to build from the repository,
 as documented below.
 
-Invoking The Setup Script
-*************************
+Invoking Build
+**************
 
-From the source repository,
-pycddlib can be compiled and installed straight from the ``setup.py`` script.
+Alternatively,
+pycddlib can be compiled from the source repository
+into a wheel using `build <https://pypi.org/project/build/>`_.
+This wheel can then be installed using pip.
 As with the pip method, ensure you have cddlib and gmp installed first.
 
-To tell the ``setup.py`` script where cddlib and gmp are located,
+To tell the build script where cddlib and gmp are located,
 for instance assuming you have installed them via ``vcpkg`` on Windows
 using the ``x64-windows-static-md-release`` triplet,
 you can use::
 
-    python setup.py build_ext -I<...\vcpkg\installed\x64-windows-static-md-release\include\> -L<...\vcpkg\installed\x64-windows-static-md-release\lib\>
+    python -m build -w -C="--global-option=build_ext" -C="--global-option=-I<...\vcpkg\installed\x64-windows-static-md-release\include\>" -C="--global-option=-L<...\vcpkg\installed\x64-windows-static-md-release\lib\>"
 
 You can adjust the ``-I`` and ``-L`` arguments as needed.
 If you get an error similar to::
@@ -90,13 +92,8 @@ If you get an error similar to::
 
 then check the lib folder that you passed (it should contain the cddlib and gmp ``.lib`` files).
 
-Once this completes successfully, you can then install with::
+Once this completes successfully, you can then install the wheel with::
 
-    python setup.py install
-
-Alternatively, you can also build a wheel and install that::
-
-    python setup.py bdist_wheel
     pip install dist/pycddlib-<...>.whl
 
 Build Scripts

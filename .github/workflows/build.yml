@@ -22,7 +22,7 @@ jobs:
     - name: Create sdist
       run: |
         python -m pip install build
-        python setup.py sdist
+        python -m build -s
     - name: Check files
       run: |
         python -m pip install twine
@@ -136,11 +136,10 @@ jobs:
         python --version
         python -c "import struct; print(struct.calcsize('P') * 8)"
     - name: Install Python dependencies
-      run: python -m pip install Sphinx pytest numpy twine setuptools wheel
+      run: python -m pip install Sphinx pytest numpy twine wheel build
     - name: Create wheel
       run: |
-        python setup.py build_ext -Iinclude/ -Llib/
-        python setup.py bdist_wheel
+        python -m build -w -C="--global-option=build_ext" -C="--global-option=-Iinclude/" -C="--global-option=-Llib/"
     - name: Check files
       run: twine check dist/*
     - name: Upload wheel
