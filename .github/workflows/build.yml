@@ -54,6 +54,7 @@ jobs:
       uses: actions/download-artifact@v4
       with:
         name: sdist
+        path: dist
     - name: Set up Python ${{ matrix.python-version }}
       uses: actions/setup-python@v5
       with:
@@ -150,11 +151,9 @@ jobs:
         if-no-files-found: error
     - name: Install wheel
       run: |
-        cd dist
-        ls
+        ls dist/
         $wheel = (Get-ChildItem -Path dist/ -Filter *.whl)[0]
         pip install dist/$wheel
-        cd ..
     - name: Run test suite
       run: |
         pytest
