@@ -19,7 +19,8 @@
 # with this program; if not, write to the Free Software Foundation, Inc.,
 # 51 Franklin Street, Fifth Floor, Boston, MA 02110-1301 USA.
 
-# to avoid compilation errors, includes must follow this order
+cdef extern from * nogil:
+    "#define GMPRATIONAL"
 
 include "extern_preamble.pxi"
 include "extern_mytype_gmp.pxi"

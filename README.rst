@@ -1,5 +1,3 @@
-pycddlib is a Python wrapper for Komei Fukuda's cddlib.
-
 `cddlib <https://people.inf.ethz.ch/fukudak/cdd_home/>`_ is
 an implementation of the Double Description Method of Motzkin et
 al. for generating all vertices (i.e. extreme points) and extreme rays

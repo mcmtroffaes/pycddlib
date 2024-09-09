@@ -1,0 +1,44 @@
+[build-system]
+requires = ["setuptools >= 74.1", "cython"]
+build-backend = "setuptools.build_meta"
+
+[project]
+name = "pycddlib"
+version = "3.0.0a1"
+requires-python = ">= 3.8"
+authors = [
+  {name = "Matthias C. M. Troffaes", email = "matthias.troffaes@gmail.com"},
+]
+description = "A Python wrapper for cddlib"
+readme = "README.rst"
+classifiers = [
+  "Development Status :: 4 - Beta",
+  "License :: OSI Approved :: GNU General Public License v2 or later (GPLv2+)",
+  "Intended Audience :: Science/Research",
+  "Topic :: Scientific/Engineering :: Mathematics",
+  "Programming Language :: C",
+  "Programming Language :: Cython",
+  "Programming Language :: Python",
+  "Programming Language :: Python :: 3",
+  "Operating System :: OS Independent",
+]
+keywords = ["convex, polyhedron, linear programming, double description method"]
+
+[project.urls]
+Homepage = "https://github.com/mcmtroffaes/pycddlib"
+Documentation = "https://pycddlib.readthedocs.io/"
+Repository = "https://github.com/mcmtroffaes/pycddlib.git"
+Issues = "https://github.com/mcmtroffaes/pycddlib/issues"
+Changelog = "https://github.com/mcmtroffaes/pycddlib/blob/develop/CHANGELOG.rst"
+
+[[tool.setuptools.ext-modules]]
+name = "cdd"
+sources = ["src/cdd.pyx"]
+depends = ["src/extern_cddlib.pxi", "src/extern_mytype.pxi", "src/extern_preamble.pxi"]
+libraries = ['cdd']
+
+[[tool.setuptools.ext-modules]]
+name = "cddgmp"
+sources = ["src/cddgmp.pyx"]
+depends = ["src/extern_cddlib.pxi", "src/extern_mytype_gmp.pxi", "src/extern_preamble.pxi"]
+libraries = ['cddgmp', 'gmp']

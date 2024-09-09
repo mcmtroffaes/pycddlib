@@ -2,12 +2,12 @@ From Binary Wheel
 ~~~~~~~~~~~~~~~~~
 
 The simplest way to install pycddlib is to
-`install it with pip <https://packaging.python.org/tutorials/installing-packages/>`_::
+`install it with pip <https://packaging.python.org/en/latest/tutorials/installing-packages/>`_::
 
     pip install pycddlib
 
-On Windows, this will install from a binary wheel,
-for Python 3.8 to 3.12.
+On Windows, for currently supported versions of Python,
+this will install from a binary wheel.
 For other versions of Python or other operating systems
 you will need to build from the source distribution,
 or directly from the repository.

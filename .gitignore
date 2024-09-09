@@ -1,8 +1,7 @@
 /venv/
-/cdd*.c
 /docs/_build/
 /.eggs/
-/*.egg-info/
+*.egg-info/
 /.idea/
 /include/
 /lib/

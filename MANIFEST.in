@@ -3,8 +3,3 @@ include CHANGELOG.rst
 include AUTHORS
 include INSTALL.rst
 include LICENSE.md
-include cddlib/COPYING
-include cddlib/README
-include cddlib/AUTHORS
-include cddlib/ChangeLog
-include *.pxi cdd.pyx cddgmp.pyx cdd.c cddgmp.c
