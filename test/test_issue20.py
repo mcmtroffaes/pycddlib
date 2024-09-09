@@ -3,13 +3,9 @@ import numpy as np
 
 
 def test_issue20():
-    arr = np.array([[1, 0, 0],
-                    [1, 1, 0],
-                    [1, 0, 1]])
+    arr = np.array([[1, 0, 0], [1, 1, 0], [1, 0, 1]])
 
-    ref_ineq = np.array([[1, -1, -1],
-                         [0, 1, 0],
-                         [0, 0, 1]])
+    ref_ineq = np.array([[1, -1, -1], [0, 1, 0], [0, 0, 1]])
 
     mat = cdd.Matrix(arr)
     mat.rep_type = cdd.RepType.GENERATOR

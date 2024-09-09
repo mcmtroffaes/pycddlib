@@ -15,8 +15,8 @@ def test_issue7():
         [1.0, 4.0, 40.0, -4.0, -28.86014625, 5.00096, 21.14945378],
         [1.0, -4.0, 40.0, 4.0, -31.21985375, -4.91296, 17.90974622],
         [1.0, 4.0, 40.0, -4.0, -28.86014625, 4.91296, 20.26945371],
-        ]
+    ]
     m2 = cdd.Matrix(m)
     m2.rep_type = cdd.RepType.GENERATOR
     with pytest.raises(RuntimeError):
-        poly = cdd.Polyhedron(m2)
+        cdd.Polyhedron(m2)
