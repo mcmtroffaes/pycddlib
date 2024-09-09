@@ -1,7 +1,7 @@
 .. testsetup::
 
    import cdd
-   import cddgmp
+   import cdd.gmp
    from fractions import Fraction
 
 .. currentmodule:: cdd
@@ -56,8 +56,8 @@ Methods and Attributes
 Example
 -------
 
->>> mat = cddgmp.Matrix([[Fraction(4, 3),-2,-1],[Fraction(2, 3),0,-1],[0,1,0],[0,0,1]])
->>> mat.obj_type = cddgmp.LPObjType.MAX
+>>> mat = cdd.gmp.Matrix([[Fraction(4, 3),-2,-1],[Fraction(2, 3),0,-1],[0,1,0],[0,0,1]])
+>>> mat.obj_type = cdd.gmp.LPObjType.MAX
 >>> mat.obj_func = (0,3,4)
 >>> print(mat)
 begin
@@ -71,9 +71,9 @@ maximize
  0 3 4
 >>> print(mat.obj_func)
 (0, 3, 4)
->>> lp = cddgmp.LinProg(mat)
+>>> lp = cdd.gmp.LinProg(mat)
 >>> lp.solve()
->>> lp.status == cddgmp.LPStatusType.OPTIMAL
+>>> lp.status == cdd.gmp.LPStatusType.OPTIMAL
 True
 >>> print(lp.obj_value)
 11/3

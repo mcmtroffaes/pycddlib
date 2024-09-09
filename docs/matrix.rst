@@ -1,7 +1,7 @@
 .. testsetup::
 
    import cdd
-   import cddgmp
+   import cdd.gmp
    from fractions import Fraction
 
 .. currentmodule:: cdd
@@ -40,7 +40,7 @@ Sets of Linear Inequalities and Generators
     :param rows: The rows of the matrix.
         For :mod:`cdd`, each element must be a :class:`~typing.SupportsFloat`
         (such as :class:`float` or :class:`~fractions.Fraction`).
-        For :mod:`cddgmp`, each element must be a :class:`~numbers.Rational`
+        For :mod:`cdd.gmp`, each element must be a :class:`~numbers.Rational`
         (such as :class:`~fractions.Fraction`).
     :type rows: :class:`list` of :class:`list`\ s.
     :param linear: Whether to add the rows to the
@@ -49,22 +49,22 @@ Sets of Linear Inequalities and Generators
 
     .. warning::
 
-       With :mod:`cddgmp`, passing a :class:`float` will result in a :exc:`TypeError`:
+       With :mod:`cdd.gmp`, passing a :class:`float` will result in a :exc:`TypeError`:
 
-       >>> cddgmp.Matrix([[1.12]])[0][0]
+       >>> cdd.gmp.Matrix([[1.12]])[0][0]
        Traceback (most recent call last):
            ...
        TypeError: value 1.12 is not Rational
 
        If the float represents a fraction, you must pass it as a fraction explicitly:
 
-       >>> print(cddgmp.Matrix([[Fraction(112, 100)]])[0][0])
+       >>> print(cdd.gmp.Matrix([[Fraction(112, 100)]])[0][0])
        28/25
 
        If you really must use a float as a fraction,
        pass it explicitly to the :class:`~fractions.Fraction` constructor:
 
-       >>> print(cddgmp.Matrix([[Fraction(1.12)]])[0][0])
+       >>> print(cdd.gmp.Matrix([[Fraction(1.12)]])[0][0])
        1261007895663739/1125899906842624
 
        As you can see from the output above, for typical use cases,
@@ -139,7 +139,7 @@ Examples
 Note that the following examples presume:
 
 >>> import cdd
->>> import cddgmp
+>>> import cdd.gmp
 >>> from fractions import Fraction
 
 Fractions
@@ -147,7 +147,7 @@ Fractions
 
 Declaring matrices, and checking some attributes:
 
->>> mat1 = cddgmp.Matrix([[1, 2],[3, 4]])
+>>> mat1 = cdd.gmp.Matrix([[1, 2],[3, 4]])
 >>> print(mat1)
 begin
  2 2 rational
@@ -189,7 +189,7 @@ end
 
 Canonicalizing:
 
->>> mat = cddgmp.Matrix([[2, 1, 2, 3], [0, 1, 2, 3], [3, 0, 1, 2], [0, -2, -4, -6]])
+>>> mat = cdd.gmp.Matrix([[2, 1, 2, 3], [0, 1, 2, 3], [3, 0, 1, 2], [0, -2, -4, -6]])
 >>> mat.canonicalize()  # oops... must specify rep_type!
 Traceback (most recent call last):
     ...
@@ -208,19 +208,19 @@ end
 
 Large number tests:
 
->>> print(cddgmp.Matrix([[10 ** 100]]))
+>>> print(cdd.gmp.Matrix([[10 ** 100]]))
 begin
  1 1 rational
  10000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000
 end
->>> print(cddgmp.Matrix([[Fraction(10 ** 100, 13 ** 102)]]))
+>>> print(cdd.gmp.Matrix([[Fraction(10 ** 100, 13 ** 102)]]))
 begin
  1 1 rational
  10000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000/419007633753249358163371317520192208024352885070865054318259957799640820272617869666750277036856988452476999386169
 end
->>> cddgmp.Matrix([[10000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000]])[0][0]
+>>> cdd.gmp.Matrix([[10000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000]])[0][0]
 Fraction(10000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000, 1)
->>> cddgmp.Matrix([[Fraction(10000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000, 419007633753249358163371317520192208024352885070865054318259957799640820272617869666750277036856988452476999386169)]])[0][0]
+>>> cdd.gmp.Matrix([[Fraction(10000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000, 419007633753249358163371317520192208024352885070865054318259957799640820272617869666750277036856988452476999386169)]])[0][0]
 Fraction(10000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000, 419007633753249358163371317520192208024352885070865054318259957799640820272617869666750277036856988452476999386169)
 
 Floats

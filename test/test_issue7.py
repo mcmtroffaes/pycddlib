@@ -18,5 +18,5 @@ def test_issue7():
     ]
     m2 = cdd.Matrix(m)
     m2.rep_type = cdd.RepType.GENERATOR
-    with pytest.raises(RuntimeError):
+    with pytest.raises(RuntimeError, match="inconsistency"):
         cdd.Polyhedron(m2)

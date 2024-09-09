@@ -1,7 +1,7 @@
 .. testsetup::
 
    import cdd
-   import cddgmp
+   import cdd.gmp
 
 .. currentmodule:: cdd
 
