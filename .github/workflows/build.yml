@@ -68,7 +68,7 @@ jobs:
       run: python -m pip install setuptools Cython${{ matrix.cython-version }} Sphinx pytest wheel numpy
     - name: Install tarball (Ubuntu)
       if: matrix.os == 'ubuntu-latest'
-      run: python -m pip install --pre --no-index --find-links=. pycddlib
+      run: python -m pip install $(ls dist/*.tar.gz| head -1)
     - name: Install tarball (MacOS)
       if: matrix.os == 'macos-latest'
       run: |
@@ -77,7 +77,7 @@ jobs:
         ls $(brew --prefix)/include/*gmp*
         ls $(brew --prefix)/lib/*cdd*
         ls $(brew --prefix)/lib/*gmp*
-        env "CFLAGS=-I$(brew --prefix)/include -L$(brew --prefix)/lib" python -m pip install --pre --no-index --find-links=. pycddlib
+        env "CFLAGS=-I$(brew --prefix)/include -L$(brew --prefix)/lib" python -m pip install $(ls dist/*.tar.gz| head -1)
     - name: Run test suite
       run: |
         pytest
@@ -152,7 +152,8 @@ jobs:
       run: |
         cd dist
         ls
-        pip install --pre --no-index --find-links=. pycddlib
+        $wheel = (Get-ChildItem -Path dist/ -Filter *.whl)[0]
+        pip install dist/$wheel
         cd ..
     - name: Run test suite
       run: |
