@@ -18,18 +18,18 @@ def test_make_vertex_adjacency_list():
     )
     mat.rep_type = cdd.RepType.INEQUALITY
     poly = cdd.Polyhedron(mat)
-    adjacency_list = poly.get_adjacency()
+    adjacency = poly.get_adjacency()
 
     # Family size should equal the number of vertices of the cube (8)
-    assert len(adjacency_list) == 8
+    assert len(adjacency) == 8
 
     # All the vertices of the cube should be connected by three other vertices
-    assert [len(adj) for adj in adjacency_list] == [3] * 8
+    assert [len(adj) for adj in adjacency] == [3] * 8
 
     # The vertices must be numbered consistently
     # The first vertex is adjacent to the second, fourth and eighth
     # (note the conversion to a pythonic numbering system)
-    adjacencies = [
+    adjacency_list = [
         [1, 3, 7],
         [0, 2, 6],
         [1, 3, 4],
@@ -39,8 +39,7 @@ def test_make_vertex_adjacency_list():
         [1, 4, 7],
         [0, 5, 6],
     ]
-    for i in range(8):
-        assert list(adjacency_list[i]) == adjacencies[i]
+    assert adjacency == tuple(frozenset(x) for x in adjacency_list)
 
 
 def test_make_facet_adjacency_list():
@@ -59,7 +58,7 @@ def test_make_facet_adjacency_list():
     mat.rep_type = cdd.RepType.INEQUALITY
     poly = cdd.Polyhedron(mat)
 
-    adjacencies = [
+    adjacency_list = [
         [1, 2, 3, 4, 6],
         [0, 2, 3, 5],
         [0, 1, 4, 5],
@@ -69,6 +68,5 @@ def test_make_facet_adjacency_list():
         [0, 3, 4, 5],
     ]
 
-    adjacency_list = poly.get_input_adjacency()
-    for i in range(7):
-        assert list(adjacency_list[i]) == adjacencies[i]
+    adjacency = poly.get_input_adjacency()
+    assert adjacency == tuple(frozenset(x) for x in adjacency_list)
