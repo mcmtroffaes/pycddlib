@@ -1,0 +1,6 @@
+[flake8]
+exclude = .git,.mypy_cache,.pytest_cache,__pycache__,build,dist,htmlcov,*venv*
+max-complexity = 10
+max-line-length = 88
+per-file-ignores =
+    test/test_large_file.py:E501
