@@ -14,8 +14,8 @@ Version 3.0.0 (in development)
 * Thanks to the reorganization, there now is a standalone Python package that
   installs just the floating point interface without needing the gmp or cddlib
   libraries installed.
-  This is useful for installation on systems where the user cannot easily install
-  libraries, such as for instance on google colab.
+  This is useful on systems where the user cannot easily install
+  libraries, such as for instance google colab.
   To install it, use ``pip install pycddlib-standalone``.
   Naturally, you cannot install ``pycddlib`` and ``pycddlib-standalone``
   at the same time.
