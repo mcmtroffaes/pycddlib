@@ -66,13 +66,7 @@ jobs:
       run: python -m pip install $(ls dist/*.tar.gz| head -1)
     - name: Install tarball (MacOS)
       if: matrix.os == 'macos-latest'
-      run: |
-        brew --prefix
-        ls $(brew --prefix)/include/cddlib/
-        ls $(brew --prefix)/include/*gmp*
-        ls $(brew --prefix)/lib/*cdd*
-        ls $(brew --prefix)/lib/*gmp*
-        env "CFLAGS=-I$(brew --prefix)/include -L$(brew --prefix)/lib" python -m pip install $(ls dist/*.tar.gz| head -1)
+      run: env "CFLAGS=-I$(brew --prefix)/include -L$(brew --prefix)/lib" python -m pip install $(ls dist/*.tar.gz| head -1)
     - name: Run test suite
       run: |
         mypy
@@ -151,9 +145,7 @@ jobs:
         path: dist/*
         if-no-files-found: error
     - name: Install wheel
-      run: |
-        ls dist/
-        pip install ((Get-ChildItem -Path dist/ -Filter *.whl)[0].FullName)
+      run: pip install ((Get-ChildItem -Path dist/ -Filter *.whl)[0].FullName)
     - name: Run test suite
       run: |
         mypy
@@ -178,7 +170,7 @@ jobs:
         path: dist/
         merge-multiple: true
     - name: List files
-      run: ls -R dist/
+      run: ls -r dist/
     - name: Publish to Test PyPI
       uses: pypa/gh-action-pypi-publish@release/v1
       with:
