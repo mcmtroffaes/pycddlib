@@ -1,5 +1,4 @@
 from collections.abc import Sequence
-from fractions import Fraction
 from numbers import Real  # common base class for float and Fraction
 
 import pytest
