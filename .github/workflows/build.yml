@@ -136,7 +136,7 @@ jobs:
     - name: Create wheel
       run: |
         python -m build -w -C="--global-option=build_ext" -C="--global-option=-Iinclude/" -C="--global-option=-Llib/"
-    - name: Check files
+    - name: Check wheel
       run: |
         twine check dist/*
         wheel unpack ((Get-ChildItem -Path dist/ -Filter *.whl)[0].FullName) --dest wheel
