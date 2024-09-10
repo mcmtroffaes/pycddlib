@@ -139,11 +139,9 @@ jobs:
     - name: Check files
       run: |
         twine check dist/*
-        mkdir wheel
-        cd wheel
-        wheel unpack ((Get-ChildItem -Path . -Filter *.whl)[0].Name)
-        ls -r .
-        If (((Get-ChildItem -Path . -Recurse -Include ("*.pyx", "*.pxi", "*.c"))).Length -Ne 0) {
+        wheel unpack ((Get-ChildItem -Path dist/ -Filter *.whl)[0].FullName) --dest wheel
+        ls -r wheel/
+        If (((Get-ChildItem -Path wheel/ -Recurse -Include ("*.pyx", "*.pxi", "*.c"))).Length -Ne 0) {
           throw "Wheel contains .pyx, .pxi, or .c files."
         }
         cd ..
