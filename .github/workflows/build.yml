@@ -141,7 +141,7 @@ jobs:
         twine check dist/*
         cd dist/
         wheel unpack ((Get-ChildItem -Path . -Filter *.whl)[0].Name)
-        ls -r dist/
+        ls -r .
         # TODO check that wheel contains no .c, .pyx, or .pxi files
     - name: Upload wheel
       uses: actions/upload-artifact@v4
