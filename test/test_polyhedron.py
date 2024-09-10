@@ -28,11 +28,7 @@ def test_testcdd2():
         list(gen),
         [
             (1, Fraction(7, 3), -1),
-            (
-                1,
-                -1,
-                -1,
-            ),
+            (1, -1, -1),
             (1, -1, Fraction(7, 3)),
             (1, Fraction(7, 3), Fraction(7, 3)),
         ],
