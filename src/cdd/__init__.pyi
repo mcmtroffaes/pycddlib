@@ -2,7 +2,6 @@ from collections.abc import Sequence, Set
 from enum import IntEnum
 from typing import ClassVar, SupportsFloat
 
-
 class LPObjType(IntEnum):
     MAX: ClassVar[LPObjType] = ...
     MIN: ClassVar[LPObjType] = ...
