@@ -106,7 +106,7 @@ you can also call ``setup.py`` directly to create the wheel, as follows::
     python setup.py bdist_wheel
 
 However, note that
-`running setup.py directly is deprecated <https://blog.ganssle.io/articles/2021/10/setup-py-deprecated.html>`.
+`running setup.py directly is deprecated <https://blog.ganssle.io/articles/2021/10/setup-py-deprecated.html>`_.
 
 Build Scripts
 ~~~~~~~~~~~~~
