@@ -9,7 +9,8 @@
 Sets of Linear Inequalities and Generators
 ==========================================
 
-.. class:: Matrix(rows, linear=False)
+.. class:: cdd.Matrix(rows: Sequence[Sequence[SupportsFloat]], linear: bool = False)
+.. class:: cdd.gmp.Matrix(rows: Sequence[Sequence[Union[Fraction, int]]], linear: bool = False)
 
     A class for working with sets of linear constraints and extreme
     points.
@@ -38,14 +39,7 @@ Sets of Linear Inequalities and Generators
     of :math:`t` must be either :math:`0` or :math:`1`.
 
     :param rows: The rows of the matrix.
-        For :mod:`cdd`, each element must be a :class:`~typing.SupportsFloat`
-        (such as :class:`float` or :class:`~fractions.Fraction`).
-        For :mod:`cdd.gmp`, each element must be a :class:`~numbers.Rational`
-        (such as :class:`~fractions.Fraction`).
-    :type rows: :class:`list` of :class:`list`\ s.
-    :param linear: Whether to add the rows to the
-        :attr:`~cdd.Matrix.lin_set` or not.
-    :type linear: :class:`bool`
+    :param linear: Whether to add the rows to the :attr:`~cdd.Matrix.lin_set` or not.
 
     .. warning::
 
@@ -73,13 +67,14 @@ Sets of Linear Inequalities and Generators
 Methods and Attributes
 ----------------------
 
-.. method:: Matrix.__getitem__(key)
+.. method:: cdd.Matrix.__getitem__(index: int) -> Sequence[float]
+            cdd.Matrix.__getitem__(index: slice) -> Sequence[Sequence[float]]
+.. method:: cdd.gmp.Matrix.__getitem__(index: int) -> Sequence[Fraction]
+            cdd.gmp.Matrix.__getitem__(index: slice) -> Sequence[Sequence[Fraction]]
 
         Return a row, or a slice of rows, of the matrix.
 
         :param key: The row number, or slice of row numbers, to get.
-        :type key: :class:`int` or :class:`slice`
-        :rtype: :class:`tuple` of :class:`float` or :class:`~fractions.Fraction`
 
 .. method:: Matrix.canonicalize()
 
