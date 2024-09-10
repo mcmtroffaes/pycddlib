@@ -37,7 +37,7 @@ cdd = ["*.pyi"]
 [[tool.setuptools.ext-modules]]
 name = "cdd._cdd"
 sources = ["src/cdd/_cdd.pyx"]
-depends = ["src/cdd/extern_cddlib.pxi", "src/cdd/extern_mytype.pxi", "src/cdd/extern_preamble.pxi"]
+depends = ["src/cdd/cddlib.pxi", "src/cdd/mytype.pxi", "src/cdd/setoper.pxi"]
 libraries = ['cdd']
 
 [[tool.setuptools.ext-modules]]
