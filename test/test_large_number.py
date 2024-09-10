@@ -1,9 +1,9 @@
 from fractions import Fraction
 
-from test_matrix import assert_matrix_almost_equal, assert_matrix_exactly_equal
-
 import cdd
 import cdd.gmp
+
+from .test_matrix import assert_matrix_almost_equal, assert_matrix_exactly_equal
 
 
 def test_gmp_large_number() -> None:

@@ -1,8 +1,9 @@
 from collections.abc import Sequence, Set
 from enum import IntEnum
 from fractions import Fraction
-from numbers import Rational
-from typing import ClassVar
+from typing import ClassVar, Union, overload
+
+SupportsRational = Union[Fraction, int]
 
 class LPObjType(IntEnum):
     MAX: ClassVar[LPObjType] = ...
@@ -39,14 +40,17 @@ class Matrix(Sequence[Sequence[Fraction]]):
     rep_type: RepType
 
     def __init__(
-        self, rows: Sequence[Sequence[Rational]], linear: bool = False
+        self, rows: Sequence[Sequence[SupportsRational]], linear: bool = False
     ) -> None: ...
     def canonicalize(self) -> None: ...
     def copy(self) -> "Matrix": ...
     def extend(
-        self, rows: Sequence[Sequence[Fraction]], linear: bool = False
+        self, rows: Sequence[Sequence[SupportsRational]], linear: bool = False
     ) -> None: ...
+    @overload
     def __getitem__(self, index: int) -> Sequence[Fraction]: ...
+    @overload
+    def __getitem__(self, index: slice) -> Sequence[Sequence[Fraction]]: ...
     def __len__(self) -> int: ...
 
 class LinProg:
@@ -63,7 +67,7 @@ class LinProg:
     @property
     def solver(self) -> LPSolverType: ...
     def __init__(self, mat: Matrix) -> None: ...
-    def solve(self, solver: LPSolverType = LPSolverType.DUAL_SIMPLEX): ...
+    def solve(self, solver: LPSolverType = LPSolverType.DUAL_SIMPLEX) -> None: ...
 
 class Polyhedron:
     @property

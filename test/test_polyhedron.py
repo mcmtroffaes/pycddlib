@@ -1,8 +1,8 @@
 from fractions import Fraction
 
-from test_matrix import assert_matrix_almost_equal
-
 import cdd
+
+from .test_matrix import assert_matrix_almost_equal
 
 
 def test_sampleh1() -> None:
