@@ -1,7 +1,7 @@
 import cdd
 
 
-def test_make_vertex_adjacency_list():
+def test_make_vertex_adjacency_list() -> None:
     # The following lines test that poly.get_adjacency_list()
     # returns the correct adjacencies.
 
@@ -42,7 +42,7 @@ def test_make_vertex_adjacency_list():
     assert adjacency == tuple(frozenset(x) for x in adjacency_list)
 
 
-def test_make_facet_adjacency_list():
+def test_make_facet_adjacency_list() -> None:
     # This matrix is the same as in vtest_vo.ine
     mat = cdd.Matrix(
         [
