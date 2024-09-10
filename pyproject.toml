@@ -43,7 +43,7 @@ libraries = ['cdd']
 [[tool.setuptools.ext-modules]]
 name = "cdd._cddgmp"
 sources = ["src/cdd/_cddgmp.pyx"]
-depends = ["src/cdd/extern_cddlib.pxi", "src/cdd/extern_mytype_gmp.pxi", "src/cdd/extern_preamble.pxi"]
+depends = ["src/cdd/cddlib.pxi", "src/cdd/mytype_gmp.pxi", "src/cdd/setoper.pxi"]
 libraries = ['cddgmp', 'gmp']
 
 [tool.mypy]
