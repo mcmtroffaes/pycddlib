@@ -22,6 +22,6 @@
 cdef extern from * nogil:
     "#undef GMPRATIONAL"
 
-include "extern_preamble.pxi"
-include "extern_mytype.pxi"
-include "extern_cddlib.pxi"
+include "setoper.pxi"
+include "mytype.pxi"
+include "cddlib.pxi"
