@@ -1,9 +1,14 @@
 from collections.abc import Sequence
-from numbers import Real  # common base class for float and Fraction
+from fractions import Fraction
+from typing import Union
 
 import pytest
 
 import cdd
+
+# https://peps.python.org/pep-0484/#the-numeric-tower
+# numbers.Real is broken with mypy
+Real = Union[float, Fraction]
 
 
 def assert_almost_equal(x: Real, y: Real) -> None:

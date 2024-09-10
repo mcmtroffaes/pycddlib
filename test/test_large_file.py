@@ -1,7 +1,7 @@
 import cdd
 
 
-def test_large_string():
+def test_large_string() -> None:
     mat = cdd.Matrix([[1] * 100] * 100)
     assert (
         str(mat)

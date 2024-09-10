@@ -5,7 +5,7 @@ from test_matrix import assert_almost_equal, assert_vector_almost_equal
 import cdd
 
 
-def test_lp2():
+def test_lp2() -> None:
     mat = cdd.Matrix([[4 / 3, -2, -1], [2 / 3, 0, -1], [0, 1, 0], [0, 0, 1]])
     mat.obj_type = cdd.LPObjType.MAX
     mat.obj_func = (0, 3, 4)
@@ -17,7 +17,7 @@ def test_lp2():
     assert_vector_almost_equal(lp.dual_solution, (Fraction(3, 2), Fraction(5, 2)))
 
 
-def test_another():
+def test_another() -> None:
     mat = cdd.Matrix(
         [[1, -1, -1, -1], [-1, 1, 1, 1], [0, 1, 0, 0], [0, 0, 1, 0], [0, 0, 0, 1]]
     )
@@ -34,4 +34,4 @@ def test_another():
     lp = cdd.LinProg(mat)
     lp.solve()
     assert_almost_equal(lp.obj_value, Fraction(28, 25))
-    assert_vector_almost_equal(lp.primal_solution, (1, 0, 0))
+    assert_vector_almost_equal(lp.primal_solution, [1, 0, 0])

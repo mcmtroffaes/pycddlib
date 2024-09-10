@@ -1,4 +1,5 @@
 import importlib
+
 extensions = [
     "sphinx.ext.autodoc",
     "sphinx.ext.doctest",

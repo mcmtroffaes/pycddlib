@@ -4,7 +4,7 @@ import cdd
 
 
 # Check that numerical inconsistency is reported properly.
-def test_issue7():
+def test_issue7() -> None:
     m = [
         [1.0, -4.0, -40.0, -4.0, 30.0677432, -0.93140119, -20.75373128],
         [1.0, 4.0, -40.0, -4.0, 31.02398625, 5.00096, -18.98561378],

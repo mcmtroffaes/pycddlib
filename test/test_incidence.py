@@ -1,7 +1,7 @@
 import cdd
 
 
-def test_vertex_incidence_cube():
+def test_vertex_incidence_cube() -> None:
     # The following lines test that poly.get_vertex_incidence()
     # returns the correct incidences.
 
@@ -42,7 +42,7 @@ def test_vertex_incidence_cube():
     assert incidence == tuple(frozenset(x) for x in incidence_list)
 
 
-def test_vertex_incidence_vtest_vo():
+def test_vertex_incidence_vtest_vo() -> None:
     # This matrix is the same as in vtest_vo.ine
     mat = cdd.Matrix(
         [
@@ -75,7 +75,7 @@ def test_vertex_incidence_vtest_vo():
     assert incidence == tuple(frozenset(x) for x in incidence_list)
 
 
-def test_facet_incidence_cube():
+def test_facet_incidence_cube() -> None:
     # We start with the H-representation for a cube
     mat = cdd.Matrix(
         [
@@ -114,7 +114,7 @@ def test_facet_incidence_cube():
     assert incidence == tuple(frozenset(x) for x in incidence_list)
 
 
-def test_facet_incidence_vtest_vo():
+def test_facet_incidence_vtest_vo() -> None:
     # This matrix is the same as in vtest_vo.ine
     mat = cdd.Matrix(
         [

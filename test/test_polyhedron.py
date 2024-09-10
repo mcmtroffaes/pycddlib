@@ -5,20 +5,20 @@ from test_matrix import assert_matrix_almost_equal
 import cdd
 
 
-def test_sampleh1():
+def test_sampleh1() -> None:
     mat = cdd.Matrix([[2, -1, -1, 0], [0, 1, 0, 0], [0, 0, 1, 0]])
     mat.rep_type = cdd.RepType.INEQUALITY
     poly = cdd.Polyhedron(mat)
     ext = poly.get_generators()
     assert ext.rep_type == cdd.RepType.GENERATOR
     assert_matrix_almost_equal(
-        ext, [(1, 0, 0, 0), (1, 2, 0, 0), (1, 0, 2, 0), (0, 0, 0, 1)]
+        ext, [[1, 0, 0, 0], [1, 2, 0, 0], [1, 0, 2, 0], [0, 0, 0, 1]]
     )
     # note: first row is 0, so fourth row is 3
     assert ext.lin_set == {3}
 
 
-def test_testcdd2():
+def test_testcdd2() -> None:
     mat = cdd.Matrix([[7, -3, -0], [7, 0, -3], [1, 1, 0], [1, 0, 1]])
     mat.rep_type = cdd.RepType.INEQUALITY
     assert_matrix_almost_equal(mat, [(7, -3, -0), (7, 0, -3), (1, 1, 0), (1, 0, 1)])
