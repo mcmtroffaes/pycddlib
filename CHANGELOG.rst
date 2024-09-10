@@ -33,7 +33,6 @@ Version 3.0.0 (in development)
   Check the installation instructions for more details.
 
 * The ``setup.py`` script has been migrated to ``pyproject.toml``.
-  As a result, setuptools 74.1 or greater is now required for building pycddlib.
 
 * Drop x86 binary wheels on Windows.
   These can still be built but they are no longer distributed in PyPI.
