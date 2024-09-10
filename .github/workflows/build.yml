@@ -137,7 +137,12 @@ jobs:
       run: |
         python -m build -w -C="--global-option=build_ext" -C="--global-option=-Iinclude/" -C="--global-option=-Llib/"
     - name: Check files
-      run: twine check dist/*
+      run: |
+        twine check dist/*
+        cd dist/
+        wheel unpack ((Get-ChildItem -Path . -Filter *.whl)[0].Name)
+        ls -r dist/
+        # TODO check that wheel contains no .c, .pyx, or .pxi files
     - name: Upload wheel
       uses: actions/upload-artifact@v4
       with:
