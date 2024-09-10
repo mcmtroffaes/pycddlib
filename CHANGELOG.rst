@@ -9,8 +9,6 @@ Version 3.0.0 (in development)
   (formerly accessible with ``number_type="fraction"``).
   This change enables more straightforward type checking for the library,
   and also better reflects how the upstream C libraries are organized.
-  It also enables easier switching between the two interfaces,
-  by simply changing ``import cdd`` to ``import cdd.gmp as cdd``.
 
 * Type hints are now included, so code can fully benefit from type checkers
   such as mypy.
@@ -39,6 +37,8 @@ Version 3.0.0 (in development)
 
 * Drop x86 binary wheels on Windows.
   These can still be built but they are no longer distributed in PyPI.
+
+* Drop Python 3.8 support.
 
 Version 2.1.8 (4 September 2024)
 --------------------------------
