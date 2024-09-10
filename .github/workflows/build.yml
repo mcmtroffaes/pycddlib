@@ -83,7 +83,7 @@ jobs:
   build-vcpkg:
     runs-on: 'windows-latest'
     steps:
-    - uses: actions/cache@v3
+    - uses: actions/cache@v4
       id: vcpkg-installed-cache
       with:
         path: installed/x64-windows-static-md-release
