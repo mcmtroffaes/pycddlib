@@ -1,6 +1,7 @@
 from collections.abc import Sequence, Set
 from enum import IntEnum
-from typing import ClassVar
+from typing import ClassVar, SupportsFloat
+
 
 class LPObjType(IntEnum):
     MAX: ClassVar[LPObjType] = ...
@@ -37,7 +38,7 @@ class Matrix(Sequence[Sequence[float]]):
     rep_type: RepType
 
     def __init__(
-        self, rows: Sequence[Sequence[float]], linear: bool = False
+        self, rows: Sequence[Sequence[SupportsFloat]], linear: bool = False
     ) -> None: ...
     def canonicalize(self) -> None: ...
     def copy(self) -> "Matrix": ...

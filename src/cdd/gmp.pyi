@@ -1,6 +1,7 @@
 from collections.abc import Sequence, Set
 from enum import IntEnum
 from fractions import Fraction
+from numbers import Rational
 from typing import ClassVar
 
 class LPObjType(IntEnum):
@@ -38,7 +39,7 @@ class Matrix(Sequence[Sequence[Fraction]]):
     rep_type: RepType
 
     def __init__(
-        self, rows: Sequence[Sequence[Fraction]], linear: bool = False
+        self, rows: Sequence[Sequence[Rational]], linear: bool = False
     ) -> None: ...
     def canonicalize(self) -> None: ...
     def copy(self) -> "Matrix": ...

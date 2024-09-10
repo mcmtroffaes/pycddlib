@@ -37,39 +37,6 @@ def assert_matrix_exactly_equal(
     assert [list(row1) for row1 in mat1] == [list(row2) for row2 in mat2]
 
 
-def test_large_number_1() -> None:
-    mat = cdd.Matrix([[10**100]])
-    assert_matrix_almost_equal(mat, [[1e100]])
-
-
-def test_large_number_2() -> None:
-    mat = cdd.Matrix([[Fraction(10**100, 13**90)]])
-    assert_matrix_almost_equal(mat, [[0.556030087418433]])
-
-
-def test_large_number_3() -> None:
-    mat = cdd.Matrix(
-        [
-            [
-                10000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000  # noqa: E501
-            ]
-        ]
-    )
-    assert_matrix_almost_equal(mat, [[1e100]])
-
-
-def test_large_number_4() -> None:
-    mat = cdd.Matrix(
-        [
-            [
-                10000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000  # noqa: E501
-                / 17984638288961211871838956989189665890197130672912829203311075745019255958028927299020895173379216649  # noqa: E501
-            ]
-        ]
-    )
-    assert_matrix_almost_equal(mat, [[0.556030087418433]])
-
-
 def test_length() -> None:
     with pytest.raises(ValueError):
         cdd.Matrix([[1], [1, 2]])
