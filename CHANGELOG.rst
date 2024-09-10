@@ -12,16 +12,6 @@ Version 3.0.0 (in development)
   It also enables easier switching between the two interfaces,
   by simply changing ``import cdd`` to ``import cdd.gmp as cdd``.
 
-* BACKWARDS INCOMPATIBLE:
-  The ``Polyhedron`` class no longer exposes the ``rep_type`` attribute.
-  Internally, it was simply copied from the underlying matrix,
-  and changing its made no difference, so it seemed sensible to remove it
-  from the interface.
-
-* BACKWARDS INCOMPATIBLE:
-  The ``LinProg`` class no longer exposes the ``solver`` attribute,
-  since this was internally only set as part of the ``solve`` method anyway.
-
 * Type hints are now included, so code can fully benefit from type checkers
   such as mypy.
 
