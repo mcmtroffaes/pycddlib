@@ -4,14 +4,14 @@ setup(
     ext_modules=[
         Extension(
             name="cdd._cdd",
-            sources=["src/cdd/_cdd.pyx"],
-            depends=["src/cdd/cddlib.pxi", "src/cdd/mytype.pxi", "src/cdd/setoper.pxi"],
+            sources=["cython/_cdd.pyx"],
+            depends=["cython/cddlib.pxi", "cython/mytype.pxi", "cython/setoper.pxi"],
             libraries=["cdd"]
         ),
         Extension(
             name="cdd._cddgmp",
-            sources=["src/cdd/_cddgmp.pyx"],
-            depends=["src/cdd/cddlib.pxi", "src/cdd/mytype_gmp.pxi", "src/cdd/setoper.pxi"],
+            sources=["cython/_cddgmp.pyx"],
+            depends=["cython/cddlib.pxi", "cython/mytype_gmp.pxi", "cython/setoper.pxi"],
             libraries=["cddgmp", "gmp"]
         ),
     ],
