@@ -96,6 +96,18 @@ Once this completes successfully, you can then install the wheel with::
 
     pip install dist/pycddlib-<...>.whl
 
+Invoking Setup
+**************
+
+If you do not wish to use ``python -m build``,
+you can also call ``setup.py`` directly to create the wheel, as follows::
+
+    python setup.py build_ext -I<...\vcpkg\installed\x64-windows-static-md-release\include\> -L<...\vcpkg\installed\x64-windows-static-md-release\lib\>
+    python setup.py bdist_wheel
+
+However, note that
+`running setup.py directly is deprecated <https://blog.ganssle.io/articles/2021/10/setup-py-deprecated.html>`.
+
 Build Scripts
 ~~~~~~~~~~~~~
 

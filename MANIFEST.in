@@ -3,3 +3,4 @@ include CHANGELOG.rst
 include AUTHORS
 include INSTALL.rst
 include LICENSE.md
+prune test/
