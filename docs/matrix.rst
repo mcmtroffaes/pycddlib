@@ -147,10 +147,10 @@ Fractions
 
 Declaring matrices, and checking some attributes:
 
->>> mat1 = cdd.gmp.Matrix([[1, 2],[3, 4]])
->>> print(mat1)
+>>> mat1 = cdd.Matrix([[1, 2],[3, 4]])
+>>> print(mat1) # doctest: +NORMALIZE_WHITESPACE
 begin
- 2 2 rational
+ 2 2 real
  1 2
  3 4
 end
@@ -159,9 +159,9 @@ end
 >>> mat1.col_size
 2
 >>> print(mat1[0])
-(1, 2)
+(1.0, 2.0)
 >>> print(mat1[1])
-(3, 4)
+(3.0, 4.0)
 >>> print(mat1[2]) # doctest: +ELLIPSIS
 Traceback (most recent call last):
   ...
@@ -169,23 +169,23 @@ IndexError: row index out of range
 >>> mat1.extend([[5,6]]) # keeps number type!
 >>> mat1.row_size
 3
->>> print(mat1)
+>>> print(mat1) # doctest: +NORMALIZE_WHITESPACE
 begin
- 3 2 rational
+ 3 2 real
  1 2
  3 4
  5 6
 end
 >>> print(mat1[0])
-(1, 2)
+(1.0, 2.0)
 >>> print(mat1[1])
-(3, 4)
+(3.0, 4.0)
 >>> print(mat1[2])
-(5, 6)
+(5.0, 6.0)
 >>> mat1[1:3]
-((3, 4), (5, 6))
+((3.0, 4.0), (5.0, 6.0))
 >>> mat1[:-1]
-((1, 2), (3, 4))
+((1.0, 2.0), (3.0, 4.0))
 
 Canonicalizing:
 

@@ -70,14 +70,14 @@ end
 maximize
  0 3 4
 >>> print(mat.obj_func)
-(0, 3, 4)
+(Fraction(0, 1), Fraction(3, 1), Fraction(4, 1))
 >>> lp = cdd.gmp.LinProg(mat)
 >>> lp.solve()
 >>> lp.status == cdd.gmp.LPStatusType.OPTIMAL
 True
->>> print(lp.obj_value)
-11/3
->>> print(" ".join("{0}".format(val) for val in lp.primal_solution))
-1/3 2/3
->>> print(" ".join("{0}".format(val) for val in lp.dual_solution))
-3/2 5/2
+>>> lp.obj_value
+Fraction(11, 3)
+>>> lp.primal_solution
+(Fraction(1, 3), Fraction(2, 3))
+>>> lp.dual_solution
+(Fraction(3, 2), Fraction(5, 2))

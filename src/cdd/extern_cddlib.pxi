@@ -764,9 +764,6 @@ cdef class Polyhedron:
         def __get__(self):
             return self.dd_poly.representation
 
-        def __set__(self, dd_RepresentationType value):
-            self.dd_poly.representation = value
-
     def __str__(self):
         """Print the polyhedra data."""
         cdef libc.stdio.FILE *pfile
