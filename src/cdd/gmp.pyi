@@ -3,8 +3,6 @@ from enum import IntEnum
 from fractions import Fraction
 from typing import ClassVar, Union, overload
 
-SupportsRational = Union[Fraction, int]
-
 class LPObjType(IntEnum):
     MAX: ClassVar[LPObjType] = ...
     MIN: ClassVar[LPObjType] = ...
@@ -40,12 +38,12 @@ class Matrix(Sequence[Sequence[Fraction]]):
     rep_type: RepType
 
     def __init__(
-        self, rows: Sequence[Sequence[SupportsRational]], linear: bool = False
+        self, rows: Sequence[Sequence[Union[Fraction, int]]], linear: bool = False
     ) -> None: ...
     def canonicalize(self) -> None: ...
     def copy(self) -> "Matrix": ...
     def extend(
-        self, rows: Sequence[Sequence[SupportsRational]], linear: bool = False
+        self, rows: Sequence[Sequence[Union[Fraction, int]]], linear: bool = False
     ) -> None: ...
     @overload
     def __getitem__(self, index: int) -> Sequence[Fraction]: ...

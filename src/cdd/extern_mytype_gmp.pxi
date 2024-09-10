@@ -15,7 +15,6 @@
 # with this program; if not, write to the Free Software Foundation, Inc.,
 # 51 Franklin Street, Fifth Floor, Boston, MA 02110-1301 USA.
 
-import numbers
 from fractions import Fraction
 
 # gmp integer and rational functions
@@ -45,7 +44,7 @@ cdef extern from "cddlib/cddmp.h" nogil:
     ctypedef mpq_t mytype
 
 
-# get Python Fraction or int from target
+# get Python Fraction from target
 cdef _get_mytype(mytype target):
     cdef signed long int num
     cdef unsigned long int den
@@ -61,10 +60,12 @@ cdef _get_mytype(mytype target):
         # trick: bytes(buf_ptr) removes everything after the null
         return Fraction(bytes(buf_ptr).decode('ascii'))
 
-# set target to value
+# set target to Python Fraction or Python int
 cdef _set_mytype(mytype target, value):
-    # set target to value
-    if isinstance(value, numbers.Rational):
+    # https://peps.python.org/pep-0484/#the-numeric-tower
+    # numbers.Real and numbers.Rational are broken with mypy
+    # so check (Fraction, int) instead of numbers.Rational
+    if isinstance(value, (Fraction, int)):
         try:
             mpq_set_si(target, value.numerator, value.denominator)
         except OverflowError:
