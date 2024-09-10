@@ -143,7 +143,9 @@ jobs:
         cd wheel
         wheel unpack ((Get-ChildItem -Path . -Filter *.whl)[0].Name)
         ls -r .
-        # TODO check that wheel contains no .c, .pyx, or .pxi files
+        If (((Get-ChildItem -Path . -Recurse -Include ("*.pyx", "*.pxi", "*.c"))).Length -Ne 0) {
+          throw "Wheel contains .pyx, .pxi, or .c files."
+        }
         cd ..
     - name: Upload wheel
       uses: actions/upload-artifact@v4
