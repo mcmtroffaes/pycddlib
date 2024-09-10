@@ -47,7 +47,7 @@ depends = ["src/cdd/extern_cddlib.pxi", "src/cdd/extern_mytype_gmp.pxi", "src/cd
 libraries = ['cddgmp', 'gmp']
 
 [tool.mypy]
-exclude = ["build", "out"]
+files = ["src/**/*.pyi", "test/**/*.py", "docs/**/*.py"]
 disallow_untyped_defs = true
 
 [[tool.mypy.overrides]]

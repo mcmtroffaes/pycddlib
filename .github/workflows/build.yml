@@ -75,7 +75,7 @@ jobs:
         env "CFLAGS=-I$(brew --prefix)/include -L$(brew --prefix)/lib" python -m pip install $(ls dist/*.tar.gz| head -1)
     - name: Run test suite
       run: |
-        mypy .
+        mypy
         pytest
         cd docs
         make doctest
@@ -150,7 +150,7 @@ jobs:
         pip install ((Get-ChildItem -Path dist/ -Filter *.whl)[0].FullName)
     - name: Run test suite
       run: |
-        mypy .
+        mypy
         pytest
         cd docs
         make doctest
