@@ -44,3 +44,25 @@ def test_testcdd2() -> None:
     gen2 = cdd.Polyhedron(mat).get_generators()
     assert gen2.rep_type == cdd.RepType.GENERATOR
     assert_matrix_almost_equal(gen2, [(1, -1, 2), (1, 0, Fraction(7, 3))])
+
+
+def test_polyhedron_cube_1() -> None:
+    generators = [[1, 0, 1], [1, 1, 0], [1, 1, 1], [1, 0, 0]]
+    inequalities = [[0, 0, 1], [0, 1, 0], [1, 0, -1], [1, -1, 0]]
+    mat = cdd.Matrix(generators)
+    mat.rep_type = cdd.RepType.GENERATOR
+    poly = cdd.Polyhedron(mat)
+    assert poly.rep_type == cdd.RepType.GENERATOR
+    assert_matrix_almost_equal(poly.get_generators(), generators)
+    assert_matrix_almost_equal(poly.get_inequalities(), inequalities)
+
+
+def test_polyhedron_cube_2() -> None:
+    generators = [[1, 1, 0], [1, 0, 0], [1, 0, 1], [1, 1, 1]]  # same up to ordering
+    inequalities = [[0, 0, 1], [0, 1, 0], [1, 0, -1], [1, -1, 0]]
+    mat = cdd.Matrix(inequalities)
+    mat.rep_type = cdd.RepType.INEQUALITY
+    poly = cdd.Polyhedron(mat)
+    assert poly.rep_type == cdd.RepType.INEQUALITY
+    assert_matrix_almost_equal(poly.get_generators(), generators)
+    assert_matrix_almost_equal(poly.get_inequalities(), inequalities)
