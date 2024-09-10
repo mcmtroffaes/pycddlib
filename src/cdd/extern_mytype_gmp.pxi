@@ -53,10 +53,7 @@ cdef _get_mytype(mytype target):
     if mpz_fits_slong_p(mpq_numref(target)) and mpz_fits_ulong_p(mpq_denref(target)):
         num = mpz_get_si(mpq_numref(target))
         den = mpz_get_ui(mpq_denref(target))
-        if den == 1:
-            return num
-        else:
-            return Fraction(num, den)
+        return Fraction(num, den)
     else:
         buf = cpython.bytes.PyBytes_FromStringAndSize(NULL, mpz_sizeinbase(mpq_numref(target), 10) + mpz_sizeinbase(mpq_denref(target), 10) + 3)
         buf_ptr = cpython.bytes.PyBytes_AsString(buf)
