@@ -139,10 +139,12 @@ jobs:
     - name: Check files
       run: |
         twine check dist/*
-        cd dist/
+        mkdir wheel
+        cd wheel
         wheel unpack ((Get-ChildItem -Path . -Filter *.whl)[0].Name)
         ls -r .
         # TODO check that wheel contains no .c, .pyx, or .pxi files
+        cd ..
     - name: Upload wheel
       uses: actions/upload-artifact@v4
       with:
