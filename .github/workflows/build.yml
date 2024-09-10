@@ -144,7 +144,6 @@ jobs:
         If (((Get-ChildItem -Path wheel/ -Recurse -Include ("*.pyx", "*.pxi", "*.c"))).Length -Ne 0) {
           throw "Wheel contains .pyx, .pxi, or .c files."
         }
-        cd ..
     - name: Upload wheel
       uses: actions/upload-artifact@v4
       with:
