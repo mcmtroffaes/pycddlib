@@ -24,6 +24,19 @@ classifiers = [
 ]
 keywords = ["convex, polyhedron, linear programming, double description method"]
 
+[project.optional-dependencies]
+test = [
+  "pytest",
+  "mypy",
+  "black",
+  "isort",
+  "flake8",
+]
+doc = [
+  "sphinx",
+  "sphinx-autoapi",
+]
+
 [project.urls]
 Homepage = "https://github.com/mcmtroffaes/pycddlib"
 Documentation = "https://pycddlib.readthedocs.io/"
