@@ -1,5 +1,5 @@
 [build-system]
-requires = ["setuptools >= 74.1", "cython >= 3.0.0"]
+requires = ["setuptools", "cython"]
 build-backend = "setuptools.build_meta"
 
 [project]
@@ -31,20 +31,11 @@ Repository = "https://github.com/mcmtroffaes/pycddlib.git"
 Issues = "https://github.com/mcmtroffaes/pycddlib/issues"
 Changelog = "https://github.com/mcmtroffaes/pycddlib/blob/develop/CHANGELOG.rst"
 
+[tool.setuptools.packages.find]
+where = ["src"]
+
 [tool.setuptools.package-data]
-cdd = ["*.pyi"]
-
-[[tool.setuptools.ext-modules]]
-name = "cdd._cdd"
-sources = ["src/cdd/_cdd.pyx"]
-depends = ["src/cdd/cddlib.pxi", "src/cdd/mytype.pxi", "src/cdd/setoper.pxi"]
-libraries = ['cdd']
-
-[[tool.setuptools.ext-modules]]
-name = "cdd._cddgmp"
-sources = ["src/cdd/_cddgmp.pyx"]
-depends = ["src/cdd/cddlib.pxi", "src/cdd/mytype_gmp.pxi", "src/cdd/setoper.pxi"]
-libraries = ['cddgmp', 'gmp']
+cdd = ["py.typed"]
 
 [tool.mypy]
 files = ["src/**/*.pyi", "test/**/*.py", "docs/**/*.py"]
