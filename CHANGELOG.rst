@@ -5,13 +5,11 @@ Version 3.0.0 (in development)
   The ``number_type`` arguments are gone.
   The ``cdd`` module now only exposes the floating point interface
   (formerly accessible with ``number_type="float"``).
-  The new ``cdd.gmp`` module exposes the rational numbers interface
+  The new ``cdd.gmp`` submodule exposes the rational numbers interface
   (formerly accessible with ``number_type="fraction"``).
-  This change enables more straightforward type checking for the library,
-  and also better reflects how the upstream C libraries are organized.
-
-* Type hints are now included, so code can fully benefit from type checkers
-  such as mypy.
+  This change was necessary to enable fully correct type checking for the library,
+  and to allow a version of pycddlib to be installed without needing to compile gmp
+  (see below).
 
 * Thanks to the reorganization, there now is a standalone Python package that
   installs just the floating point interface without needing the gmp or cddlib
@@ -22,12 +20,14 @@ Version 3.0.0 (in development)
   Naturally, you cannot install ``pycddlib`` and ``pycddlib-standalone``
   at the same time.
 
-* Use vcpkg to compile cddlib and gmp.
+* Type hints are now included, so the code can fully benefit from type checking.
+
+* The Windows wheels now use vcpkg to compile cddlib and gmp.
   This updates the library from mpir 3.0.0 (dating back from 2017)
   to gmp 6.3.0 (the most recent release at the time of writing).
 
-* Simplify build script to no longer compile cddlib.
-  This allows the module to make use cddlib and gmp
+* The build script no longer compiles cddlib.
+  This permits the module to use cddlib and gmp
   as installed by the system (e.g. vcpkg, rpm, ...).
   To build the extension, you may need to point Python to the correct folders.
   Check the installation instructions for more details.
