@@ -1,5 +1,6 @@
-import cdd
 import pytest
+
+import cdd
 
 
 # Check that numerical inconsistency is reported properly.

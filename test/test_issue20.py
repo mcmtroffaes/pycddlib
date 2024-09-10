@@ -1,5 +1,6 @@
-import cdd
 import numpy as np
+
+import cdd
 
 
 def test_issue20():

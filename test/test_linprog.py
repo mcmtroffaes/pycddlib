@@ -1,6 +1,8 @@
-import cdd
 from fractions import Fraction
+
 from test_matrix import assert_almost_equal, assert_vector_almost_equal
+
+import cdd
 
 
 def test_lp2():
