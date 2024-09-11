@@ -15,11 +15,7 @@
 # with this program; if not, write to the Free Software Foundation, Inc.,
 # 51 Franklin Street, Fifth Floor, Boston, MA 02110-1301 USA.
 
-cimport cpython.bytes
-cimport cpython.mem
-cimport cpython.unicode
 cimport libc.stdio
-cimport libc.stdlib
 
 # also need time_t
 cdef extern from "time.h" nogil:

@@ -14,7 +14,7 @@ def test_matrix_init_1() -> None:
     assert_matrix_almost_equal(mat, rows)
     assert isinstance(mat.lin_set, Set)
     assert not mat.lin_set
-    # FIXME assert isinstance(mat.rep_type, cdd.RepType)
+    assert isinstance(mat.rep_type, cdd.RepType)
     assert mat.rep_type == cdd.RepType.UNSPECIFIED
     # FIXME assert isinstance(mat.obj_type, cdd.LPObjType)
     assert mat.obj_type == cdd.LPObjType.NONE

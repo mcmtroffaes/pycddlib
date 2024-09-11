@@ -11,5 +11,4 @@ import cdd.gmp
 )
 def test_gmp_rep_type(name: str) -> None:
     assert issubclass(getattr(cdd, name), IntFlag)
-    with pytest.raises(AttributeError):
-        getattr(cdd.gmp, name)
+    assert getattr(cdd, name) is getattr(cdd.gmp, name)
