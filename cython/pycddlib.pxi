@@ -20,37 +20,40 @@ cimport cpython.unicode
 cimport libc.stdio
 cimport libc.stdlib
 
-# helper functions
 
-### begin windows hack (broken libc.stdio.tmpfile)
+# windows hack for broken libc.stdio.tmpfile
+
 cdef extern from * nogil:
-     cdef void _emit_ifdef_msc_ver "#ifdef _MSC_VER //" ()
-     cdef void _emit_else "#else //" ()
-     cdef void _emit_endif "#endif //" ()
+    cdef void _emit_ifdef_msc_ver "#ifdef _MSC_VER //" ()
+    cdef void _emit_else "#else //" ()
+    cdef void _emit_endif "#endif //" ()
+
 cdef extern from "stdio.h" nogil:
     char *_tempnam(char *dir, char *prefix)
+
 cdef libc.stdio.FILE *libc_stdio_tmpfile() except NULL:
-     cdef libc.stdio.FILE *result
-     cdef char *name
-     _emit_ifdef_msc_ver()
-     name = _tempnam(NULL, NULL)
-     if name == NULL:
-         raise RuntimeError("failed to create temporary file name")
-     result = libc.stdio.fopen(name, "wb+TD");
-     libc.stdlib.free(name)
-     _emit_else()
-     result = libc.stdio.tmpfile()
-     _emit_endif()
-     return result
-### end windows hack (broken libc.stdio.tmpfile)
+    cdef libc.stdio.FILE *result
+    cdef char *name
+    _emit_ifdef_msc_ver()
+    name = _tempnam(NULL, NULL)
+    if name == NULL:
+        raise RuntimeError("failed to create temporary file name")
+    result = libc.stdio.fopen(name, "wb+TD")
+    libc.stdlib.free(name)
+    _emit_else()
+    result = libc.stdio.tmpfile()
+    _emit_endif()
+    return result
 
 cdef libc.stdio.FILE *_tmpfile() except NULL:
-     cdef libc.stdio.FILE *result
-     # libc.stdio.tmpfile() is broken on windows
-     result = libc_stdio_tmpfile()
-     if result == NULL:
-         raise RuntimeError("failed to create temporary file")
-     return result
+    cdef libc.stdio.FILE *result
+    # libc.stdio.tmpfile() is broken on windows
+    result = libc_stdio_tmpfile()
+    if result == NULL:
+        raise RuntimeError("failed to create temporary file")
+    return result
+
+# helper functions
 
 cdef _tmpread(libc.stdio.FILE *pfile):
     cdef size_t length
@@ -63,7 +66,9 @@ cdef _tmpread(libc.stdio.FILE *pfile):
     try:
         libc.stdio.fseek(pfile, 0, libc.stdio.SEEK_SET)
         num_bytes = libc.stdio.fread(buffer, 1, length, pfile)
-        result = cpython.unicode.PyUnicode_DecodeUTF8(<char*>buffer, num_bytes, 'strict')
+        result = cpython.unicode.PyUnicode_DecodeUTF8(
+            <char*>buffer, num_bytes, 'strict'
+        )
     finally:
         libc.stdio.fclose(pfile)
         cpython.mem.PyMem_RawFree(buffer)
@@ -134,7 +139,6 @@ cdef class Matrix:
     def __len__(self):
         return self.dd_mat.rowsize
 
-
     property col_size:
         def __get__(self):
             return self.dd_mat.colsize
@@ -142,18 +146,21 @@ cdef class Matrix:
     property lin_set:
         def __get__(self):
             return _get_set(self.dd_mat.linset)
+
         def __set__(self, value):
             _set_set(self.dd_mat.linset, value)
 
     property rep_type:
         def __get__(self):
             return RepType(self.dd_mat.representation)
+
         def __set__(self, dd_RepresentationType value):
             self.dd_mat.representation = value
 
     property obj_type:
         def __get__(self):
             return LPObjType(self.dd_mat.objective)
+
         def __set__(self, dd_LPObjectiveType value):
             self.dd_mat.objective = value
 
@@ -163,6 +170,7 @@ cdef class Matrix:
             cdef int colindex
             return tuple([_get_mytype(self.dd_mat.rowvec[colindex])
                           for 0 <= colindex < self.dd_mat.colsize])
+
         def __set__(self, obj_func):
             cdef int colindex
             if len(obj_func) != self.dd_mat.colsize:
@@ -248,7 +256,9 @@ cdef class Matrix:
         if self.dd_mat.representation == dd_Unspecified:
             raise ValueError("rep_type unspecified")
         m = self.dd_mat.rowsize
-        success = dd_MatrixCanonicalize(&self.dd_mat, &impl_linset, &redset, &newpos, &error)
+        success = dd_MatrixCanonicalize(
+            &self.dd_mat, &impl_linset, &redset, &newpos, &error
+        )
         result = (_get_set(impl_linset), _get_set(redset))
         set_free(impl_linset)
         set_free(redset)

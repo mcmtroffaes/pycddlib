@@ -56,7 +56,12 @@ cdef _get_mytype(mytype target):
         den = mpz_get_ui(mpq_denref(target))
         return Fraction(num, den)
     else:
-        buf = cpython.bytes.PyBytes_FromStringAndSize(NULL, mpz_sizeinbase(mpq_numref(target), 10) + mpz_sizeinbase(mpq_denref(target), 10) + 3)
+        buf = cpython.bytes.PyBytes_FromStringAndSize(
+            NULL,
+            mpz_sizeinbase(mpq_numref(target), 10)
+            + mpz_sizeinbase(mpq_denref(target), 10)
+            + 3,
+        )
         buf_ptr = cpython.bytes.PyBytes_AsString(buf)
         mpq_get_str(buf_ptr, 10, target)
         # trick: bytes(buf_ptr) removes everything after the null
