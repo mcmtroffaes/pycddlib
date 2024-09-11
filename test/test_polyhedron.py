@@ -2,7 +2,7 @@ from fractions import Fraction
 
 import cdd
 
-from .test_matrix import assert_matrix_almost_equal
+from . import assert_matrix_almost_equal
 
 
 def test_sampleh1() -> None:

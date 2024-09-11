@@ -2,7 +2,7 @@ from fractions import Fraction
 
 import cdd
 
-from .test_matrix import assert_almost_equal, assert_vector_almost_equal
+from . import assert_almost_equal, assert_vector_almost_equal
 
 
 def test_lp2() -> None:
