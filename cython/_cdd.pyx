@@ -25,3 +25,4 @@ cdef extern from * nogil:
 include "setoper.pxi"
 include "mytype.pxi"
 include "cddlib.pxi"
+include "enums.pxi"
