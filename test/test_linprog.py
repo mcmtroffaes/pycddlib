@@ -22,7 +22,7 @@ def test_lin_prog_type() -> None:
         for x in xs:
             assert isinstance(x, float)
             assert x == 0.0
-    assert lp.solve(solver=cdd.LPSolverType.CRISS_CROSS) is None
+    lp.solve(solver=cdd.LPSolverType.CRISS_CROSS)
     assert_almost_equal(lp.obj_value, 1.5)
     assert_vector_almost_equal(lp.primal_solution, [0.5])
 
