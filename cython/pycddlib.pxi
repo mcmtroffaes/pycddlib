@@ -70,14 +70,14 @@ cdef _tmpread(libc.stdio.FILE *pfile):
     return result
 
 cdef _get_set(set_type set_):
-    """Create Python set from given set_type."""
+    # create Python set from given set_type
     cdef unsigned long elem
     return frozenset(
         elem for elem from 0 <= elem < set_[0] if set_member(elem + 1, set_)
     )
 
 cdef _set_set(set_type set_, pset):
-    """Set elements of set_type by elements from Python set."""
+    # set elements of set_type by elements from Python set
     cdef unsigned long elem
     for elem from 0 <= elem < set_[0]:
         if elem in pset:
@@ -86,10 +86,9 @@ cdef _set_set(set_type set_, pset):
             set_delelem(set_, elem + 1)
 
 cdef _get_dd_setfam(dd_SetFamilyPtr setfam):
-    """Create list of Python sets from dd_SetFamilyPtr, and
-    free the pointer. The indexing of the sets start at 0, unlike the
-    string output from cddlib, which starts at 1.
-    """
+    # create list of Python sets from dd_SetFamilyPtr, and
+    # free the pointer; indexing of the sets start at 0, unlike the
+    # string output from cddlib, which starts at 1
     cdef long elem
     if setfam == NULL:
         raise ValueError("failed to get set family")
@@ -106,14 +105,12 @@ cdef _get_dd_setfam(dd_SetFamilyPtr setfam):
     return result
 
 cdef _raise_error(dd_ErrorType error, msg):
-    """Convert error into string and raise it."""
     cdef libc.stdio.FILE *pfile
     pfile = _tmpfile()
     dd_WriteErrorMessages(pfile, error)
     raise RuntimeError(msg + "\n" + _tmpread(pfile).rstrip('\n'))
 
 cdef _make_dd_matrix(dd_MatrixPtr dd_mat):
-    """Create matrix from given pointer."""
     # we must "cdef Matrix mat" because otherwise pyrex will not
     # recognize mat.thisptr as a C pointer
     cdef Matrix mat
@@ -181,7 +178,6 @@ cdef class Matrix:
         return _tmpread(pfile).rstrip('\n')
 
     def __cinit__(self, rows, linear=False):
-        """Load matrix data from the rows (which is a list of lists)."""
         cdef Py_ssize_t numrows, numcols, rowindex, colindex
         # reset pointers
         self.dd_mat = NULL
@@ -207,10 +203,9 @@ cdef class Matrix:
             # set all constraints as linear
             set_compl(self.dd_mat.linset, self.dd_mat.linset)
         # debug
-        #dd_WriteMatrix(stdout, self.dd_mat)
+        # dd_WriteMatrix(stdout, self.dd_mat)
 
     def __dealloc__(self):
-        """Deallocate matrix."""
         dd_FreeMatrix(self.dd_mat)
         self.dd_mat = NULL
 
@@ -289,7 +284,6 @@ cdef class LinProg:
                           for 1 <= colindex < self.dd_lp.d])
 
     def __str__(self):
-        """Print the linear program data."""
         cdef libc.stdio.FILE *pfile
         # open file for writing the data
         pfile = _tmpfile()
@@ -314,7 +308,6 @@ cdef class LinProg:
         #dd_WriteLP(stdout, self.dd_lp)
 
     def __dealloc__(self):
-        """Deallocate solution memory."""
         dd_FreeLPData(self.dd_lp)
         self.dd_lp = NULL
 
@@ -329,14 +322,12 @@ cdef class Polyhedron:
     cdef dd_PolyhedraPtr dd_poly
 
     def __str__(self):
-        """Print the polyhedra data."""
         cdef libc.stdio.FILE *pfile
         pfile = _tmpfile()
         dd_WritePolyFile(pfile, self.dd_poly)
         return _tmpread(pfile).rstrip('\n')
 
     def __cinit__(self, Matrix mat):
-        """Initialize polyhedra from given matrix."""
         cdef dd_ErrorType error = dd_NoError
         # initialize pointers
         self.dd_poly = NULL
@@ -351,7 +342,6 @@ cdef class Polyhedron:
         #dd_WritePolyFile(stdout, self.dd_poly)
 
     def __dealloc__(self):
-        """Deallocate matrix."""
         if self.dd_poly:
             dd_FreePolyhedra(self.dd_poly)
         self.dd_poly = NULL
