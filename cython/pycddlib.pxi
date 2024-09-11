@@ -330,9 +330,8 @@ cdef class Polyhedron:
         # read matrix
         self.dd_poly = dd_DDMatrix2Poly(mat.dd_mat, &error)
         if self.dd_poly == NULL or error != dd_NoError:
-            # Do not clean up data: see issue #7.
-            #if self.dd_poly != NULL:
-            #    dd_FreePolyhedra(self.dd_poly)
+            # do not call dd_FreePolyhedra(self.dd_poly)
+            # see issue #7
             _raise_error(error, "failed to load polyhedra")
 
     def __dealloc__(self):
