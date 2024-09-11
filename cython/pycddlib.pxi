@@ -275,8 +275,6 @@ cdef class LinProg:
     property obj_type:
         def __get__(self):
             return LPObjType(self.dd_lp.objective)
-        def __set__(self, dd_LPObjectiveType value):
-            self.dd_lp.objective = value
 
     property status:
         def __get__(self):

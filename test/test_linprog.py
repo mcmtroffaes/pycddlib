@@ -1,8 +1,27 @@
+from collections.abc import Sequence
 from fractions import Fraction
 
 import cdd
 
 from . import assert_almost_equal, assert_vector_almost_equal
+
+
+def test_lin_prog_type() -> None:
+    # -0.5 + x >= 0,  2 - x >= 0
+    mat = cdd.Matrix([[-0.5, 1], [2, -1]])
+    mat.rep_type = cdd.RepType.INEQUALITY
+    mat.obj_type = cdd.LPObjType.MAX
+    lp = cdd.LinProg(mat)
+    assert isinstance(lp.obj_type, cdd.LPObjType)
+    assert isinstance(lp.status, cdd.LPStatusType)
+    assert isinstance(lp.obj_value, float)
+    assert isinstance(lp.solver, cdd.LPSolverType)
+    for xs in [lp.primal_solution, lp.dual_solution]:
+        assert isinstance(xs, Sequence)
+        for x in xs:
+            assert isinstance(x, float)
+    assert lp.solve() is None
+    assert_vector_almost_equal(lp.primal_solution, [0.5])
 
 
 def test_lp2() -> None:
