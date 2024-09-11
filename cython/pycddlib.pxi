@@ -20,7 +20,6 @@ cimport cpython.unicode
 cimport libc.stdio
 cimport libc.stdlib
 
-
 # windows hack for broken libc.stdio.tmpfile
 
 cdef extern from * nogil:

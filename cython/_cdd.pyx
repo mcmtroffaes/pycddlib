@@ -22,6 +22,7 @@
 cdef extern from * nogil:
     "#undef GMPRATIONAL"
 
+include "all.pxi"
 include "setoper.pxi"
 include "mytype.pxi"
 include "cdd.pxi"

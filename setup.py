@@ -6,6 +6,7 @@ setup(
             name="cdd.__init__",
             sources=["cython/_cdd.pyx"],
             depends=[
+                "cython/all.pxi",
                 "cython/cdd.pxi",
                 "cython/mytype.pxi",
                 "cython/pycddlib.pxi",
@@ -18,6 +19,7 @@ setup(
             name="cdd.gmp",
             sources=["cython/_cddgmp.pyx"],
             depends=[
+                "cython/all.pxi",
                 "cython/cdd.pxi",
                 "cython/mytype_gmp.pxi",
                 "cython/pycddlib.pxi",
