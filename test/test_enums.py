@@ -18,7 +18,7 @@ def test_rep_type(cls: Union[type[PyRepType], type[cdd.RepType]]) -> None:
     assert cls.INEQUALITY == 1
     assert cls.INEQUALITY.name == "INEQUALITY"
     assert cls.INEQUALITY.value == 1
-    assert [val for val in cls] == [0, 1, 2]
+    assert [int(val) for val in cls] == [0, 1, 2]
     assert [val.name for val in cls] == ["UNSPECIFIED", "INEQUALITY", "GENERATOR"]
     assert [val.value for val in cls] == [0, 1, 2]
     assert isinstance(cls.INEQUALITY, cls)
