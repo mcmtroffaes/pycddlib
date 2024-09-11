@@ -24,6 +24,6 @@ cdef extern from * nogil:
 
 include "setoper.pxi"
 include "mytype_gmp.pxi"
-include "cddlib.pxi"
+include "cdd.pxi"
 from cdd import RepType, LPObjType, LPSolverType, LPStatusType
 include "pycddlib.pxi"
