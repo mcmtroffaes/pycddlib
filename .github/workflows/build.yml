@@ -23,7 +23,7 @@ jobs:
       run: |
         python -m pip install build
         python -m build -s
-    - name: Check files
+    - name: Check sdist
       run: |
         python -m pip install twine
         twine check dist/*
