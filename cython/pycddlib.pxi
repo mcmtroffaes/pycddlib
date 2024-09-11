@@ -202,8 +202,6 @@ cdef class Matrix:
         if linear:
             # set all constraints as linear
             set_compl(self.dd_mat.linset, self.dd_mat.linset)
-        # debug
-        # dd_WriteMatrix(stdout, self.dd_mat)
 
     def __dealloc__(self):
         dd_FreeMatrix(self.dd_mat)
@@ -304,8 +302,6 @@ cdef class LinProg:
             if self.dd_lp != NULL:
                 dd_FreeLPData(self.dd_lp)
             _raise_error(error, "failed to load linear program")
-        # debug
-        #dd_WriteLP(stdout, self.dd_lp)
 
     def __dealloc__(self):
         dd_FreeLPData(self.dd_lp)
@@ -338,8 +334,6 @@ cdef class Polyhedron:
             #if self.dd_poly != NULL:
             #    dd_FreePolyhedra(self.dd_poly)
             _raise_error(error, "failed to load polyhedra")
-        # debug
-        #dd_WritePolyFile(stdout, self.dd_poly)
 
     def __dealloc__(self):
         if self.dd_poly:
