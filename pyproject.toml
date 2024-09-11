@@ -27,6 +27,7 @@ keywords = ["convex, polyhedron, linear programming, double description method"]
 [project.optional-dependencies]
 test = [
   "pytest",
+  "numpy",
   "mypy",
   "black",
   "isort",
