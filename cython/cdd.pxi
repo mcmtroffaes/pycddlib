@@ -67,7 +67,8 @@ cdef extern from "cddlib/cdd.h" nogil:
         dd_LexMax
         dd_RandomRow
 
-    # not translated: dd_ConversionType, dd_IncidenceOutputType, dd_AdjacencyOutputType, dd_FileInputModeType
+    # not translated: dd_ConversionType, dd_IncidenceOutputType,
+    # dd_AdjacencyOutputType, dd_FileInputModeType
 
     ctypedef enum dd_ErrorType:
         dd_DimensionTooLarge
@@ -152,7 +153,7 @@ cdef extern from "cddlib/cdd.h" nogil:
         dd_AdjacencyPtr Next
 
     ctypedef struct dd_lpsolution:
-        #dd_DataFileType filename
+        # dd_DataFileType filename
         dd_LPObjectiveType objective
         dd_LPSolverType solver
         dd_rowrange m
@@ -179,7 +180,7 @@ cdef extern from "cddlib/cdd.h" nogil:
         dd_rowrange objrow
         dd_colrange rhscol
         dd_NumberType numbtype
-        dd_rowrange eqnumber # number of equalities
+        dd_rowrange eqnumber  # number of equalities
         dd_rowset equalityset
         dd_boolean redcheck_extensive
         dd_rowrange ired
@@ -274,8 +275,10 @@ cdef extern from "cddlib/cdd.h" nogil:
         dd_rowindex OrderVector
         dd_boolean RecomputeRowOrder
         dd_boolean PreOrderedRun
-        dd_rowset GroundSet, EqualitySet, NonequalitySet, AddedHalfspaces, WeaklyAddedHalfspaces, InitialHalfspaces
-        long RayCount, FeasibleRayCount, WeaklyFeasibleRayCount, TotalRayCount, ZeroRayCount
+        dd_rowset GroundSet, EqualitySet, NonequalitySet
+        dd_rowset AddedHalfspaces, WeaklyAddedHalfspaces, InitialHalfspaces
+        long RayCount, FeasibleRayCount, WeaklyFeasibleRayCount
+        long TotalRayCount, ZeroRayCount
         long EdgeCount, TotalEdgeCount
         long count_int, count_int_good, count_int_bad
         dd_Bmatrix B
@@ -295,15 +298,15 @@ cdef extern from "cddlib/cdd.h" nogil:
 
     cdef void dd_WriteErrorMessages(libc.stdio.FILE *, dd_ErrorType)
 
-    cdef void dd_InitializeArow(dd_colrange,dd_Arow *)
-    cdef void dd_InitializeAmatrix(dd_rowrange,dd_colrange,dd_Amatrix *)
+    cdef void dd_InitializeArow(dd_colrange, dd_Arow *)
+    cdef void dd_InitializeAmatrix(dd_rowrange, dd_colrange, dd_Amatrix *)
     cdef void dd_InitializeBmatrix(dd_colrange, dd_Bmatrix *)
-    cdef dd_SetFamilyPtr dd_CreateSetFamily(dd_bigrange,dd_bigrange)
+    cdef dd_SetFamilyPtr dd_CreateSetFamily(dd_bigrange, dd_bigrange)
     cdef void dd_FreeSetFamily(dd_SetFamilyPtr)
-    cdef dd_MatrixPtr dd_CreateMatrix(dd_rowrange,dd_colrange)
-    cdef void dd_FreeAmatrix(dd_rowrange,dd_colrange,dd_Amatrix)
+    cdef dd_MatrixPtr dd_CreateMatrix(dd_rowrange, dd_colrange)
+    cdef void dd_FreeAmatrix(dd_rowrange, dd_colrange, dd_Amatrix)
     cdef void dd_FreeArow(dd_colrange, dd_Arow)
-    cdef void dd_FreeBmatrix(dd_colrange,dd_Bmatrix)
+    cdef void dd_FreeBmatrix(dd_colrange, dd_Bmatrix)
     cdef void dd_FreeDDMemory(dd_PolyhedraPtr)
     cdef void dd_FreePolyhedra(dd_PolyhedraPtr)
     cdef void dd_FreeMatrix(dd_MatrixPtr)
@@ -322,26 +325,46 @@ cdef extern from "cddlib/cdd.h" nogil:
     cdef dd_MatrixPtr dd_PolyFile2Matrix(libc.stdio.FILE *f, dd_ErrorType *)
 
     cdef dd_PolyhedraPtr dd_DDMatrix2Poly(dd_MatrixPtr, dd_ErrorType *)
-    cdef dd_PolyhedraPtr dd_DDMatrix2Poly2(dd_MatrixPtr, dd_RowOrderType, dd_ErrorType *)
+    cdef dd_PolyhedraPtr dd_DDMatrix2Poly2(
+        dd_MatrixPtr, dd_RowOrderType, dd_ErrorType *
+    )
     cdef dd_boolean dd_Redundant(dd_MatrixPtr, dd_rowrange, dd_Arow, dd_ErrorType *)
     cdef dd_rowset dd_RedundantRows(dd_MatrixPtr, dd_ErrorType *)
     cdef dd_boolean dd_SRedundant(dd_MatrixPtr, dd_rowrange, dd_Arow, dd_ErrorType *)
     cdef dd_rowset dd_SRedundantRows(dd_MatrixPtr, dd_ErrorType *)
     cdef dd_rowset dd_RedundantRowsViaShooting(dd_MatrixPtr, dd_ErrorType *)
     cdef dd_rowrange dd_RayShooting(dd_MatrixPtr, dd_Arow intpt, dd_Arow direction)
-    cdef dd_boolean dd_ImplicitLinearity(dd_MatrixPtr, dd_rowrange, dd_Arow, dd_ErrorType *)
+    cdef dd_boolean dd_ImplicitLinearity(
+        dd_MatrixPtr, dd_rowrange, dd_Arow, dd_ErrorType *
+    )
     cdef dd_rowset dd_ImplicitLinearityRows(dd_MatrixPtr, dd_ErrorType *)
-    cdef int dd_FreeOfImplicitLinearity(dd_MatrixPtr, dd_Arow, dd_rowset *, dd_ErrorType *)
-    cdef dd_boolean dd_MatrixCanonicalizeLinearity(dd_MatrixPtr *, dd_rowset *,dd_rowindex *, dd_ErrorType *)
-    cdef dd_boolean dd_MatrixCanonicalize(dd_MatrixPtr *, dd_rowset *, dd_rowset *, dd_rowindex *, dd_ErrorType *)
-    cdef dd_boolean dd_MatrixRedundancyRemove(dd_MatrixPtr *M, dd_rowset *redset,dd_rowindex *newpos, dd_ErrorType *)
-    cdef dd_boolean dd_FindRelativeInterior(dd_MatrixPtr, dd_rowset *, dd_rowset *, dd_LPSolutionPtr *, dd_ErrorType *)
-    cdef dd_boolean dd_ExistsRestrictedFace(dd_MatrixPtr, dd_rowset, dd_rowset, dd_ErrorType *)
-    cdef dd_boolean dd_ExistsRestrictedFace2(dd_MatrixPtr, dd_rowset, dd_rowset, dd_LPSolutionPtr *, dd_ErrorType *)
+    cdef int dd_FreeOfImplicitLinearity(
+        dd_MatrixPtr, dd_Arow, dd_rowset *, dd_ErrorType *
+    )
+    cdef dd_boolean dd_MatrixCanonicalizeLinearity(
+        dd_MatrixPtr *, dd_rowset *, dd_rowindex *, dd_ErrorType *
+    )
+    cdef dd_boolean dd_MatrixCanonicalize(
+        dd_MatrixPtr *, dd_rowset *, dd_rowset *, dd_rowindex *, dd_ErrorType *
+    )
+    cdef dd_boolean dd_MatrixRedundancyRemove(
+        dd_MatrixPtr *M, dd_rowset *redset, dd_rowindex *newpos, dd_ErrorType *
+    )
+    cdef dd_boolean dd_FindRelativeInterior(
+        dd_MatrixPtr, dd_rowset *, dd_rowset *, dd_LPSolutionPtr *, dd_ErrorType *
+    )
+    cdef dd_boolean dd_ExistsRestrictedFace(
+        dd_MatrixPtr, dd_rowset, dd_rowset, dd_ErrorType *
+    )
+    cdef dd_boolean dd_ExistsRestrictedFace2(
+        dd_MatrixPtr, dd_rowset, dd_rowset, dd_LPSolutionPtr *, dd_ErrorType *
+    )
 
     cdef dd_SetFamilyPtr dd_Matrix2Adjacency(dd_MatrixPtr, dd_ErrorType *)
     cdef dd_SetFamilyPtr dd_Matrix2WeakAdjacency(dd_MatrixPtr, dd_ErrorType *)
-    cdef long dd_MatrixRank(dd_MatrixPtr, dd_rowset, dd_colset, dd_rowset *, dd_colset *)
+    cdef long dd_MatrixRank(
+        dd_MatrixPtr, dd_rowset, dd_colset, dd_rowset *, dd_colset *
+    )
 
     cdef dd_MatrixPtr dd_CopyMatrix(dd_MatrixPtr)
     cdef int dd_MatrixAppendTo(dd_MatrixPtr*, dd_MatrixPtr)
