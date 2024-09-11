@@ -16,12 +16,13 @@
 # 51 Franklin Street, Fifth Floor, Boston, MA 02110-1301 USA.
 
 # wrapper classes to expose enums
+# currently unused enums are marked as private
 
-cpdef enum AdjacencyTestType:
+cpdef enum _AdjacencyTestType:
     COMBINATORIAL = dd_Combinatorial
     ALGEBRAIC     = dd_Algebraic
 
-cpdef enum NumberType:
+cpdef enum _NumberType:
     UNKNOWN  = dd_Unknown
     REAL     = dd_Real
     RATIONAL = dd_Rational
@@ -32,7 +33,7 @@ cpdef enum RepType:
     INEQUALITY  = dd_Inequality
     GENERATOR   = dd_Generator
 
-cpdef enum RowOrderType:
+cpdef enum _RowOrderType:
     MAX_INDEX  = dd_MaxIndex
     MIN_INDEX  = dd_MinIndex
     MIN_CUTOFF = dd_MinCutoff
@@ -42,7 +43,7 @@ cpdef enum RowOrderType:
     LEX_MAX    = dd_LexMax
     RANDOM_ROW = dd_RandomRow
 
-cpdef enum Error:
+cpdef enum _Error:
     DIMENSION_TOO_LARGE      = dd_DimensionTooLarge
     IMPROPER_INPUT_FORMAT    = dd_ImproperInputFormat
     NEGATIVE_MATRIX_SIZE     = dd_NegativeMatrixSize
@@ -62,7 +63,7 @@ cpdef enum Error:
     NUMERICALLY_INCONSISTENT = dd_NumericallyInconsistent
     NO_ERROR                 = dd_NoError
 
-cpdef enum CompStatus:
+cpdef enum _CompStatus:
     IN_PROGRESS  = dd_InProgress
     ALL_FOUND    = dd_AllFound
     REGION_EMPTY = dd_RegionEmpty
