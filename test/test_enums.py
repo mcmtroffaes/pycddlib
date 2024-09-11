@@ -6,21 +6,13 @@ import pytest
 import cdd
 
 
-# for comparison of cdd.RepType against a classic IntFlag type
-class PyRepType(IntFlag):
-    UNSPECIFIED = 0
-    INEQUALITY = 1
-    GENERATOR = 2
-
-
-@pytest.mark.parametrize("cls", [PyRepType, cdd.RepType])
-def test_rep_type(cls: Union[type[PyRepType], type[cdd.RepType]]) -> None:
-    assert cls.INEQUALITY == 1
-    assert cls.INEQUALITY.name == "INEQUALITY"
-    assert cls.INEQUALITY.value == 1
-    assert [int(val) for val in cls] == [0, 1, 2]
-    assert [val.name for val in cls] == ["UNSPECIFIED", "INEQUALITY", "GENERATOR"]
-    assert [val.value for val in cls] == [0, 1, 2]
-    assert isinstance(cls.INEQUALITY, cls)
-    assert isinstance(cls.INEQUALITY, int)
-    assert issubclass(cls, IntFlag)
+def test_rep_type() -> None:
+    assert cdd.RepType.INEQUALITY == 1
+    assert cdd.RepType.INEQUALITY.name == "INEQUALITY"
+    assert cdd.RepType.INEQUALITY.value == 1
+    assert [val for val in cdd.RepType] == [0, 1, 2]
+    assert [val.name for val in cdd.RepType] == ["UNSPECIFIED", "INEQUALITY", "GENERATOR"]
+    assert [val.value for val in cdd.RepType] == [0, 1, 2]
+    assert isinstance(cdd.RepType.INEQUALITY, cdd.RepType)
+    assert isinstance(cdd.RepType.INEQUALITY, int)
+    assert issubclass(cdd.RepType, IntFlag)
