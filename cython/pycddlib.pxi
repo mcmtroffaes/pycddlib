@@ -156,7 +156,7 @@ cdef class Matrix:
 
     property obj_type:
         def __get__(self):
-            return self.dd_mat.objective
+            return LPObjType(self.dd_mat.objective)
         def __set__(self, dd_LPObjectiveType value):
             self.dd_mat.objective = value
 
@@ -252,7 +252,7 @@ cdef class Matrix:
         cdef dd_ErrorType error = dd_NoError
         cdef int m
         cdef dd_boolean success
-        if self.rep_type == dd_Unspecified:
+        if self.dd_mat.representation == dd_Unspecified:
             raise ValueError("rep_type unspecified")
         m = self.dd_mat.rowsize
         success = dd_MatrixCanonicalize(&self.dd_mat, &impl_linset, &redset, &newpos, &error)
@@ -270,17 +270,17 @@ cdef class LinProg:
 
     property solver:
         def __get__(self):
-            return self.dd_lp.solver
+            return LPSolverType(self.dd_lp.solver)
 
     property obj_type:
         def __get__(self):
-            return self.dd_lp.objective
+            return LPObjType(self.dd_lp.objective)
         def __set__(self, dd_LPObjectiveType value):
             self.dd_lp.objective = value
 
     property status:
         def __get__(self):
-            return self.dd_lp.LPS
+            return LPStatusType(self.dd_lp.LPS)
 
     property obj_value:
         def __get__(self):
@@ -340,7 +340,7 @@ cdef class Polyhedron:
 
     property rep_type:
         def __get__(self):
-            return self.dd_poly.representation
+            return RepType(self.dd_poly.representation)
 
     def __str__(self):
         """Print the polyhedra data."""
