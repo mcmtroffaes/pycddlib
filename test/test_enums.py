@@ -1,8 +1,9 @@
 from enum import IntFlag
 from typing import Union
 
-import cdd
 import pytest
+
+import cdd
 
 
 # for comparison of cdd.RepType against a classic IntFlag type
@@ -10,6 +11,7 @@ class PyRepType(IntFlag):
     UNSPECIFIED = 0
     INEQUALITY = 1
     GENERATOR = 2
+
 
 @pytest.mark.parametrize("cls", [PyRepType, cdd.RepType])
 def test_rep_type(cls: Union[type[PyRepType], type[cdd.RepType]]) -> None:
