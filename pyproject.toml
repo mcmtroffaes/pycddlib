@@ -34,7 +34,6 @@ test = [
 ]
 doc = [
   "sphinx",
-  "sphinx-autoapi",
 ]
 
 [project.urls]
