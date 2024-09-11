@@ -1,16 +1,20 @@
-from collections.abc import Set, Sequence
+from collections.abc import Sequence, Set
 from fractions import Fraction
 
 import pytest
 
 import cdd
 
-from . import assert_vector_almost_equal, assert_matrix_almost_equal
+from . import assert_matrix_almost_equal, assert_vector_almost_equal
 
 
 def test_matrix_init_1() -> None:
-    rows = [[1.1, 1.2], [1.3, 1.4]]
+    rows = [[1.1, 1.2, 1.3], [1.4, 1.5, 1.6]]
     mat = cdd.Matrix(rows)
+    assert isinstance(mat.row_size, int)
+    assert isinstance(mat.col_size, int)
+    assert mat.row_size == 2
+    assert mat.col_size == 3
     assert_matrix_almost_equal(mat, rows)
     assert isinstance(mat.lin_set, Set)
     assert not mat.lin_set
@@ -19,7 +23,7 @@ def test_matrix_init_1() -> None:
     assert isinstance(mat.obj_type, cdd.LPObjType)
     assert mat.obj_type == cdd.LPObjType.NONE
     assert isinstance(mat.obj_func, Sequence)
-    assert_vector_almost_equal(mat.obj_func, [0.0, 0.0])
+    assert_vector_almost_equal(mat.obj_func, [0.0, 0.0, 0.0])
 
 
 def test_matrix_init_2() -> None:

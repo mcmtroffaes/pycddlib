@@ -1,8 +1,30 @@
+from collections.abc import Sequence, Set
 from fractions import Fraction
 
 import cdd
 
 from . import assert_matrix_almost_equal
+
+
+def test_polyhedron_type() -> None:
+    mat = cdd.Matrix([[1, 1], [1, -1]])
+    mat.rep_type = cdd.RepType.INEQUALITY
+    poly = cdd.Polyhedron(mat)
+    assert isinstance(poly.rep_type, cdd.RepType)
+    assert poly.rep_type == cdd.RepType.INEQUALITY
+    assert isinstance(poly.get_generators(), cdd.Matrix)
+    assert isinstance(poly.get_inequalities(), cdd.Matrix)
+    for xss in [
+        poly.get_adjacency(),
+        poly.get_input_adjacency(),
+        poly.get_incidence(),
+        poly.get_input_incidence(),
+    ]:
+        assert isinstance(xss, Sequence)
+        for xs in xss:
+            assert isinstance(xs, Set)
+            for x in xs:
+                assert isinstance(x, int)
 
 
 def test_sampleh1() -> None:
