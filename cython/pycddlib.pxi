@@ -268,14 +268,6 @@ cdef class LinProg:
 
     cdef dd_LPPtr dd_lp
 
-    property solver:
-        def __get__(self):
-            return LPSolverType(self.dd_lp.solver)
-
-    property obj_type:
-        def __get__(self):
-            return LPObjType(self.dd_lp.objective)
-
     property status:
         def __get__(self):
             return LPStatusType(self.dd_lp.LPS)
@@ -335,10 +327,6 @@ cdef class LinProg:
 cdef class Polyhedron:
 
     cdef dd_PolyhedraPtr dd_poly
-
-    property rep_type:
-        def __get__(self):
-            return RepType(self.dd_poly.representation)
 
     def __str__(self):
         """Print the polyhedra data."""

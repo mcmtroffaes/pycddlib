@@ -10,8 +10,6 @@ def test_polyhedron_type() -> None:
     mat = cdd.Matrix([[1, 1], [1, -1]])
     mat.rep_type = cdd.RepType.INEQUALITY
     poly = cdd.Polyhedron(mat)
-    assert isinstance(poly.rep_type, cdd.RepType)
-    assert poly.rep_type == cdd.RepType.INEQUALITY
     assert isinstance(poly.get_generators(), cdd.Matrix)
     assert isinstance(poly.get_inequalities(), cdd.Matrix)
     for xss in [
@@ -74,7 +72,6 @@ def test_polyhedron_cube_1() -> None:
     mat = cdd.Matrix(generators)
     mat.rep_type = cdd.RepType.GENERATOR
     poly = cdd.Polyhedron(mat)
-    assert poly.rep_type == cdd.RepType.GENERATOR
     assert_matrix_almost_equal(poly.get_generators(), generators)
     assert_matrix_almost_equal(poly.get_inequalities(), inequalities)
 
@@ -85,6 +82,5 @@ def test_polyhedron_cube_2() -> None:
     mat = cdd.Matrix(inequalities)
     mat.rep_type = cdd.RepType.INEQUALITY
     poly = cdd.Polyhedron(mat)
-    assert poly.rep_type == cdd.RepType.INEQUALITY
     assert_matrix_almost_equal(poly.get_generators(), generators)
     assert_matrix_almost_equal(poly.get_inequalities(), inequalities)

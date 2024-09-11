@@ -13,20 +13,15 @@ def test_lin_prog_type() -> None:
     mat.obj_type = cdd.LPObjType.MAX
     mat.obj_func = [2.0, -1.0]
     lp = cdd.LinProg(mat)
-    assert isinstance(lp.obj_type, cdd.LPObjType)
-    assert lp.obj_type == cdd.LPObjType.MAX
     assert isinstance(lp.status, cdd.LPStatusType)
     assert lp.status == cdd.LPStatusType.UNDECIDED
     assert isinstance(lp.obj_value, float)
     assert lp.obj_value == 0.0
-    assert isinstance(lp.solver, cdd.LPSolverType)
-    assert lp.solver == cdd.LPSolverType.DUAL_SIMPLEX
     for xs in [lp.primal_solution, lp.dual_solution]:
         assert isinstance(xs, Sequence)
         for x in xs:
             assert isinstance(x, float)
     assert lp.solve(solver=cdd.LPSolverType.CRISS_CROSS) is None
-    assert lp.solver == cdd.LPSolverType.CRISS_CROSS
     assert_almost_equal(lp.obj_value, 1.5)
     assert_vector_almost_equal(lp.primal_solution, [0.5])
 
