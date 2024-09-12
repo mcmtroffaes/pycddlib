@@ -13,8 +13,6 @@ env:
 jobs:
   build-sdist:
     runs-on: 'ubuntu-latest'
-    permissions:
-      id-token: write
     steps:
     - name: Set up Python
       uses: actions/setup-python@v5
@@ -158,6 +156,8 @@ jobs:
   release:
     if: github.repository == 'mcmtroffaes/pycddlib'
     runs-on: 'ubuntu-latest'
+    permissions:
+      id-token: write
     needs: [ build-sdist, test-ubuntu-macos, build-test-windows ]
     steps:
     - name: Download sdist
