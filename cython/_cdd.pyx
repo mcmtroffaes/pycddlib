@@ -26,5 +26,8 @@ include "all.pxi"
 include "setoper.pxi"
 include "mytype.pxi"
 include "cdd.pxi"
+
+cdef dd_NumberType NUMBER_TYPE = dd_Real
+
 include "pyenums.pxi"
 include "pycddlib.pxi"

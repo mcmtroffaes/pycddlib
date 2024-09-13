@@ -26,6 +26,10 @@ include "all.pxi"
 include "setoper.pxi"
 include "mytype_gmp.pxi"
 include "cdd.pxi"
+
 from cdd import LPObjType, LPSolverType, LPStatusType, RepType
+
+
+cdef dd_NumberType NUMBER_TYPE = dd_Rational
 
 include "pycddlib.pxi"

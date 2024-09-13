@@ -186,6 +186,7 @@ cdef class Matrix:
             (self.array, self.lin_set, self.rep_type, self.obj_type, self.obj_func),
         )
 
+
 # wrap pointer into Matrix class
 # https://cython.readthedocs.io/en/latest/src/userguide/extension_types.html#instantiation-from-existing-c-c-pointers
 cdef matrix_from_ptr(dd_MatrixPtr dd_mat):
@@ -194,6 +195,30 @@ cdef matrix_from_ptr(dd_MatrixPtr dd_mat):
     cdef Matrix matrix = Matrix.__new__(Matrix)
     matrix.dd_mat = dd_mat
     return matrix
+
+
+cdef struct _Shape:
+    dd_rowrange numrows
+    dd_colrange numcols
+
+cdef _array_shape(array):
+    cdef Py_ssize_t numrows, numcols
+    numrows = len(array)
+    if numrows > 0:
+        numcols = len(array[0])
+    else:
+        numcols = 0
+    cdef _Shape shape = _Shape(<dd_rowrange>numrows, <dd_colrange>numcols)
+    if shape.numrows != numrows or shape.numcols != numcols:
+        raise ValueError("array too large")
+    return shape
+
+cdef _set_matrix(mytype **pp, _Shape shape, array):
+    for rowindex, row in enumerate(array):
+        if len(row) != shape.numcols:
+            raise ValueError("rows have different lengths")
+        for colindex, value in enumerate(row):
+            _set_mytype(pp[rowindex][colindex], value)
 
 
 # create matrix and wrap into Matrix class
@@ -207,26 +232,12 @@ def matrix_from_array(
 ):
     cdef Py_ssize_t numrows, numcols, rowindex, colindex
     cdef dd_MatrixPtr dd_mat
-    # determine dimension
-    numrows = len(array)
-    if numrows > 0:
-        numcols = len(array[0])
-    else:
-        numcols = 0
-    # safely cast ranges
-    cdef dd_rowrange numrows2 = <dd_rowrange>numrows
-    cdef dd_colrange numcols2 = <dd_colrange>numcols
-    if numrows2 != numrows or numcols2 != numcols:
-        raise ValueError("matrix too large")
-    dd_mat = dd_CreateMatrix(numrows2, numcols2)
+    cdef _Shape shape = _array_shape(array)
+    dd_mat = dd_CreateMatrix(shape.numrows, shape.numcols)
     if dd_mat == NULL:
         raise MemoryError
     try:
-        for rowindex, row in enumerate(array):
-            if len(row) != numcols:
-                raise ValueError("rows have different lengths")
-            for colindex, value in enumerate(row):
-                _set_mytype(dd_mat.matrix[rowindex][colindex], value)
+        _set_matrix(dd_mat.matrix, shape, array)
         _set_set(dd_mat.linset, lin_set)
         dd_mat.representation = rep_type
         dd_mat.objective = obj_type
@@ -274,6 +285,25 @@ def matrix_canonicalize(Matrix matrix):
 cdef class LinProg:
     cdef dd_LPPtr dd_lp
 
+    property array:
+        def __get__(self):
+            cdef dd_rowrange i
+            cdef dd_colrange j
+            return [
+                [
+                    _get_mytype(self.dd_lp.A[i][j])
+                    for j in range(self.dd_lp.d)
+                ]
+                for i in range(self.dd_lp.m)
+            ]
+
+    property obj_type:
+        def __get__(self):
+            return LPObjType(self.dd_lp.objective)
+
+        def __set__(self, dd_LPObjectiveType value):
+            self.dd_lp.objective = value
+
     property status:
         def __get__(self):
             return LPStatusType(self.dd_lp.LPS)
@@ -291,8 +321,14 @@ cdef class LinProg:
     property dual_solution:
         def __get__(self):
             cdef dd_colrange colindex
-            return [_get_mytype(self.dd_lp.dsol[colindex])
-                    for colindex in range(1, self.dd_lp.d)]
+            return [
+                (
+                    self.dd_lp.nbindex[colindex + 1] - 1,
+                    _get_mytype(self.dd_lp.dsol[colindex])
+                )
+                for colindex in range(1, self.dd_lp.d)
+                if self.dd_lp.nbindex[colindex + 1] > 0
+            ]
 
     def __str__(self):
         cdef libc.stdio.FILE *pfile
@@ -303,28 +339,59 @@ cdef class LinProg:
         dd_WriteLPResult(pfile, self.dd_lp, dd_NoError)
         return _tmpread(pfile).rstrip('\n')
 
-    def __cinit__(self, Matrix mat):
-        """Initialize linear program solution from solved linear program in
-        the given matrix.
-        """
-        cdef dd_ErrorType error = dd_NoError
-        self.dd_lp = NULL
-        # read matrix
-        self.dd_lp = dd_Matrix2LP(mat.dd_mat, &error)
-        if self.dd_lp == NULL or error != dd_NoError:
-            if self.dd_lp != NULL:
-                dd_FreeLPData(self.dd_lp)
-            _raise_error(error, "failed to load linear program")
+    def __init__(self):
+        raise TypeError("This class cannot be instantiated directly.")
 
     def __dealloc__(self):
         dd_FreeLPData(self.dd_lp)
         self.dd_lp = NULL
 
-    def solve(self, dd_LPSolverType solver=dd_DualSimplex):
-        cdef dd_ErrorType error = dd_NoError
-        dd_LPSolve(self.dd_lp, solver, &error)
-        if error != dd_NoError:
-            _raise_error(error, "failed to solve linear program")
+    def __reduce__(self):
+        return linprog_from_array, (self.array, self.obj_type)
+
+
+cdef linprog_from_ptr(dd_LPPtr dd_lp):
+    if dd_lp == NULL:
+        raise MemoryError  # assume malloc failed
+    cdef LinProg linprog = LinProg.__new__(LinProg)
+    linprog.dd_lp = dd_lp
+    return linprog
+
+
+def linprog_from_matrix(Matrix matrix) -> LinProg:
+    if matrix.obj_type != dd_LPmax and matrix.obj_type != dd_LPmin:
+        raise ValueError(f"invalid value for obj_type: {LPObjType(matrix.obj_type)}")
+    cdef dd_ErrorType error = dd_NoError
+    # note: dd_Matrix2LP never reports error... so ignore
+    cdef dd_LPPtr dd_lp = dd_Matrix2LP(matrix.dd_mat, &error)
+    if dd_lp == NULL:
+        raise MemoryError
+    return linprog_from_ptr(dd_lp)
+
+
+def linprog_from_array(array, dd_LPObjectiveType obj_type):
+    if obj_type != dd_LPmax and obj_type != dd_LPmin:
+        raise ValueError(f"invalid value for obj_type: {LPObjType(obj_type)}")
+    cdef _Shape shape = _array_shape(array)
+    cdef dd_LPPtr dd_lp = dd_CreateLPData(
+        obj_type, NUMBER_TYPE, shape.numrows, shape.numcols
+    )
+    if dd_lp == NULL:
+        raise MemoryError
+    try:
+        _set_matrix(dd_lp.A, shape, array)
+    except:  # noqa: E722
+        dd_FreeLPData(dd_lp)
+        raise
+    return linprog_from_ptr(dd_lp)
+
+
+def linprog_solve(LinProg linprog, dd_LPSolverType solver=dd_DualSimplex):
+    cdef dd_ErrorType error = dd_NoError
+    dd_LPSolve(linprog.dd_lp, solver, &error)
+    if error != dd_NoError:
+        _raise_error(error, "failed to solve linear program")
+
 
 cdef class Polyhedron:
 

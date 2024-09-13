@@ -390,6 +390,9 @@ cdef extern from "cddlib/cdd.h" nogil:
     cdef void dd_WriteInputAdjacency(libc.stdio.FILE *, dd_PolyhedraPtr)
     cdef void dd_WriteInputIncidence(libc.stdio.FILE *, dd_PolyhedraPtr)
 
+    cdef dd_LPPtr dd_CreateLPData(
+        dd_LPObjectiveType, dd_NumberType, dd_rowrange, dd_colrange
+    )
     cdef dd_LPPtr dd_Matrix2LP(dd_MatrixPtr, dd_ErrorType *)
     cdef dd_boolean dd_LPSolve(dd_LPPtr, dd_LPSolverType, dd_ErrorType *)
     cdef void dd_FreeLPData(dd_LPPtr)

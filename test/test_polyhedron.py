@@ -41,7 +41,9 @@ def test_sampleh1() -> None:
 def test_testcdd2() -> None:
     mat = cdd.matrix_from_array([[7, -3, -0], [7, 0, -3], [1, 1, 0], [1, 0, 1]])
     mat.rep_type = cdd.RepType.INEQUALITY
-    assert_matrix_almost_equal(mat.array, [(7, -3, -0), (7, 0, -3), (1, 1, 0), (1, 0, 1)])
+    assert_matrix_almost_equal(
+        mat.array, [(7, -3, -0), (7, 0, -3), (1, 1, 0), (1, 0, 1)]
+    )
     gen = cdd.Polyhedron(mat).get_generators()
     assert gen.rep_type == cdd.RepType.GENERATOR
     assert_matrix_almost_equal(
