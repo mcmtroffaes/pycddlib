@@ -54,8 +54,8 @@ def test_testcdd2() -> None:
         ],
     )
     # add an equality and an inequality
-    mat.extend([[7, 1, -3]], linear=True)
-    mat.extend([[7, -3, 1]])
+    cdd.matrix_append_to(mat, cdd.Matrix([[7, 1, -3]], linear=True))
+    cdd.matrix_append_to(mat, cdd.Matrix([[7, -3, 1]]))
     assert_matrix_almost_equal(
         mat,
         [(7, -3, -0), (7, 0, -3), (1, 1, 0), (1, 0, 1), (7, 1, -3), (7, -3, 1)],

@@ -76,29 +76,22 @@ Methods and Attributes
 
         :param key: The row number, or slice of row numbers, to get.
 
-.. method:: Matrix.canonicalize()
+.. function:: matrix_canonicalize(matrix: Matrix) -> tuple[Set[int], Set[int]]
 
         Transform to canonical representation by recognizing all
         implicit linearities and all redundancies. These are returned
         as a pair of sets of row indices.
 
-.. method:: Matrix.copy()
+.. function:: matrix_copy(matrix: Matrix) -> Matrix
 
-        Make a copy of the matrix and return that copy.
+        Make a copy of *matrix* and return it.
 
-.. method:: Matrix.extend(rows, linear=False)
+.. function:: matrix_append_to(matrix1: Matrix, matrix2: Matrix) -> None
 
-        Append rows to self (this corresponds to the dd_MatrixAppendTo
-        function in cdd; to emulate the effect of dd_MatrixAppend, first call
-        copy and then call extend on the copy).
+        Append *matrix2* to *matrix1*.
 
         The column size must be equal in the two input matrices. It
-        raises a ValueError if the input rows are not appropriate.
-
-        :param rows: The rows to append.
-        :type rows: :class:`list` of :class:`list`\ s
-        :param linear: Whether to add the rows to the :attr:`~cdd.Matrix.lin_set` or not.
-        :type linear: :class:`bool`
+        raises a :exc:`ValueError` otherwise.
 
 .. attribute:: Matrix.row_size
 
@@ -154,14 +147,14 @@ end
 >>> mat1.col_size
 2
 >>> print(mat1[0])
-(1.0, 2.0)
+[1.0, 2.0]
 >>> print(mat1[1])
-(3.0, 4.0)
+[3.0, 4.0]
 >>> print(mat1[2]) # doctest: +ELLIPSIS
 Traceback (most recent call last):
   ...
 IndexError: row index out of range
->>> mat1.extend([[5,6]]) # keeps number type!
+>>> cdd.matrix_append_to(mat1, cdd.Matrix([[5,6]]))
 >>> mat1.row_size
 3
 >>> print(mat1) # doctest: +NORMALIZE_WHITESPACE
@@ -172,25 +165,25 @@ begin
  5 6
 end
 >>> print(mat1[0])
-(1.0, 2.0)
+[1.0, 2.0]
 >>> print(mat1[1])
-(3.0, 4.0)
+[3.0, 4.0]
 >>> print(mat1[2])
-(5.0, 6.0)
+[5.0, 6.0]
 >>> mat1[1:3]
-((3.0, 4.0), (5.0, 6.0))
+[[3.0, 4.0], [5.0, 6.0]]
 >>> mat1[:-1]
-((1.0, 2.0), (3.0, 4.0))
+[[1.0, 2.0], [3.0, 4.0]]
 
 Canonicalizing:
 
 >>> mat = cdd.gmp.Matrix([[2, 1, 2, 3], [0, 1, 2, 3], [3, 0, 1, 2], [0, -2, -4, -6]])
->>> mat.canonicalize()  # oops... must specify rep_type!
+>>> cdd.gmp.matrix_canonicalize(mat)  # oops... must specify rep_type!
 Traceback (most recent call last):
     ...
 ValueError: rep_type unspecified
 >>> mat.rep_type = cdd.RepType.INEQUALITY
->>> mat.canonicalize()
+>>> cdd.gmp.matrix_canonicalize(mat)
 (frozenset(...1, 3...), frozenset(...0...))
 >>> print(mat)
 H-representation
@@ -218,14 +211,14 @@ end
 >>> mat1.col_size
 2
 >>> print(mat1[0])
-(1.0, 2.0)
+[1.0, 2.0]
 >>> print(mat1[1])
-(3.0, 4.0)
+[3.0, 4.0]
 >>> print(mat1[2]) # doctest: +ELLIPSIS
 Traceback (most recent call last):
   ...
 IndexError: row index out of range
->>> mat1.extend([[5,6]])
+>>> cdd.matrix_append_to(mat1, cdd.Matrix([[5,6]]))
 >>> mat1.row_size
 3
 >>> print(mat1) # doctest: +NORMALIZE_WHITESPACE
@@ -236,25 +229,25 @@ begin
  5 6
 end
 >>> print(mat1[0])
-(1.0, 2.0)
+[1.0, 2.0]
 >>> print(mat1[1])
-(3.0, 4.0)
+[3.0, 4.0]
 >>> print(mat1[2])
-(5.0, 6.0)
+[5.0, 6.0]
 >>> mat1[1:3]
-((3.0, 4.0), (5.0, 6.0))
+[[3.0, 4.0], [5.0, 6.0]]
 >>> mat1[:-1]
-((1.0, 2.0), (3.0, 4.0))
+[[1.0, 2.0], [3.0, 4.0]]
 
 Canonicalizing:
 
 >>> mat = cdd.Matrix([[2, 1, 2, 3], [0, 1, 2, 3], [3, 0, 1, 2], [0, -2, -4, -6]])
->>> mat.canonicalize()  # oops... must specify rep_type!
+>>> cdd.matrix_canonicalize(mat)  # oops... must specify rep_type!
 Traceback (most recent call last):
     ...
 ValueError: rep_type unspecified
 >>> mat.rep_type = cdd.RepType.INEQUALITY
->>> mat.canonicalize()
+>>> cdd.matrix_canonicalize(mat)
 (frozenset(...1, 3...), frozenset(...0...))
 >>> print(mat) # doctest: +NORMALIZE_WHITESPACE
 H-representation

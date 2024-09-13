@@ -175,7 +175,7 @@ end
 >>> print([list(x) for x in poly.get_input_incidence()])
 [[2, 3], [0, 3], [0, 1], [1, 2], []]
 >>> # add a vertex, and construct new polyhedron
->>> gen.extend([[1, 0, 2]])
+>>> cdd.matrix_append_to(gen, cdd.Matrix([[1, 0, 2]]))
 >>> vpoly = cdd.Polyhedron(gen)
 >>> print(vpoly.get_inequalities()) # doctest: +NORMALIZE_WHITESPACE
 H-representation

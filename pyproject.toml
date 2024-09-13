@@ -5,7 +5,7 @@ build-backend = "setuptools.build_meta"
 [project]
 name = "pycddlib"
 version = "3.0.0a2"
-requires-python = ">= 3.9"
+requires-python = ">=3.9"
 authors = [
   {name = "Matthias C. M. Troffaes", email = "matthias.troffaes@gmail.com"},
 ]
@@ -23,6 +23,9 @@ classifiers = [
   "Operating System :: OS Independent",
 ]
 keywords = ["convex, polyhedron, linear programming, double description method"]
+dependencies = [
+  "typing-extensions>=4.9",
+]
 
 [project.optional-dependencies]
 test = [

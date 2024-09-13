@@ -1,6 +1,36 @@
 Version 3.0.0 (in development)
 ------------------------------
 
+This version comes with a lot of improvements, notably:
+- support for type checking,
+- new functions that more closely reflect upstream cddlib,
+- improved build and installation, allowing linkage against arbitrary gmp/cddlib
+  versions installed by the system or by the user.
+
+Unfortunately, the interface of the old version did not permit type checking,
+due to an unfortunate design decision from the past:
+from a typing point of view,
+real and rational matrices could be mixed arbitrarily,
+and runtime checks had to be put in place to prevent this.
+
+Since type checking is meant to prevent bugs like this long before runtime,
+I made the hard decision to break the old API.
+As a consequence, the library is now split into two
+separate modules: ``cdd`` for real matrices, and ``cdd.gmp`` for rational matrices.
+Coincidentally, these two modules reflect the upstream organization of cddlib itself
+into ``cdd`` and ``cddgmp``.
+
+Whilst doing this,
+new functions have been added
+to more closely reflect the upstream cddlib public headers.
+As some of these were already implemented as class methods,
+to ease transition,
+these class methods are now marked as deprecated
+(using the new typing system)
+with pointers to the new API.
+
+Fully detailed changes:
+
 * BACKWARDS INCOMPATIBLE:
   The ``number_type`` arguments are gone.
   The ``cdd`` module now only exposes the floating point interface
@@ -8,8 +38,21 @@ Version 3.0.0 (in development)
   The new ``cdd.gmp`` submodule exposes the rational numbers interface
   (formerly accessible with ``number_type="fraction"``).
   This change was necessary to enable fully correct type checking for the library,
-  and to allow a version of pycddlib to be installed without needing to compile gmp
-  (see below).
+  and to allow a version of pycddlib to be installed without needing to compile gmp.
+
+* Many methods have been refactored into functions
+  to more closely reflect the underlying cddlib interface.
+
+    - ``Matrix.extend`` is now ``matrix_append_to`` and takes two matrices as argument,
+      to match the corresponding cddlib functions.
+      It still raises a ValueError if the column sizes differ.
+
+    - ``Matrix.copy`` is now ``matrix_copy``.
+
+    - ``Matrix.canonicalize`` is now ``matrix_canonicalize``.
+
+  The old methods are still present, however they are deprecated and will be removed
+  eventually.
 
 * Thanks to the reorganization, there now is a standalone Python package that
   installs just the floating point interface without needing the gmp or cddlib

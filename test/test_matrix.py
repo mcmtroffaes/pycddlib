@@ -54,10 +54,11 @@ def test_matrix_typing() -> None:
         cdd.Matrix([["1"]])  # type: ignore
 
 
-def test_matrix_extend_typing() -> None:
-    mat: cdd.Matrix = cdd.Matrix([[1]])
-    mat.extend([[1]])
-    mat.extend([[Fraction(1, 1)]])
-    mat.extend([[1.0]])
-    with pytest.raises(TypeError, match="must be real number"):
-        mat.extend([["1"]])  # type: ignore
+def test_matrix_deprecated() -> None:
+    mat = cdd.Matrix([[1, 1]])  # 0 <= 1 + x
+    mat.extend([[2, 1]])  # 0 <= 2 + x
+    assert_matrix_almost_equal(mat, [[1, 1], [2, 1]])
+    mat.rep_type = cdd.RepType.INEQUALITY
+    mat.canonicalize()
+    assert_matrix_almost_equal(mat, [[1, 1]])
+    assert_matrix_almost_equal(mat.copy(), [[1, 1]])

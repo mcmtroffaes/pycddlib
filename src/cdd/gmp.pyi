@@ -2,6 +2,8 @@ from collections.abc import Sequence, Set
 from fractions import Fraction
 from typing import Union, overload
 
+from typing_extensions import deprecated  # new in Python 3.13
+
 from cdd import LPObjType, LPSolverType, LPStatusType, RepType
 
 class Matrix(Sequence[Sequence[Fraction]]):
@@ -17,8 +19,11 @@ class Matrix(Sequence[Sequence[Fraction]]):
     def __init__(
         self, rows: Sequence[Sequence[Union[Fraction, int]]], linear: bool = False
     ) -> None: ...
+    @deprecated("Use matrix_canonicalize instead")
     def canonicalize(self) -> None: ...
+    @deprecated("Use matrix_copy instead")
     def copy(self) -> Matrix: ...
+    @deprecated("Use matrix_append_to instead")
     def extend(
         self, rows: Sequence[Sequence[Union[Fraction, int]]], linear: bool = False
     ) -> None: ...
@@ -27,6 +32,10 @@ class Matrix(Sequence[Sequence[Fraction]]):
     @overload
     def __getitem__(self, index: slice) -> Sequence[Sequence[Fraction]]: ...
     def __len__(self) -> int: ...
+
+def matrix_append_to(matrix1: Matrix, matrix2: Matrix) -> None: ...
+def matrix_canonicalize(matrix: Matrix) -> None: ...
+def matrix_copy(matrix: Matrix) -> Matrix: ...
 
 class LinProg:
     obj_type: LPObjType

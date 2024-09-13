@@ -115,8 +115,6 @@ cdef _raise_error(dd_ErrorType error, msg):
     raise RuntimeError(msg + "\n" + _tmpread(pfile).rstrip('\n'))
 
 cdef _make_dd_matrix(dd_MatrixPtr dd_mat):
-    # we must "cdef Matrix mat" because otherwise pyrex will not
-    # recognize mat.thisptr as a C pointer
     cdef Matrix mat
     if dd_mat == NULL:
         raise ValueError("failed to make matrix")
@@ -215,56 +213,53 @@ cdef class Matrix:
         self.dd_mat = NULL
 
     def copy(self):
-        return _make_dd_matrix(dd_CopyMatrix(self.dd_mat))
+        return matrix_copy(self)
 
     def extend(self, rows, linear=False):
         cdef Matrix other
-        cdef int success
-        # create matrix with given rows
-        other = Matrix(rows, linear=linear)
-        # call dd_AppendToMatrix
-        success = dd_MatrixAppendTo(&self.dd_mat, other.dd_mat)
-        # check result
-        if success != 1:
-            raise ValueError("cannot append because column sizes differ")
+        matrix_append_to(self, Matrix(rows, linear=linear))
+
+    def canonicalize(self):
+        return matrix_canonicalize(self)
 
     def __getitem__(self, key):
         cdef dd_rowrange rownum
         cdef dd_rowrange j
-        # check if we are slicing
         if isinstance(key, slice):
             indices = key.indices(len(self))
-            # XXX once generators are supported in cython, this should
-            # return (self.__getitem__(i) for i in xrange(*indices))
-            return tuple([self.__getitem__(i) for i in xrange(*indices)])
+            return [self.__getitem__(i) for i in range(*indices)]
         else:
             rownum = key
             if rownum < 0 or rownum >= self.dd_mat.rowsize:
                 raise IndexError("row index out of range")
-            # return an immutable tuple to prohibit item assignment
-            return tuple([_get_mytype(self.dd_mat.matrix[rownum][j])
-                          for 0 <= j < self.dd_mat.colsize])
+            return [_get_mytype(self.dd_mat.matrix[rownum][j])
+                    for 0 <= j < self.dd_mat.colsize]
 
-    def canonicalize(self):
-        cdef dd_rowset impl_linset
-        cdef dd_rowset redset
-        cdef dd_rowindex newpos
-        cdef dd_ErrorType error = dd_NoError
-        cdef int m
-        cdef dd_boolean success
-        if self.dd_mat.representation == dd_Unspecified:
-            raise ValueError("rep_type unspecified")
-        m = self.dd_mat.rowsize
-        success = dd_MatrixCanonicalize(
-            &self.dd_mat, &impl_linset, &redset, &newpos, &error
-        )
-        result = (_get_set(impl_linset), _get_set(redset))
-        set_free(impl_linset)
-        set_free(redset)
-        libc.stdlib.free(newpos)
-        if not success or error != dd_NoError:
-            _raise_error(error, "failed to canonicalize matrix")
-        return result
+def matrix_copy(Matrix matrix):
+    return _make_dd_matrix(dd_CopyMatrix(matrix.dd_mat))
+
+def matrix_append_to(Matrix matrix1, Matrix matrix2):
+    if dd_MatrixAppendTo(&matrix1.dd_mat, matrix2.dd_mat) != 1:
+        raise ValueError("cannot append because column sizes differ")
+
+def matrix_canonicalize(Matrix matrix):
+    cdef dd_rowset impl_linset
+    cdef dd_rowset redset
+    cdef dd_rowindex newpos
+    cdef dd_ErrorType error = dd_NoError
+    cdef dd_boolean success
+    if matrix.dd_mat.representation == dd_Unspecified:
+        raise ValueError("rep_type unspecified")
+    success = dd_MatrixCanonicalize(
+        &matrix.dd_mat, &impl_linset, &redset, &newpos, &error
+    )
+    result = (_get_set(impl_linset), _get_set(redset))
+    set_free(impl_linset)
+    set_free(redset)
+    libc.stdlib.free(newpos)
+    if not success or error != dd_NoError:
+        _raise_error(error, "failed to canonicalize matrix")
+    return result
 
 cdef class LinProg:
 
