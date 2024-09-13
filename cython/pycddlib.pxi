@@ -359,8 +359,12 @@ cdef linprog_from_ptr(dd_LPPtr dd_lp):
 
 
 def linprog_from_matrix(Matrix matrix) -> LinProg:
+    # cddlib does not check if obj_type is valid
     if matrix.obj_type != dd_LPmax and matrix.obj_type != dd_LPmin:
-        raise ValueError(f"invalid value for obj_type: {LPObjType(matrix.obj_type)}")
+        raise ValueError("obj_type must be MIN or MAX")
+    # cddlib assumes H-representation
+    if matrix.rep_type != dd_Inequality:
+        raise ValueError("rep_type must be INEQUALITY")
     cdef dd_ErrorType error = dd_NoError
     # note: dd_Matrix2LP never reports error... so ignore
     cdef dd_LPPtr dd_lp = dd_Matrix2LP(matrix.dd_mat, &error)
@@ -371,7 +375,7 @@ def linprog_from_matrix(Matrix matrix) -> LinProg:
 
 def linprog_from_array(array, dd_LPObjectiveType obj_type):
     if obj_type != dd_LPmax and obj_type != dd_LPmin:
-        raise ValueError(f"invalid value for obj_type: {LPObjType(obj_type)}")
+        raise ValueError("obj_type must be MIN or MAX")
     cdef _Shape shape = _array_shape(array)
     cdef dd_LPPtr dd_lp = dd_CreateLPData(
         obj_type, NUMBER_TYPE, shape.numrows, shape.numcols

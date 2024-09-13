@@ -38,6 +38,7 @@ def test_lp2() -> None:
     mat = cdd.matrix_from_array([[4 / 3, -2, -1], [2 / 3, 0, -1], [0, 1, 0], [0, 0, 1]])
     mat.obj_type = cdd.LPObjType.MAX
     mat.obj_func = (0, 3, 4)
+    mat.rep_type = cdd.RepType.INEQUALITY
     lp = cdd.linprog_from_matrix(mat)
     cdd.linprog_solve(lp)
     assert lp.status == cdd.LPStatusType.OPTIMAL
@@ -55,6 +56,7 @@ def test_another() -> None:
     mat = cdd.matrix_from_array(array=array, lin_set=lin_set)
     mat.obj_type = cdd.LPObjType.MIN
     mat.obj_func = obj_func
+    mat.rep_type = cdd.RepType.INEQUALITY
     lp = cdd.linprog_from_matrix(mat)
     assert_matrix_almost_equal(
         lp.array, array + [[-x for x in array[i]] for i in lin_set] + [mat.obj_func]
