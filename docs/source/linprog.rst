@@ -59,7 +59,9 @@ Example
 >>> mat = cdd.gmp.matrix_from_array([[Fraction(4, 3),-2,-1],[Fraction(2, 3),0,-1],[0,1,0],[0,0,1]])
 >>> mat.obj_type = cdd.LPObjType.MAX
 >>> mat.obj_func = (0,3,4)
+>>> mat.rep_type = cdd.RepType.INEQUALITY
 >>> print(mat)
+H-representation
 begin
  4 3 rational
  4/3 -2 -1
