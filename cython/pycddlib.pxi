@@ -15,6 +15,8 @@
 # with this program; if not, write to the Free Software Foundation, Inc.,
 # 51 Franklin Street, Fifth Floor, Boston, MA 02110-1301 USA.
 
+from typing_extensions import deprecated
+
 cimport cpython.mem
 cimport cpython.unicode
 cimport libc.stdio
@@ -212,13 +214,16 @@ cdef class Matrix:
         dd_FreeMatrix(self.dd_mat)
         self.dd_mat = NULL
 
+    @deprecated("Use matrix_copy instead")
     def copy(self):
         return matrix_copy(self)
 
+    @deprecated("Use matrix_append_to instead")
     def extend(self, rows, linear=False):
         cdef Matrix other
         matrix_append_to(self, Matrix(rows, linear=linear))
 
+    @deprecated("Use matrix_canonicalize instead")
     def canonicalize(self):
         return matrix_canonicalize(self)
 

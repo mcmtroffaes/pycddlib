@@ -54,6 +54,7 @@ def test_matrix_typing() -> None:
         cdd.Matrix([["1"]])  # type: ignore
 
 
+@pytest.mark.filterwarnings("ignore", category=DeprecationWarning)
 def test_matrix_deprecated() -> None:
     mat = cdd.Matrix([[1, 1]])  # 0 <= 1 + x
     mat.extend([[2, 1]])  # 0 <= 2 + x

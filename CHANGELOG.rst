@@ -19,6 +19,7 @@ As a consequence, the library is now split into two
 separate modules: ``cdd`` for real matrices, and ``cdd.gmp`` for rational matrices.
 Coincidentally, these two modules reflect the upstream organization of cddlib itself
 into ``cdd`` and ``cddgmp``.
+This resulted in a faster, cleaner, and less buggy implementation.
 
 Whilst doing this,
 new functions have been added
