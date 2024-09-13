@@ -180,6 +180,12 @@ cdef class Matrix:
         dd_FreeMatrix(self.dd_mat)
         self.dd_mat = NULL
 
+    def __reduce__(self):
+        return (
+            matrix_from_array,
+            (self.array, self.lin_set, self.rep_type, self.obj_type, self.obj_func),
+        )
+
 # wrap pointer into Matrix class
 # https://cython.readthedocs.io/en/latest/src/userguide/extension_types.html#instantiation-from-existing-c-c-pointers
 cdef matrix_from_ptr(dd_MatrixPtr dd_mat):
