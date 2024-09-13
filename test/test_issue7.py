@@ -17,7 +17,7 @@ def test_issue7() -> None:
         [1.0, -4.0, 40.0, 4.0, -31.21985375, -4.91296, 17.90974622],
         [1.0, 4.0, 40.0, -4.0, -28.86014625, 4.91296, 20.26945371],
     ]
-    m2 = cdd.Matrix(m)
+    m2 = cdd.matrix_from_array(m)
     m2.rep_type = cdd.RepType.GENERATOR
     with pytest.raises(RuntimeError, match="inconsistency"):
         cdd.Polyhedron(m2)

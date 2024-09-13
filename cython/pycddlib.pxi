@@ -15,7 +15,7 @@
 # with this program; if not, write to the Free Software Foundation, Inc.,
 # 51 Franklin Street, Fifth Floor, Boston, MA 02110-1301 USA.
 
-from typing_extensions import deprecated
+from typing_extensions import deprecated  # new in Python 3.13
 
 cimport cpython.mem
 cimport cpython.unicode
@@ -76,14 +76,14 @@ cdef _tmpread(libc.stdio.FILE *pfile):
     return result
 
 cdef _get_set(set_type set_):
-    # create Python set from given set_type
+    # create Python Set from given set_type
     cdef unsigned long elem
     return frozenset(
         elem for elem from 0 <= elem < set_[0] if set_member(elem + 1, set_)
     )
 
 cdef _set_set(set_type set_, pset):
-    # set elements of set_type by elements from Python set
+    # set elements of set_type by elements from a Python Container
     cdef unsigned long elem
     for elem from 0 <= elem < set_[0]:
         if elem in pset:
@@ -92,21 +92,20 @@ cdef _set_set(set_type set_, pset):
             set_delelem(set_, elem + 1)
 
 cdef _get_dd_setfam(dd_SetFamilyPtr setfam):
-    # create list of Python sets from dd_SetFamilyPtr, and
+    # create Python Sequence[Set] from dd_SetFamilyPtr, and
     # free the pointer; indexing of the sets start at 0, unlike the
     # string output from cddlib, which starts at 1
     cdef long elem
     if setfam == NULL:
         raise ValueError("failed to get set family")
-    # note: must return immutable object
-    result = tuple(
+    result = [
         frozenset(
             elem
             for elem from 0 <= elem < setfam.setsize
             if set_member(elem + 1, setfam.set[i])
         )
         for i from 0 <= i < setfam.famsize
-    )
+    ]
     dd_FreeSetFamily(setfam)
     return result
 
@@ -116,31 +115,22 @@ cdef _raise_error(dd_ErrorType error, msg):
     dd_WriteErrorMessages(pfile, error)
     raise RuntimeError(msg + "\n" + _tmpread(pfile).rstrip('\n'))
 
-cdef _make_dd_matrix(dd_MatrixPtr dd_mat):
-    cdef Matrix mat
-    if dd_mat == NULL:
-        raise ValueError("failed to make matrix")
-    mat = Matrix([[]])
-    dd_FreeMatrix(mat.dd_mat)
-    mat.dd_mat = dd_mat
-    return mat
-
 # extension classes to wrap matrix, linear program, and polyhedron
 
 cdef class Matrix:
-
     cdef dd_MatrixPtr dd_mat
 
-    property row_size:
+    property array:
         def __get__(self):
-            return self.dd_mat.rowsize
-
-    def __len__(self):
-        return self.dd_mat.rowsize
-
-    property col_size:
-        def __get__(self):
-            return self.dd_mat.colsize
+            cdef dd_rowrange i
+            cdef dd_colrange j
+            return [
+                [
+                    _get_mytype(self.dd_mat.matrix[i][j])
+                    for j in range(self.dd_mat.colsize)
+                ]
+                for i in range(self.dd_mat.rowsize)
+            ]
 
     property lin_set:
         def __get__(self):
@@ -165,13 +155,12 @@ cdef class Matrix:
 
     property obj_func:
         def __get__(self):
-            # return an immutable tuple to prohibit item assignment
-            cdef int colindex
-            return tuple([_get_mytype(self.dd_mat.rowvec[colindex])
-                          for 0 <= colindex < self.dd_mat.colsize])
+            cdef dd_colrange colindex
+            return [_get_mytype(self.dd_mat.rowvec[colindex])
+                    for colindex in range(self.dd_mat.colsize)]
 
         def __set__(self, obj_func):
-            cdef int colindex
+            cdef Py_ssize_t colindex
             if len(obj_func) != self.dd_mat.colsize:
                 raise ValueError(
                     "objective function does not match matrix column size")
@@ -184,68 +173,77 @@ cdef class Matrix:
         dd_WriteMatrix(pfile, self.dd_mat)
         return _tmpread(pfile).rstrip('\n')
 
-    def __cinit__(self, rows, linear=False):
-        cdef Py_ssize_t numrows, numcols, rowindex, colindex
-        # reset pointers
-        self.dd_mat = NULL
-        # determine dimension
-        numrows = len(rows)
-        if numrows > 0:
-            numcols = len(rows[0])
-        else:
-            numcols = 0
-        # create new matrix, safely casting ranges
-        cdef dd_rowrange numrows2 = <dd_rowrange>numrows
-        cdef dd_colrange numcols2 = <dd_colrange>numcols
-        if numrows2 != numrows or numcols2 != numcols:
-            raise ValueError("matrix too large")
-        self.dd_mat = dd_CreateMatrix(numrows2, numcols2)
-        # load data
-        for rowindex, row in enumerate(rows):
-            if len(row) != numcols:
-                raise ValueError("rows have different lengths")
-            for colindex, value in enumerate(row):
-                _set_mytype(self.dd_mat.matrix[rowindex][colindex], value)
-        if linear:
-            # set all constraints as linear
-            set_compl(self.dd_mat.linset, self.dd_mat.linset)
+    def __init__(self):
+        raise TypeError("This class cannot be instantiated directly.")
 
     def __dealloc__(self):
         dd_FreeMatrix(self.dd_mat)
         self.dd_mat = NULL
 
-    @deprecated("Use matrix_copy instead")
-    def copy(self):
-        return matrix_copy(self)
+# wrap pointer into Matrix class
+# https://cython.readthedocs.io/en/latest/src/userguide/extension_types.html#instantiation-from-existing-c-c-pointers
+cdef matrix_from_ptr(dd_MatrixPtr dd_mat):
+    if dd_mat == NULL:
+        raise MemoryError  # assume malloc failed
+    cdef Matrix matrix = Matrix.__new__(Matrix)
+    matrix.dd_mat = dd_mat
+    return matrix
 
-    @deprecated("Use matrix_append_to instead")
-    def extend(self, rows, linear=False):
-        cdef Matrix other
-        matrix_append_to(self, Matrix(rows, linear=linear))
 
-    @deprecated("Use matrix_canonicalize instead")
-    def canonicalize(self):
-        return matrix_canonicalize(self)
+# create matrix and wrap into Matrix class
+# https://cython.readthedocs.io/en/latest/src/userguide/extension_types.html#instantiation-from-existing-c-c-pointers
+def matrix_from_array(
+    array,
+    lin_set=(),
+    dd_RepresentationType rep_type=dd_Unspecified,
+    dd_LPObjectiveType obj_type=dd_LPnone,
+    obj_func=None,
+):
+    cdef Py_ssize_t numrows, numcols, rowindex, colindex
+    cdef dd_MatrixPtr dd_mat
+    # determine dimension
+    numrows = len(array)
+    if numrows > 0:
+        numcols = len(array[0])
+    else:
+        numcols = 0
+    # safely cast ranges
+    cdef dd_rowrange numrows2 = <dd_rowrange>numrows
+    cdef dd_colrange numcols2 = <dd_colrange>numcols
+    if numrows2 != numrows or numcols2 != numcols:
+        raise ValueError("matrix too large")
+    dd_mat = dd_CreateMatrix(numrows2, numcols2)
+    if dd_mat == NULL:
+        raise MemoryError
+    try:
+        for rowindex, row in enumerate(array):
+            if len(row) != numcols:
+                raise ValueError("rows have different lengths")
+            for colindex, value in enumerate(row):
+                _set_mytype(dd_mat.matrix[rowindex][colindex], value)
+        _set_set(dd_mat.linset, lin_set)
+        dd_mat.representation = rep_type
+        dd_mat.objective = obj_type
+        if obj_func is not None:
+            if len(obj_func) != dd_mat.colsize:
+                raise ValueError(
+                    "objective function does not match matrix column size")
+            for colindex, value in enumerate(obj_func):
+                _set_mytype(dd_mat.rowvec[colindex], value)
+    except:  # noqa: E722
+        dd_FreeMatrix(dd_mat)
+        raise
+    return matrix_from_ptr(dd_mat)
 
-    def __getitem__(self, key):
-        cdef dd_rowrange rownum
-        cdef dd_rowrange j
-        if isinstance(key, slice):
-            indices = key.indices(len(self))
-            return [self.__getitem__(i) for i in range(*indices)]
-        else:
-            rownum = key
-            if rownum < 0 or rownum >= self.dd_mat.rowsize:
-                raise IndexError("row index out of range")
-            return [_get_mytype(self.dd_mat.matrix[rownum][j])
-                    for 0 <= j < self.dd_mat.colsize]
 
 def matrix_copy(Matrix matrix):
-    return _make_dd_matrix(dd_CopyMatrix(matrix.dd_mat))
+    return matrix_from_ptr(dd_CopyMatrix(matrix.dd_mat))
+
 
 def matrix_append_to(Matrix matrix1, Matrix matrix2):
     if dd_MatrixAppendTo(&matrix1.dd_mat, matrix2.dd_mat) != 1:
         raise ValueError("cannot append because column sizes differ")
+
 
 def matrix_canonicalize(Matrix matrix):
     cdef dd_rowset impl_linset
@@ -266,8 +264,8 @@ def matrix_canonicalize(Matrix matrix):
         _raise_error(error, "failed to canonicalize matrix")
     return result
 
-cdef class LinProg:
 
+cdef class LinProg:
     cdef dd_LPPtr dd_lp
 
     property status:
@@ -280,15 +278,15 @@ cdef class LinProg:
 
     property primal_solution:
         def __get__(self):
-            cdef int colindex
-            return tuple([_get_mytype(self.dd_lp.sol[colindex])
-                          for 1 <= colindex < self.dd_lp.d])
+            cdef dd_colrange colindex
+            return [_get_mytype(self.dd_lp.sol[colindex])
+                    for colindex in range(1, self.dd_lp.d)]
 
     property dual_solution:
         def __get__(self):
-            cdef int colindex
-            return tuple([_get_mytype(self.dd_lp.dsol[colindex])
-                          for 1 <= colindex < self.dd_lp.d])
+            cdef dd_colrange colindex
+            return [_get_mytype(self.dd_lp.dsol[colindex])
+                    for colindex in range(1, self.dd_lp.d)]
 
     def __str__(self):
         cdef libc.stdio.FILE *pfile
@@ -349,10 +347,10 @@ cdef class Polyhedron:
         self.dd_poly = NULL
 
     def get_inequalities(self):
-        return _make_dd_matrix(dd_CopyInequalities(self.dd_poly))
+        return matrix_from_ptr(dd_CopyInequalities(self.dd_poly))
 
     def get_generators(self):
-        return _make_dd_matrix(dd_CopyGenerators(self.dd_poly))
+        return matrix_from_ptr(dd_CopyGenerators(self.dd_poly))
 
     def get_adjacency(self):
         return _get_dd_setfam(dd_CopyAdjacency(self.dd_poly))

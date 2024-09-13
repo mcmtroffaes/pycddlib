@@ -2,7 +2,7 @@ import cdd
 
 
 def test_large_string() -> None:
-    mat = cdd.Matrix([[1] * 100] * 100)
+    mat = cdd.matrix_from_array([[1] * 100] * 100)
     assert (
         str(mat)
         == """begin

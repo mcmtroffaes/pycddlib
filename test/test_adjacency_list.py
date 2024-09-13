@@ -6,7 +6,7 @@ def test_make_vertex_adjacency_list() -> None:
     # returns the correct adjacencies.
 
     # We start with the H-representation for a cube
-    mat = cdd.Matrix(
+    mat = cdd.matrix_from_array(
         [
             [1, 1, 0, 0],
             [1, 0, 1, 0],
@@ -14,9 +14,9 @@ def test_make_vertex_adjacency_list() -> None:
             [1, -1, 0, 0],
             [1, 0, -1, 0],
             [1, 0, 0, -1],
-        ]
+        ],
+        rep_type=cdd.RepType.INEQUALITY
     )
-    mat.rep_type = cdd.RepType.INEQUALITY
     poly = cdd.Polyhedron(mat)
     adjacency = poly.get_adjacency()
 
@@ -39,12 +39,12 @@ def test_make_vertex_adjacency_list() -> None:
         [1, 4, 7],
         [0, 5, 6],
     ]
-    assert adjacency == tuple(frozenset(x) for x in adjacency_list)
+    assert adjacency == [frozenset(x) for x in adjacency_list]
 
 
 def test_make_facet_adjacency_list() -> None:
     # This matrix is the same as in vtest_vo.ine
-    mat = cdd.Matrix(
+    mat = cdd.matrix_from_array(
         [
             [0, 0, 0, 1],
             [5, -4, -2, 1],
@@ -52,10 +52,9 @@ def test_make_facet_adjacency_list() -> None:
             [16, -8, 0, 1],
             [16, 0, -8, 1],
             [32, -8, -8, 1],
-        ]
+        ],
+        rep_type=cdd.RepType.INEQUALITY
     )
-
-    mat.rep_type = cdd.RepType.INEQUALITY
     poly = cdd.Polyhedron(mat)
 
     adjacency_list = [
@@ -69,4 +68,4 @@ def test_make_facet_adjacency_list() -> None:
     ]
 
     adjacency = poly.get_input_adjacency()
-    assert adjacency == tuple(frozenset(x) for x in adjacency_list)
+    assert adjacency == [frozenset(x) for x in adjacency_list]

@@ -4,13 +4,16 @@
    import cdd.gmp
    from fractions import Fraction
 
-.. currentmodule:: cdd
-
 Sets of Linear Inequalities and Generators
 ==========================================
 
-.. class:: cdd.Matrix(rows: Sequence[Sequence[SupportsFloat]], linear: bool = False)
-.. class:: cdd.gmp.Matrix(rows: Sequence[Sequence[Union[Fraction, int]]], linear: bool = False)
+.. function:: cdd.matrix_from_array(
+        array: Sequence[Sequence[SupportsFloat]],
+        lin_set: Container[int] = (),
+        rep_type: RepType = RepType.UNSPECIFIED,
+        obj_type: LPObjType = LPObjType.NONE,
+        obj_func: Optional[Sequence[SupportsFloat]] = None,
+    ) -> Matrix: ...
 
     A class for working with sets of linear constraints and extreme
     points.
@@ -38,43 +41,28 @@ Sets of Linear Inequalities and Generators
     :math:`\mathrm{linspan}` is the linear span operator. All entries
     of :math:`t` must be either :math:`0` or :math:`1`.
 
-    :param rows: The rows of the matrix.
-    :param linear: Whether to add the rows to the :attr:`~cdd.Matrix.lin_set` or not.
-
     .. warning::
 
        With :mod:`cdd.gmp`, passing a :class:`float` will result in a :exc:`TypeError`:
 
-       >>> cdd.gmp.Matrix([[1.12]])[0][0]
+       >>> cdd.gmp.matrix_from_array([[1.12]])
        Traceback (most recent call last):
            ...
        TypeError: value 1.12 is not Rational
 
        If the float represents a fraction, you must pass it as a fraction explicitly:
 
-       >>> print(cdd.gmp.Matrix([[Fraction(112, 100)]])[0][0])
-       28/25
+       >>> print(cdd.gmp.matrix_from_array([[Fraction(112, 100)]]).array)
+       [[Fraction(28, 25)]]
 
        If you really must use a float as a fraction,
        pass it explicitly to the :class:`~fractions.Fraction` constructor:
 
-       >>> print(cdd.gmp.Matrix([[Fraction(1.12)]])[0][0])
-       1261007895663739/1125899906842624
+       >>> print(cdd.gmp.matrix_from_array([[Fraction(1.12)]]).array)
+       [[Fraction(1261007895663739, 1125899906842624)]]
 
        As you can see from the output above, for typical use cases,
        you will not want to do this.
-
-Methods and Attributes
-----------------------
-
-.. method:: cdd.Matrix.__getitem__(index: int) -> Sequence[float]
-            cdd.Matrix.__getitem__(index: slice) -> Sequence[Sequence[float]]
-.. method:: cdd.gmp.Matrix.__getitem__(index: int) -> Sequence[Fraction]
-            cdd.gmp.Matrix.__getitem__(index: slice) -> Sequence[Sequence[Fraction]]
-
-        Return a row, or a slice of rows, of the matrix.
-
-        :param key: The row number, or slice of row numbers, to get.
 
 .. function:: matrix_canonicalize(matrix: Matrix) -> tuple[Set[int], Set[int]]
 
@@ -93,17 +81,9 @@ Methods and Attributes
         The column size must be equal in the two input matrices. It
         raises a :exc:`ValueError` otherwise.
 
-.. attribute:: Matrix.row_size
-
-        Number of rows.
-
-.. attribute:: Matrix.col_size
-
-        Number of columns.
-
 .. attribute:: Matrix.lin_set
 
-        A :class:`frozenset` containing the rows of linearity
+        A :class:`Set` containing the rows of linearity
         (linear generators for the V-representation, and
         equalities for the H-representation).
 
@@ -118,7 +98,7 @@ Methods and Attributes
 
 .. attribute:: Matrix.obj_func
 
-        A :class:`tuple` containing the linear programming objective
+        A :class:`Sequence` containing the linear programming objective
         function.
 
 Examples
@@ -135,49 +115,29 @@ Fractions
 
 Declaring matrices, and checking some attributes:
 
->>> mat1 = cdd.Matrix([[1, 2],[3, 4]])
+>>> mat1 = cdd.gmp.matrix_from_array([[1, 2],[3, 4]])
 >>> print(mat1) # doctest: +NORMALIZE_WHITESPACE
 begin
- 2 2 real
+ 2 2 rational
  1 2
  3 4
 end
->>> mat1.row_size
-2
->>> mat1.col_size
-2
->>> print(mat1[0])
-[1.0, 2.0]
->>> print(mat1[1])
-[3.0, 4.0]
->>> print(mat1[2]) # doctest: +ELLIPSIS
-Traceback (most recent call last):
-  ...
-IndexError: row index out of range
->>> cdd.matrix_append_to(mat1, cdd.Matrix([[5,6]]))
->>> mat1.row_size
-3
+>>> print(mat1.array)
+[[Fraction(1, 1), Fraction(2, 1)], [Fraction(3, 1), Fraction(4, 1)]]
+>>> cdd.gmp.matrix_append_to(mat1, cdd.gmp.matrix_from_array([[5,6]]))
 >>> print(mat1) # doctest: +NORMALIZE_WHITESPACE
 begin
- 3 2 real
+ 3 2 rational
  1 2
  3 4
  5 6
 end
->>> print(mat1[0])
-[1.0, 2.0]
->>> print(mat1[1])
-[3.0, 4.0]
->>> print(mat1[2])
-[5.0, 6.0]
->>> mat1[1:3]
-[[3.0, 4.0], [5.0, 6.0]]
->>> mat1[:-1]
-[[1.0, 2.0], [3.0, 4.0]]
+>>> print(mat1.array)
+[[Fraction(1, 1), Fraction(2, 1)], [Fraction(3, 1), Fraction(4, 1)], [Fraction(5, 1), Fraction(6, 1)]]
 
 Canonicalizing:
 
->>> mat = cdd.gmp.Matrix([[2, 1, 2, 3], [0, 1, 2, 3], [3, 0, 1, 2], [0, -2, -4, -6]])
+>>> mat = cdd.gmp.matrix_from_array([[2, 1, 2, 3], [0, 1, 2, 3], [3, 0, 1, 2], [0, -2, -4, -6]])
 >>> cdd.gmp.matrix_canonicalize(mat)  # oops... must specify rep_type!
 Traceback (most recent call last):
     ...
@@ -185,7 +145,7 @@ ValueError: rep_type unspecified
 >>> mat.rep_type = cdd.RepType.INEQUALITY
 >>> cdd.gmp.matrix_canonicalize(mat)
 (frozenset(...1, 3...), frozenset(...0...))
->>> print(mat)
+>>> print(mat) # doctest: +NORMALIZE_WHITESPACE
 H-representation
 linearity 1  1
 begin
@@ -199,28 +159,16 @@ Floats
 
 Declaring matrices, and checking some attributes:
 
->>> mat1 = cdd.Matrix([[1,2],[3,4]])
+>>> mat1 = cdd.matrix_from_array([[1,2],[3,4]])
 >>> print(mat1) # doctest: +NORMALIZE_WHITESPACE
 begin
  2 2 real
  1 2
  3 4
 end
->>> mat1.row_size
-2
->>> mat1.col_size
-2
->>> print(mat1[0])
-[1.0, 2.0]
->>> print(mat1[1])
-[3.0, 4.0]
->>> print(mat1[2]) # doctest: +ELLIPSIS
-Traceback (most recent call last):
-  ...
-IndexError: row index out of range
->>> cdd.matrix_append_to(mat1, cdd.Matrix([[5,6]]))
->>> mat1.row_size
-3
+>>> print(mat1.array)
+[[1.0, 2.0], [3.0, 4.0]]
+>>> cdd.matrix_append_to(mat1, cdd.matrix_from_array([[5,6]]))
 >>> print(mat1) # doctest: +NORMALIZE_WHITESPACE
 begin
  3 2 real
@@ -228,20 +176,12 @@ begin
  3 4
  5 6
 end
->>> print(mat1[0])
-[1.0, 2.0]
->>> print(mat1[1])
-[3.0, 4.0]
->>> print(mat1[2])
-[5.0, 6.0]
->>> mat1[1:3]
-[[3.0, 4.0], [5.0, 6.0]]
->>> mat1[:-1]
-[[1.0, 2.0], [3.0, 4.0]]
+>>> print(mat1.array)
+[[1.0, 2.0], [3.0, 4.0], [5.0, 6.0]]
 
 Canonicalizing:
 
->>> mat = cdd.Matrix([[2, 1, 2, 3], [0, 1, 2, 3], [3, 0, 1, 2], [0, -2, -4, -6]])
+>>> mat = cdd.matrix_from_array([[2, 1, 2, 3], [0, 1, 2, 3], [3, 0, 1, 2], [0, -2, -4, -6]])
 >>> cdd.matrix_canonicalize(mat)  # oops... must specify rep_type!
 Traceback (most recent call last):
     ...

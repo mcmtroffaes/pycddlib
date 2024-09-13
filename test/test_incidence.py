@@ -6,7 +6,7 @@ def test_vertex_incidence_cube() -> None:
     # returns the correct incidences.
 
     # We start with the H-representation for a cube
-    mat = cdd.Matrix(
+    mat = cdd.matrix_from_array(
         [
             [1, 1, 0, 0],
             [1, 0, 1, 0],
@@ -39,12 +39,12 @@ def test_vertex_incidence_cube() -> None:
         {0, 1, 5},
         {0, 1, 2},
     ]
-    assert incidence == tuple(frozenset(x) for x in incidence_list)
+    assert incidence == [frozenset(x) for x in incidence_list]
 
 
 def test_vertex_incidence_vtest_vo() -> None:
     # This matrix is the same as in vtest_vo.ine
-    mat = cdd.Matrix(
+    mat = cdd.matrix_from_array(
         [
             [0, 0, 0, 1],
             [5, -4, -2, 1],
@@ -72,12 +72,12 @@ def test_vertex_incidence_vtest_vo() -> None:
     ]
 
     incidence = poly.get_incidence()
-    assert incidence == tuple(frozenset(x) for x in incidence_list)
+    assert incidence == [frozenset(x) for x in incidence_list]
 
 
 def test_facet_incidence_cube() -> None:
     # We start with the H-representation for a cube
-    mat = cdd.Matrix(
+    mat = cdd.matrix_from_array(
         [
             [1, 1, 0, 0],
             [1, 0, 1, 0],
@@ -111,12 +111,12 @@ def test_facet_incidence_cube() -> None:
         {1, 2, 4, 6},
         set(),
     ]
-    assert incidence == tuple(frozenset(x) for x in incidence_list)
+    assert incidence == [frozenset(x) for x in incidence_list]
 
 
 def test_facet_incidence_vtest_vo() -> None:
     # This matrix is the same as in vtest_vo.ine
-    mat = cdd.Matrix(
+    mat = cdd.matrix_from_array(
         [
             [0, 0, 0, 1],
             [5, -4, -2, 1],
@@ -140,4 +140,4 @@ def test_facet_incidence_vtest_vo() -> None:
         {0, 4, 7, 8},
     ]
 
-    assert poly.get_input_incidence() == tuple(frozenset(x) for x in incidence_list)
+    assert poly.get_input_incidence() == [frozenset(x) for x in incidence_list]

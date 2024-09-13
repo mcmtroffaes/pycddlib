@@ -10,12 +10,13 @@ from . import assert_matrix_almost_equal, assert_vector_almost_equal
 
 def test_matrix_init_1() -> None:
     rows = [[1.1, 1.2, 1.3], [1.4, 1.5, 1.6]]
-    mat = cdd.Matrix(rows)
-    assert isinstance(mat.row_size, int)
-    assert isinstance(mat.col_size, int)
-    assert mat.row_size == 2
-    assert mat.col_size == 3
-    assert_matrix_almost_equal(mat, rows)
+    mat = cdd.matrix_from_array(rows)
+    assert isinstance(mat.array, Sequence)
+    assert len(mat.array) == 2
+    for row in mat.array:
+        assert isinstance(row, Sequence)
+        assert len(row) == 3
+    assert_matrix_almost_equal(mat.array, rows)
     assert isinstance(mat.lin_set, Set)
     assert not mat.lin_set
     assert isinstance(mat.rep_type, cdd.RepType)
@@ -27,19 +28,19 @@ def test_matrix_init_1() -> None:
 
 
 def test_matrix_init_2() -> None:
-    rows = [[1.1, 1.2], [1.3, 1.4]]
-    mat = cdd.Matrix(rows, linear=True)
-    assert_matrix_almost_equal(mat, rows)
+    array = [[1.1, 1.2], [1.3, 1.4]]
+    mat = cdd.matrix_from_array(array, lin_set=[0, 1])
+    assert_matrix_almost_equal(mat.array, array)
     assert mat.lin_set == {0, 1}
 
 
 def test_length() -> None:
     with pytest.raises(ValueError):
-        cdd.Matrix([[1], [1, 2]])
+        cdd.matrix_from_array([[1], [1, 2]])
 
 
 def test_obj_func() -> None:
-    mat = cdd.Matrix([[1], [2]])
+    mat = cdd.matrix_from_array([[1], [2]])
     with pytest.raises(ValueError):
         mat.obj_func = [0, 0]
     mat.obj_func = [7]
@@ -47,19 +48,18 @@ def test_obj_func() -> None:
 
 
 def test_matrix_typing() -> None:
-    cdd.Matrix([[1]])
-    cdd.Matrix([[Fraction(1, 1)]])
-    cdd.Matrix([[1.0]])
+    cdd.matrix_from_array([[1]])
+    cdd.matrix_from_array([[Fraction(1, 1)]])
+    cdd.matrix_from_array([[1.0]])
     with pytest.raises(TypeError, match="must be real number"):
-        cdd.Matrix([["1"]])  # type: ignore
+        cdd.matrix_from_array([["1"]])  # type: ignore
 
 
-@pytest.mark.filterwarnings("ignore", category=DeprecationWarning)
-def test_matrix_deprecated() -> None:
-    mat = cdd.Matrix([[1, 1]])  # 0 <= 1 + x
-    mat.extend([[2, 1]])  # 0 <= 2 + x
-    assert_matrix_almost_equal(mat, [[1, 1], [2, 1]])
+def test_matrix_various() -> None:
+    mat = cdd.matrix_from_array([[1, 1]])  # 0 <= 1 + x
+    cdd.matrix_append_to(mat, cdd.matrix_from_array([[2, 1]]))  # 0 <= 2 + x
+    assert_matrix_almost_equal(mat.array, [[1, 1], [2, 1]])
     mat.rep_type = cdd.RepType.INEQUALITY
-    mat.canonicalize()
-    assert_matrix_almost_equal(mat, [[1, 1]])
-    assert_matrix_almost_equal(mat.copy(), [[1, 1]])
+    cdd.matrix_canonicalize(mat)
+    assert_matrix_almost_equal(mat.array, [[1, 1]])
+    assert_matrix_almost_equal(cdd.matrix_copy(mat).array, [[1, 1]])

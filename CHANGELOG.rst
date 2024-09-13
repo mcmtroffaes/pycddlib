@@ -41,7 +41,17 @@ Fully detailed changes:
   This change was necessary to enable fully correct type checking for the library,
   and to allow a version of pycddlib to be installed without needing to compile gmp.
 
-* Many methods have been refactored into functions
+* BACKWARDS INCOMPATIBLE:
+  Under the hood, the old version used cython's ``__cinit__`` to initialize
+  ``Matrix``, ``LinProg``, and ``Polyhedron`` objects.
+  However, this function cannot handle exceptions correctly.
+  Instead, cython recommends using factory functions instead.
+  So, to construct these objects, new factory functions have been introduced:
+  ``matrix_create``, ``linprog_from_matrix``, and ``polyhedron_from_matrix``.
+  As a consequence, errors during construction are now correctly handled.
+
+* BACKWARDS INCOMPATIBLE:
+  For consistency, methods have been refactored into functions
   to more closely reflect the underlying cddlib interface.
 
     - ``Matrix.extend`` is now ``matrix_append_to`` and takes two matrices as argument,
@@ -51,9 +61,6 @@ Fully detailed changes:
     - ``Matrix.copy`` is now ``matrix_copy``.
 
     - ``Matrix.canonicalize`` is now ``matrix_canonicalize``.
-
-  The old methods are still present, however they are deprecated and will be removed
-  eventually.
 
 * Thanks to the reorganization, there now is a standalone Python package that
   installs just the floating point interface without needing the gmp or cddlib

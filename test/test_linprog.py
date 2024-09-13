@@ -8,7 +8,7 @@ from . import assert_almost_equal, assert_vector_almost_equal
 
 def test_lin_prog_type() -> None:
     # -0.5 + x >= 0,  2 - x >= 0
-    mat = cdd.Matrix([[-0.5, 1], [2, -1]])
+    mat = cdd.matrix_from_array([[-0.5, 1], [2, -1]])
     mat.rep_type = cdd.RepType.INEQUALITY
     mat.obj_type = cdd.LPObjType.MAX
     mat.obj_func = [2.0, -1.0]
@@ -28,7 +28,7 @@ def test_lin_prog_type() -> None:
 
 
 def test_lp2() -> None:
-    mat = cdd.Matrix([[4 / 3, -2, -1], [2 / 3, 0, -1], [0, 1, 0], [0, 0, 1]])
+    mat = cdd.matrix_from_array([[4 / 3, -2, -1], [2 / 3, 0, -1], [0, 1, 0], [0, 0, 1]])
     mat.obj_type = cdd.LPObjType.MAX
     mat.obj_func = (0, 3, 4)
     lp = cdd.LinProg(mat)
@@ -40,7 +40,7 @@ def test_lp2() -> None:
 
 
 def test_another() -> None:
-    mat = cdd.Matrix(
+    mat = cdd.matrix_from_array(
         [[1, -1, -1, -1], [-1, 1, 1, 1], [0, 1, 0, 0], [0, 0, 1, 0], [0, 0, 0, 1]]
     )
     mat.obj_type = cdd.LPObjType.MIN

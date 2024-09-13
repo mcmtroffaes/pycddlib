@@ -94,7 +94,7 @@ Examples
 
 This is the sampleh1.ine example that comes with cddlib.
 
->>> mat = cdd.Matrix([[2,-1,-1,0],[0,1,0,0],[0,0,1,0]])
+>>> mat = cdd.matrix_from_array([[2,-1,-1,0],[0,1,0,0],[0,0,1,0]])
 >>> mat.rep_type = cdd.RepType.INEQUALITY
 >>> poly = cdd.Polyhedron(mat)
 >>> print(poly) # doctest: +NORMALIZE_WHITESPACE
@@ -126,7 +126,7 @@ The following example illustrates how to get adjacencies and incidences.
 >>> # 0 <= 1 + x2 (face 1)
 >>> # 0 <= 1 - x1 (face 2)
 >>> # 0 <= 1 - x2 (face 3)
->>> mat = cdd.Matrix([[1, 1, 0], [1, 0, 1], [1, -1, 0], [1, 0, -1]])
+>>> mat = cdd.matrix_from_array([[1, 1, 0], [1, 0, 1], [1, -1, 0], [1, 0, -1]])
 >>> mat.rep_type = cdd.RepType.INEQUALITY
 >>> poly = cdd.Polyhedron(mat)
 >>> # The V-representation can be printed in the usual way:
@@ -175,7 +175,7 @@ end
 >>> print([list(x) for x in poly.get_input_incidence()])
 [[2, 3], [0, 3], [0, 1], [1, 2], []]
 >>> # add a vertex, and construct new polyhedron
->>> cdd.matrix_append_to(gen, cdd.Matrix([[1, 0, 2]]))
+>>> cdd.matrix_append_to(gen, cdd.matrix_from_array([[1, 0, 2]]))
 >>> vpoly = cdd.Polyhedron(gen)
 >>> print(vpoly.get_inequalities()) # doctest: +NORMALIZE_WHITESPACE
 H-representation

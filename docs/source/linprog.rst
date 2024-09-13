@@ -56,7 +56,7 @@ Methods and Attributes
 Example
 -------
 
->>> mat = cdd.gmp.Matrix([[Fraction(4, 3),-2,-1],[Fraction(2, 3),0,-1],[0,1,0],[0,0,1]])
+>>> mat = cdd.gmp.matrix_from_array([[Fraction(4, 3),-2,-1],[Fraction(2, 3),0,-1],[0,1,0],[0,0,1]])
 >>> mat.obj_type = cdd.LPObjType.MAX
 >>> mat.obj_func = (0,3,4)
 >>> print(mat)
@@ -70,7 +70,7 @@ end
 maximize
  0 3 4
 >>> print(mat.obj_func)
-(Fraction(0, 1), Fraction(3, 1), Fraction(4, 1))
+[Fraction(0, 1), Fraction(3, 1), Fraction(4, 1)]
 >>> lp = cdd.gmp.LinProg(mat)
 >>> lp.solve()
 >>> lp.status == cdd.LPStatusType.OPTIMAL
@@ -78,6 +78,6 @@ True
 >>> lp.obj_value
 Fraction(11, 3)
 >>> lp.primal_solution
-(Fraction(1, 3), Fraction(2, 3))
+[Fraction(1, 3), Fraction(2, 3)]
 >>> lp.dual_solution
-(Fraction(3, 2), Fraction(5, 2))
+[Fraction(3, 2), Fraction(5, 2)]

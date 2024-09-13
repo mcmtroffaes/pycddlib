@@ -81,4 +81,4 @@ cdef _set_mytype(mytype target, value):
             if mpq_set_str(target, buf, 10) == -1:
                 raise ValueError('could not convert %s to mpq_t' % value)
     else:
-        raise TypeError(f"value {value!r} is not Rational")
+        raise TypeError(f"must be Fraction or int, not {type(value).__name__}")

@@ -7,7 +7,7 @@ from . import assert_matrix_almost_equal
 
 
 def test_polyhedron_type() -> None:
-    mat = cdd.Matrix([[1, 1], [1, -1]])
+    mat = cdd.matrix_from_array([[1, 1], [1, -1]])
     mat.rep_type = cdd.RepType.INEQUALITY
     poly = cdd.Polyhedron(mat)
     assert isinstance(poly.get_generators(), cdd.Matrix)
@@ -26,26 +26,26 @@ def test_polyhedron_type() -> None:
 
 
 def test_sampleh1() -> None:
-    mat = cdd.Matrix([[2, -1, -1, 0], [0, 1, 0, 0], [0, 0, 1, 0]])
+    mat = cdd.matrix_from_array([[2, -1, -1, 0], [0, 1, 0, 0], [0, 0, 1, 0]])
     mat.rep_type = cdd.RepType.INEQUALITY
     poly = cdd.Polyhedron(mat)
     ext = poly.get_generators()
     assert ext.rep_type == cdd.RepType.GENERATOR
     assert_matrix_almost_equal(
-        ext, [[1, 0, 0, 0], [1, 2, 0, 0], [1, 0, 2, 0], [0, 0, 0, 1]]
+        ext.array, [[1, 0, 0, 0], [1, 2, 0, 0], [1, 0, 2, 0], [0, 0, 0, 1]]
     )
     # note: first row is 0, so fourth row is 3
     assert ext.lin_set == {3}
 
 
 def test_testcdd2() -> None:
-    mat = cdd.Matrix([[7, -3, -0], [7, 0, -3], [1, 1, 0], [1, 0, 1]])
+    mat = cdd.matrix_from_array([[7, -3, -0], [7, 0, -3], [1, 1, 0], [1, 0, 1]])
     mat.rep_type = cdd.RepType.INEQUALITY
-    assert_matrix_almost_equal(mat, [(7, -3, -0), (7, 0, -3), (1, 1, 0), (1, 0, 1)])
+    assert_matrix_almost_equal(mat.array, [(7, -3, -0), (7, 0, -3), (1, 1, 0), (1, 0, 1)])
     gen = cdd.Polyhedron(mat).get_generators()
     assert gen.rep_type == cdd.RepType.GENERATOR
     assert_matrix_almost_equal(
-        gen,
+        gen.array,
         [
             (1, Fraction(7, 3), -1),
             (1, -1, -1),
@@ -54,33 +54,33 @@ def test_testcdd2() -> None:
         ],
     )
     # add an equality and an inequality
-    cdd.matrix_append_to(mat, cdd.Matrix([[7, 1, -3]], linear=True))
-    cdd.matrix_append_to(mat, cdd.Matrix([[7, -3, 1]]))
+    cdd.matrix_append_to(mat, cdd.matrix_from_array([[7, 1, -3]], lin_set={0}))
+    cdd.matrix_append_to(mat, cdd.matrix_from_array([[7, -3, 1]]))
     assert_matrix_almost_equal(
-        mat,
+        mat.array,
         [(7, -3, -0), (7, 0, -3), (1, 1, 0), (1, 0, 1), (7, 1, -3), (7, -3, 1)],
     )
     assert mat.lin_set == {4}
     gen2 = cdd.Polyhedron(mat).get_generators()
     assert gen2.rep_type == cdd.RepType.GENERATOR
-    assert_matrix_almost_equal(gen2, [(1, -1, 2), (1, 0, Fraction(7, 3))])
+    assert_matrix_almost_equal(gen2.array, [(1, -1, 2), (1, 0, Fraction(7, 3))])
 
 
 def test_polyhedron_cube_1() -> None:
     generators = [[1, 0, 1], [1, 1, 0], [1, 1, 1], [1, 0, 0]]
     inequalities = [[0, 0, 1], [0, 1, 0], [1, 0, -1], [1, -1, 0]]
-    mat = cdd.Matrix(generators)
+    mat = cdd.matrix_from_array(generators)
     mat.rep_type = cdd.RepType.GENERATOR
     poly = cdd.Polyhedron(mat)
-    assert_matrix_almost_equal(poly.get_generators(), generators)
-    assert_matrix_almost_equal(poly.get_inequalities(), inequalities)
+    assert_matrix_almost_equal(poly.get_generators().array, generators)
+    assert_matrix_almost_equal(poly.get_inequalities().array, inequalities)
 
 
 def test_polyhedron_cube_2() -> None:
     generators = [[1, 1, 0], [1, 0, 0], [1, 0, 1], [1, 1, 1]]  # same up to ordering
     inequalities = [[0, 0, 1], [0, 1, 0], [1, 0, -1], [1, -1, 0]]
-    mat = cdd.Matrix(inequalities)
+    mat = cdd.matrix_from_array(inequalities)
     mat.rep_type = cdd.RepType.INEQUALITY
     poly = cdd.Polyhedron(mat)
-    assert_matrix_almost_equal(poly.get_generators(), generators)
-    assert_matrix_almost_equal(poly.get_inequalities(), inequalities)
+    assert_matrix_almost_equal(poly.get_generators().array, generators)
+    assert_matrix_almost_equal(poly.get_inequalities().array, inequalities)
