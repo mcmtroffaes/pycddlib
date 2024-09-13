@@ -44,11 +44,12 @@ Fully detailed changes:
 * BACKWARDS INCOMPATIBLE:
   Under the hood, the old version used cython's ``__cinit__`` to initialize
   ``Matrix``, ``LinProg``, and ``Polyhedron`` objects.
-  However, this function cannot handle exceptions correctly.
+  However, exceptions thrown from this function
+  risk leaving the object in an invalid state.
   Instead, cython recommends using factory functions instead.
   So, to construct these objects, new factory functions have been introduced:
-  ``matrix_create``, ``linprog_from_matrix``, and ``polyhedron_from_matrix``.
-  As a consequence, errors during construction are now correctly handled.
+  ``matrix_from_array``, ``linprog_from_matrix``, and ``polyhedron_from_matrix``.
+  As a consequence, errors during construction are now always correctly handled.
 
 * BACKWARDS INCOMPATIBLE:
   For consistency, methods have been refactored into functions
@@ -61,6 +62,8 @@ Fully detailed changes:
     - ``Matrix.copy`` is now ``matrix_copy``.
 
     - ``Matrix.canonicalize`` is now ``matrix_canonicalize``.
+
+* Pickle support for ``Matrix``, ``LinProg``, and ``Polyhedron`` (see issue #47).
 
 * Thanks to the reorganization, there now is a standalone Python package that
   installs just the floating point interface without needing the gmp or cddlib
