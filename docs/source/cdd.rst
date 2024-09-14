@@ -10,20 +10,23 @@ Enums
 
 .. autoclass has trouble finding attributes of enums, so list explicitly
 
-.. autoclass:: LPObjType
+.. autoclass:: LPObjType(value)
+    :show-inheritance:
 
     .. attribute::
         NONE
         MAX
         MIN
 
-.. autoclass:: LPSolverType
+.. autoclass:: LPSolverType(value)
+    :show-inheritance:
 
     .. attribute::
         CRISS_CROSS
         DUAL_SIMPLEX
 
-.. autoclass:: LPStatusType
+.. autoclass:: LPStatusType(value)
+    :show-inheritance:
 
     .. attribute::
         UNDECIDED
@@ -35,7 +38,8 @@ Enums
         UNBOUNDED
         DUAL_UNBOUNDED
 
-.. autoclass:: RepType
+.. autoclass:: RepType(value)
+    :show-inheritance:
 
     .. attribute::
         UNSPECIFIED
