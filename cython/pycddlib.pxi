@@ -441,7 +441,6 @@ def copy_output(Polyhedron poly):
     return matrix_from_ptr(dd_CopyOutput(poly.dd_poly))
 
 
-
 def copy_inequalities(Polyhedron poly):
     return matrix_from_ptr(dd_CopyInequalities(poly.dd_poly))
 
