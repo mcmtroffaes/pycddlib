@@ -2,9 +2,12 @@ Version 3.0.0 (in development)
 ------------------------------
 
 This version comes with a lot of improvements, notably:
-- support for type checking,
-- new functions that more closely reflect upstream cddlib,
-- improved build and installation, allowing linkage against arbitrary gmp/cddlib
+
+* support for type checking,
+
+* new functions that more closely reflect upstream cddlib,
+
+* improved build and installation, allowing linkage against arbitrary gmp/cddlib
   versions installed by the system or by the user.
 
 Unfortunately, the interface of the old version did not permit type checking,
@@ -19,16 +22,11 @@ As a consequence, the library is now split into two
 separate modules: ``cdd`` for real matrices, and ``cdd.gmp`` for rational matrices.
 Coincidentally, these two modules reflect the upstream organization of cddlib itself
 into ``cdd`` and ``cddgmp``.
-This resulted in a faster, cleaner, and less buggy implementation.
-
 Whilst doing this,
 new functions have been added
-to more closely reflect the upstream cddlib public headers.
-As some of these were already implemented as class methods,
-to ease transition,
-these class methods are now marked as deprecated
-(using the new typing system)
-with pointers to the new API.
+from the upstream cddlib public headers.
+This resulted in a faster, cleaner, and less buggy implementation,
+which is more closely aligned with upstream cddlib.
 
 Fully detailed changes:
 
@@ -55,13 +53,33 @@ Fully detailed changes:
   For consistency, methods have been refactored into functions
   to more closely reflect the underlying cddlib interface.
 
+    - ``Matrix(...)`` is now ``matrix_from_array(...)``.
+      The ``linear`` argument has been replaced with ``lin_set``,
+      and all other properties can also be specified from this new factory function.
+
     - ``Matrix.extend`` is now ``matrix_append_to`` and takes two matrices as argument,
       to match the corresponding cddlib functions.
-      It still raises a ValueError if the column sizes differ.
+      It still raises a :exc:`ValueError` if the column sizes differ.
 
     - ``Matrix.copy`` is now ``matrix_copy``.
 
     - ``Matrix.canonicalize`` is now ``matrix_canonicalize``.
+
+    - ``LinProg(...)`` is now ``linprog_from_matrix(...)``
+      or ``linprog_from_array(...)``.
+      The ``linprog_from_array`` factory function
+      is recommended especially if you have no equality constraints since it saves
+      having to allocate a matrix first.
+      If you have equality constraints, ``linprog_from_matrix``
+      will convert those for you.
+      If you use ``linprog_from_array``, you will have to convert these yourself.
+
+    - ``LinProg.solve`` is now ``linprog_solve``.
+
+    - ``Polyhedron(...)`` is now ``polyhedron_from_matrix``.
+
+    - The ``Polyhedron.get_...`` methods are now ``copy_...``. This reflects the
+      upstream naming of these functions.
 
 * Pickle support for ``Matrix``, ``LinProg``, and ``Polyhedron`` (see issue #47).
 
