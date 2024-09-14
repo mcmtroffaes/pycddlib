@@ -1,3 +1,9 @@
+.. testsetup::
+
+   import cdd
+   import cdd.gmp
+   from fractions import Fraction
+
 The :mod:`cdd.gmp` module
 =========================
 
@@ -14,7 +20,7 @@ instead of :class:`float`, and all arithmetic is exact.
    >>> cdd.gmp.matrix_from_array([[1.12]])
    Traceback (most recent call last):
        ...
-   TypeError: value 1.12 is not Rational
+   TypeError: must be Fraction or int, not float
 
    If the float represents a fraction, you must pass it as a fraction explicitly:
 
