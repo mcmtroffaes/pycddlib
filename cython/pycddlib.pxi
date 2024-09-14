@@ -118,31 +118,7 @@ cdef _raise_error(dd_ErrorType error, msg):
 # extension classes to wrap matrix, linear program, and polyhedron
 
 cdef class Matrix:
-    r"""A class for working with sets of linear constraints and extreme points.
-
-    A matrix :math:`[b \quad -A]` in the H-representation corresponds to a
-    polyhedron described by
-
-    .. math::
-       A_i x &\le b_i \qquad \forall i\in\{0,\dots,n-1\}\setminus L \\
-       A_i x &=   b_i \qquad \forall i\in L
-
-    where :math:`L` is :attr:`~cdd.Matrix.lin_set` and :math:`A_i`
-    corresponds to the :math:`i`-th row of :math:`A`.
-
-    A matrix :math:`[t \quad V]` in the V-representation corresponds to a polyhedron
-    described by
-
-    .. math::
-       \mathrm{conv}\{V_i\colon t_i=1\}+\mathrm{nonnegspan}\{V_i\colon t_i=0,i\not\in L\}+\mathrm{linspan}\{V_i\colon t_i=0,i\in L\}
-
-    where :math:`L` is :attr:`~cdd.Matrix.lin_set` and :math:`V_i`
-    corresponds to the :math:`i`-th row of :math:`V`. Here
-    :math:`\mathrm{conv}` is the convex hull operator,
-    :math:`\mathrm{nonnegspan}` is the non-negative span operator, and
-    :math:`\mathrm{linspan}` is the linear span operator. All entries
-    of :math:`t` must be either :math:`0` or :math:`1`.
-    """
+    """A set of linear inequalities or a set of linear generators."""
 
     cdef dd_MatrixPtr dd_mat
     # hack for annotation of properties
@@ -156,7 +132,31 @@ cdef class Matrix:
 
     @property
     def array(self):
-        """Array for the inequalities or generators represented by the matrix."""
+        r"""Array representing the inequalities or generators.
+
+        An array :math:`[b \quad -A]` in the H-representation corresponds to a
+        polyhedron described by
+
+        .. math::
+           A_i x &\le b_i \qquad \forall i\in\{0,\dots,n-1\}\setminus L \\
+           A_i x &=   b_i \qquad \forall i\in L
+
+        where :math:`L` is :attr:`~cdd.Matrix.lin_set` and :math:`A_i`
+        corresponds to the :math:`i`-th row of :math:`A`.
+
+        A array :math:`[t \quad V]` in the V-representation corresponds to a
+        polyhedron described by
+
+        .. math::
+           \mathrm{conv}\{V_i\colon t_i=1\}+\mathrm{nonnegspan}\{V_i\colon t_i=0,i\not\in L\}+\mathrm{linspan}\{V_i\colon t_i=0,i\in L\}
+
+        where :math:`L` is :attr:`~cdd.Matrix.lin_set` and :math:`V_i`
+        corresponds to the :math:`i`-th row of :math:`V`. Here
+        :math:`\mathrm{conv}` is the convex hull operator,
+        :math:`\mathrm{nonnegspan}` is the non-negative span operator, and
+        :math:`\mathrm{linspan}` is the linear span operator. All entries
+        of :math:`t` must be either :math:`0` or :math:`1`.
+        """
         cdef _Shape shape = _Shape(self.dd_mat.rowsize, self.dd_mat.colsize)
         return _get_array_from_matrix(self.dd_mat.matrix, shape)
 
@@ -280,7 +280,10 @@ def matrix_from_array(
     obj_type: LPObjType = LPObjType.NONE,
     obj_func: Optional[Sequence[SupportsNumberType]] = None,
 ) -> Matrix:
-    """Construct a matrix with the given attributes."""
+    """Construct a matrix with the given attributes.
+
+    See :attr:`cdd.Matrix.array` for an explanation of how *array* must be laid out.
+    """
     cdef Py_ssize_t numrows, numcols, rowindex, colindex
     cdef dd_MatrixPtr dd_mat
     cdef _Shape shape = _array_shape(array)
@@ -358,11 +361,12 @@ cdef class LinProg:
     @property
     def array(self):
         r"""The array representing the linear program. More specifically,
-        the constraints :math:`Ax\le b` and objective function :math:`c^T x`
+        the constraints :math:`Ax\le b`
+        and objective function :math:`\gamma + c^T x`
         are stored as an array as follows:
 
         .. math::
-            \begin{array}{cc} b & -A \\ 0 & c \end{array}
+            \begin{array}{cc} b & -A \\ \gamma & c \end{array}
 
         i.e. the constraints are stored as a H-representation (with inequalities only),
         and the objective function is stored in the final row.
@@ -466,9 +470,10 @@ def linprog_from_array(
     array: Sequence[Sequence[SupportsNumberType]], obj_type: LPObjType
 ) -> LinProg:
     """Construct a linear program from *array*.
-    The top part of *array* represents a set of inequalities
-    in the H-representation,
-    and the final row of *array* represents the objective function.
+
+    See :attr:`cdd.LinProg.array` for an explanation of how *array* must be laid out.
+
+    .. versionadded:: 3.0.0
     """
     if obj_type != dd_LPmax and obj_type != dd_LPmin:
         raise ValueError("obj_type must be MIN or MAX")
