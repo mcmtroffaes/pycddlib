@@ -409,8 +409,7 @@ cdef class Polyhedron:
         raise TypeError("This class cannot be instantiated directly.")
 
     def __dealloc__(self):
-        if self.dd_poly:
-            dd_FreePolyhedra(self.dd_poly)
+        dd_FreePolyhedra(self.dd_poly)
         self.dd_poly = NULL
 
 cdef polyhedron_from_ptr(dd_PolyhedraPtr dd_poly):
@@ -429,7 +428,7 @@ def polyhedron_from_matrix(Matrix mat):
     if dd_poly == NULL:
         raise MemoryError
     if error != dd_NoError:
-        # TODO should call dd_FreePolyhedra(dd_poly)... see issue #7
+        dd_FreePolyhedra(dd_poly)
         _raise_error(error, "failed to load polyhedra")
     return polyhedron_from_ptr(dd_poly)
 
