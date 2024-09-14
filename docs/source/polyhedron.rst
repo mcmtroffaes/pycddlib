@@ -1,7 +1,6 @@
 .. testsetup::
 
    import cdd
-   import cdd.gmp
 
 .. currentmodule:: cdd
 
@@ -12,9 +11,9 @@ Working With Polyhedron Representations
 
     Representation of a polyhedron.
 
-.. attribute:: Polyhedron.rep_type: RepType
+    .. attribute:: rep_type: RepType
 
-    Representation type (see :class:`~cdd.RepType`).
+        Representation type.
 
 .. function:: polyhedron_from_matrix(mat: Matrix) -> Polyhedron
 
@@ -90,7 +89,7 @@ Examples
 
 This is the sampleh1.ine example that comes with cddlib.
 
->>> mat = cdd.matrix_from_array([[2,-1,-1,0],[0,1,0,0],[0,0,1,0]])
+>>> mat = cdd.matrix_from_array([[2, -1, -1, 0],[0, 1, 0, 0],[0, 0, 1, 0]])
 >>> mat.rep_type = cdd.RepType.INEQUALITY
 >>> poly = cdd.polyhedron_from_matrix(mat)
 >>> print(poly) # doctest: +NORMALIZE_WHITESPACE

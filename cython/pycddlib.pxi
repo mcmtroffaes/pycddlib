@@ -185,9 +185,9 @@ cdef class Matrix:
 cdef matrix_from_ptr(dd_MatrixPtr dd_mat):
     if dd_mat == NULL:
         raise MemoryError  # assume malloc failed
-    cdef Matrix matrix = Matrix.__new__(Matrix)
-    matrix.dd_mat = dd_mat
-    return matrix
+    cdef Matrix mat = Matrix.__new__(Matrix)
+    mat.dd_mat = dd_mat
+    return mat
 
 
 cdef struct _Shape:
@@ -264,16 +264,16 @@ def matrix_append_to(Matrix matrix1, Matrix matrix2):
         raise ValueError("cannot append because column sizes differ")
 
 
-def matrix_canonicalize(Matrix matrix):
+def matrix_canonicalize(Matrix mat):
     cdef dd_rowset impl_linset
     cdef dd_rowset redset
     cdef dd_rowindex newpos
     cdef dd_ErrorType error = dd_NoError
     cdef dd_boolean success
-    if matrix.dd_mat.representation == dd_Unspecified:
+    if mat.dd_mat.representation == dd_Unspecified:
         raise ValueError("rep_type unspecified")
     success = dd_MatrixCanonicalize(
-        &matrix.dd_mat, &impl_linset, &redset, &newpos, &error
+        &mat.dd_mat, &impl_linset, &redset, &newpos, &error
     )
     result = (_get_set(impl_linset), _get_set(redset))
     set_free(impl_linset)
@@ -348,21 +348,21 @@ cdef class LinProg:
 cdef linprog_from_ptr(dd_LPPtr dd_lp):
     if dd_lp == NULL:
         raise MemoryError  # assume malloc failed
-    cdef LinProg linprog = LinProg.__new__(LinProg)
-    linprog.dd_lp = dd_lp
-    return linprog
+    cdef LinProg lp = LinProg.__new__(LinProg)
+    lp.dd_lp = dd_lp
+    return lp
 
 
-def linprog_from_matrix(Matrix matrix) -> LinProg:
+def linprog_from_matrix(Matrix mat) -> LinProg:
     # cddlib does not check if obj_type is valid
-    if matrix.obj_type != dd_LPmax and matrix.obj_type != dd_LPmin:
+    if mat.obj_type != dd_LPmax and mat.obj_type != dd_LPmin:
         raise ValueError("obj_type must be MIN or MAX")
     # cddlib assumes H-representation
-    if matrix.rep_type != dd_Inequality:
+    if mat.rep_type != dd_Inequality:
         raise ValueError("rep_type must be INEQUALITY")
     cdef dd_ErrorType error = dd_NoError
     # note: dd_Matrix2LP never reports error... so ignore
-    cdef dd_LPPtr dd_lp = dd_Matrix2LP(matrix.dd_mat, &error)
+    cdef dd_LPPtr dd_lp = dd_Matrix2LP(mat.dd_mat, &error)
     if dd_lp == NULL:
         raise MemoryError
     return linprog_from_ptr(dd_lp)
@@ -385,9 +385,9 @@ def linprog_from_array(array, dd_LPObjectiveType obj_type):
     return linprog_from_ptr(dd_lp)
 
 
-def linprog_solve(LinProg linprog, dd_LPSolverType solver=dd_DualSimplex):
+def linprog_solve(LinProg lp, dd_LPSolverType solver=dd_DualSimplex):
     cdef dd_ErrorType error = dd_NoError
-    dd_LPSolve(linprog.dd_lp, solver, &error)
+    dd_LPSolve(lp.dd_lp, solver, &error)
     if error != dd_NoError:
         _raise_error(error, "failed to solve linear program")
 
