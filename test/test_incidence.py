@@ -39,7 +39,7 @@ def test_vertex_incidence_cube() -> None:
         {0, 1, 5},
         {0, 1, 2},
     ]
-    assert incidence == [frozenset(x) for x in incidence_list]
+    assert incidence == incidence_list
 
 
 def test_vertex_incidence_vtest_vo() -> None:
@@ -72,7 +72,7 @@ def test_vertex_incidence_vtest_vo() -> None:
     ]
 
     incidence = cdd.copy_incidence(poly)
-    assert incidence == [frozenset(x) for x in incidence_list]
+    assert incidence == incidence_list
 
 
 def test_facet_incidence_cube() -> None:
@@ -111,7 +111,7 @@ def test_facet_incidence_cube() -> None:
         {1, 2, 4, 6},
         set(),
     ]
-    assert incidence == [frozenset(x) for x in incidence_list]
+    assert incidence == incidence_list
 
 
 def test_facet_incidence_vtest_vo() -> None:
@@ -140,4 +140,4 @@ def test_facet_incidence_vtest_vo() -> None:
         {0, 4, 7, 8},
     ]
 
-    assert cdd.copy_input_incidence(poly) == [frozenset(x) for x in incidence_list]
+    assert cdd.copy_input_incidence(poly) == incidence_list

@@ -78,9 +78,9 @@ cdef _tmpread(libc.stdio.FILE *pfile):
 cdef _get_set(set_type set_):
     # create Python Set from given set_type
     cdef unsigned long elem
-    return frozenset(
+    return {
         elem for elem from 0 <= elem < set_[0] if set_member(elem + 1, set_)
-    )
+    }
 
 cdef _set_set(set_type set_, pset):
     # set elements of set_type by elements from a Python Container
@@ -99,11 +99,11 @@ cdef _get_dd_setfam(dd_SetFamilyPtr setfam):
     if setfam == NULL:
         raise ValueError("failed to get set family")
     result = [
-        frozenset(
+        {
             elem
             for elem from 0 <= elem < setfam.setsize
             if set_member(elem + 1, setfam.set[i])
-        )
+        }
         for i from 0 <= i < setfam.famsize
     ]
     dd_FreeSetFamily(setfam)

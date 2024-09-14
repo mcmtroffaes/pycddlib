@@ -32,16 +32,16 @@ def test_make_vertex_adjacency_list() -> None:
     # The first vertex is adjacent to the second, fourth and eighth
     # (note the conversion to a pythonic numbering system)
     adjacency_list = [
-        [1, 3, 7],
-        [0, 2, 6],
-        [1, 3, 4],
-        [0, 2, 5],
-        [2, 5, 6],
-        [3, 4, 7],
-        [1, 4, 7],
-        [0, 5, 6],
+        {1, 3, 7},
+        {0, 2, 6},
+        {1, 3, 4},
+        {0, 2, 5},
+        {2, 5, 6},
+        {3, 4, 7},
+        {1, 4, 7},
+        {0, 5, 6},
     ]
-    assert adjacency == [frozenset(x) for x in adjacency_list]
+    assert adjacency == adjacency_list
 
 
 def test_make_facet_adjacency_list() -> None:
@@ -60,14 +60,14 @@ def test_make_facet_adjacency_list() -> None:
     poly = cdd.polyhedron_from_matrix(mat)
 
     adjacency_list = [
-        [1, 2, 3, 4, 6],
-        [0, 2, 3, 5],
-        [0, 1, 4, 5],
-        [0, 1, 5, 6],
-        [0, 2, 5, 6],
-        [1, 2, 3, 4, 6],
-        [0, 3, 4, 5],
+        {1, 2, 3, 4, 6},
+        {0, 2, 3, 5},
+        {0, 1, 4, 5},
+        {0, 1, 5, 6},
+        {0, 2, 5, 6},
+        {1, 2, 3, 4, 6},
+        {0, 3, 4, 5},
     ]
 
     adjacency = cdd.copy_input_adjacency(poly)
-    assert adjacency == [frozenset(x) for x in adjacency_list]
+    assert adjacency == adjacency_list
