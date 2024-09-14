@@ -1,30 +1,13 @@
 .. testsetup::
 
-   import cdd
    import cdd.gmp
    from fractions import Fraction
 
 Solving Linear Programs
 =======================
 
->>> mat = cdd.gmp.matrix_from_array([[Fraction(4, 3),-2,-1],[Fraction(2, 3),0,-1],[0,1,0],[0,0,1]])
->>> mat.obj_type = cdd.LPObjType.MAX
->>> mat.obj_func = (0,3,4)
->>> mat.rep_type = cdd.RepType.INEQUALITY
->>> print(mat)
-H-representation
-begin
- 4 3 rational
- 4/3 -2 -1
- 2/3 0 -1
- 0 1 0
- 0 0 1
-end
-maximize
- 0 3 4
->>> print(mat.obj_func)
-[Fraction(0, 1), Fraction(3, 1), Fraction(4, 1)]
->>> lp = cdd.gmp.linprog_from_matrix(mat)
+>>> array = [[Fraction(4, 3),-2,-1],[Fraction(2, 3),0,-1],[0,1,0],[0,0,1],[0,3,4]]
+>>> lp = cdd.gmp.linprog_from_array(array, obj_type=cdd.LPObjType.MAX)
 >>> cdd.gmp.linprog_solve(lp)
 >>> lp.status == cdd.LPStatusType.OPTIMAL
 True
