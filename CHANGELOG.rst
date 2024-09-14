@@ -82,7 +82,7 @@ Fully detailed changes:
     - The ``Polyhedron.get_...`` methods are now ``copy_...``. This reflects the
       upstream naming of these functions.
 
-* Pickle support for ``Matrix``, ``LinProg`` (see issue #47).
+* Pickle support for ``Matrix`` and ``LinProg`` (see issue #47).
   ``Polyhedron`` does not have pickle support as it is too complex to implement.
   As a fallback, you can pickle a matrix
   that you then explicitly convert to a polyhedron,
