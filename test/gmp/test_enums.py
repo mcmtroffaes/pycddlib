@@ -1,4 +1,4 @@
-from enum import IntFlag
+from enum import IntEnum
 
 import pytest
 
@@ -10,5 +10,5 @@ import cdd.gmp
     "name", ["RepType", "LPObjType", "LPStatusType", "LPSolverType"]
 )
 def test_gmp_rep_type(name: str) -> None:
-    assert issubclass(getattr(cdd, name), IntFlag)
+    assert issubclass(getattr(cdd, name), IntEnum)
     assert getattr(cdd, name) is getattr(cdd.gmp, name)

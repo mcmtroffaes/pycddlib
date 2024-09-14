@@ -17,23 +17,30 @@
 
 # wrapper classes to expose enums
 # currently unused enums are marked as private
+# note "cpdef enum" is more efficient but does not work well with type annotations
 
-cpdef enum _AdjacencyTestType:
+from enum import IntEnum
+
+class _AdjacencyTestType(IntEnum):
     COMBINATORIAL = dd_Combinatorial
     ALGEBRAIC = dd_Algebraic
 
-cpdef enum _NumberType:
+class _NumberType(IntEnum):
     UNKNOWN = dd_Unknown
     REAL = dd_Real
     RATIONAL = dd_Rational
     INTEGER = dd_Integer
 
-cpdef enum RepType:
+class RepType(IntEnum):
+    """Type of representation.
+    Use :attr:`INEQUALITY` for H-representation
+    and :attr:`GENERATOR` for V-representation.
+    """
     UNSPECIFIED = dd_Unspecified
     INEQUALITY = dd_Inequality
     GENERATOR = dd_Generator
 
-cpdef enum _RowOrderType:
+class _RowOrderType(IntEnum):
     MAX_INDEX = dd_MaxIndex
     MIN_INDEX = dd_MinIndex
     MIN_CUTOFF = dd_MinCutoff
@@ -43,7 +50,7 @@ cpdef enum _RowOrderType:
     LEX_MAX = dd_LexMax
     RANDOM_ROW = dd_RandomRow
 
-cpdef enum _Error:
+class _Error(IntEnum):
     DIMENSION_TOO_LARGE = dd_DimensionTooLarge
     IMPROPER_INPUT_FORMAT = dd_ImproperInputFormat
     NEGATIVE_MATRIX_SIZE = dd_NegativeMatrixSize
@@ -63,21 +70,24 @@ cpdef enum _Error:
     NUMERICALLY_INCONSISTENT = dd_NumericallyInconsistent
     NO_ERROR = dd_NoError
 
-cpdef enum _CompStatus:
+class _CompStatus(IntEnum):
     IN_PROGRESS = dd_InProgress
     ALL_FOUND = dd_AllFound
     REGION_EMPTY = dd_RegionEmpty
 
-cpdef enum LPObjType:
+class LPObjType(IntEnum):
+    """Type of objective for a linear program."""
     NONE = dd_LPnone
     MAX = dd_LPmax
     MIN = dd_LPmin
 
-cpdef enum LPSolverType:
+class LPSolverType(IntEnum):
+    """Type of solver for a linear program."""
     CRISS_CROSS = dd_CrissCross
     DUAL_SIMPLEX = dd_DualSimplex
 
-cpdef enum LPStatusType:
+class LPStatusType(IntEnum):
+    """Status of a linear program."""
     UNDECIDED = dd_LPSundecided
     OPTIMAL = dd_Optimal
     INCONSISTENT = dd_Inconsistent

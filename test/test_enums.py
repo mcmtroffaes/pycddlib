@@ -1,4 +1,4 @@
-from enum import IntFlag
+from enum import IntEnum
 
 import cdd
 
@@ -16,4 +16,4 @@ def test_rep_type() -> None:
     assert [val.value for val in cdd.RepType] == [0, 1, 2]
     assert isinstance(cdd.RepType.INEQUALITY, cdd.RepType)
     assert isinstance(cdd.RepType.INEQUALITY, int)
-    assert issubclass(cdd.RepType, IntFlag)
+    assert issubclass(cdd.RepType, IntEnum)

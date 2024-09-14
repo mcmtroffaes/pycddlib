@@ -15,7 +15,7 @@
 # with this program; if not, write to the Free Software Foundation, Inc.,
 # 51 Franklin Street, Fifth Floor, Boston, MA 02110-1301 USA.
 
-from typing_extensions import deprecated  # new in Python 3.13
+from collections.abc import Sequence, Set
 
 cimport cpython.mem
 cimport cpython.unicode
@@ -118,47 +118,95 @@ cdef _raise_error(dd_ErrorType error, msg):
 # extension classes to wrap matrix, linear program, and polyhedron
 
 cdef class Matrix:
+    r"""A class for working with sets of linear constraints and extreme points.
+
+    A matrix :math:`[b \quad -A]` in the H-representation corresponds to a
+    polyhedron described by
+
+    .. math::
+       A_i x &\le b_i \qquad \forall i\in\{0,\dots,n-1\}\setminus L \\
+       A_i x &=   b_i \qquad \forall i\in L
+
+    where :math:`L` is :attr:`~cdd.Matrix.lin_set` and :math:`A_i`
+    corresponds to the :math:`i`-th row of :math:`A`.
+
+    A matrix :math:`[t \quad V]` in the V-representation corresponds to a polyhedron
+    described by
+
+    .. math::
+       \mathrm{conv}\{V_i\colon t_i=1\}+\mathrm{nonnegspan}\{V_i\colon t_i=0,i\not\in L\}+\mathrm{linspan}\{V_i\colon t_i=0,i\in L\}
+
+    where :math:`L` is :attr:`~cdd.Matrix.lin_set` and :math:`V_i`
+    corresponds to the :math:`i`-th row of :math:`V`. Here
+    :math:`\mathrm{conv}` is the convex hull operator,
+    :math:`\mathrm{nonnegspan}` is the non-negative span operator, and
+    :math:`\mathrm{linspan}` is the linear span operator. All entries
+    of :math:`t` must be either :math:`0` or :math:`1`.
+    """
+
     cdef dd_MatrixPtr dd_mat
+    # hack for annotation of properties
+    __annotations__ = dict(
+        array=Sequence[Sequence[NumberType]],
+        lin_set=Set[int],
+        rep_type=RepType,
+        obj_type=LPObjType,
+        obj_func=Sequence[NumberType],
+    )
 
-    property array:
-        def __get__(self):
-            cdef _Shape shape = _Shape(self.dd_mat.rowsize, self.dd_mat.colsize)
-            return _get_array_from_matrix(self.dd_mat.matrix, shape)
+    @property
+    def array(self):
+        """Array for the inequalities or generators represented by the matrix."""
+        cdef _Shape shape = _Shape(self.dd_mat.rowsize, self.dd_mat.colsize)
+        return _get_array_from_matrix(self.dd_mat.matrix, shape)
 
-    property lin_set:
-        def __get__(self):
-            return _get_set(self.dd_mat.linset)
+    @property
+    def lin_set(self):
+        """A set containing the rows of linearity.
+        These are linear generators for the V-representation, and
+        equalities for the H-representation.
+        """
+        return _get_set(self.dd_mat.linset)
 
-        def __set__(self, value):
-            _set_set(self.dd_mat.linset, value)
+    @lin_set.setter
+    def lin_set(self, value):
+        _set_set(self.dd_mat.linset, value)
 
-    property rep_type:
-        def __get__(self):
-            return RepType(self.dd_mat.representation)
+    @property
+    def rep_type(self):
+        """Representation:
+        inequalities (H-representation), generators (V-representation), or unspecified.
+        """
+        return RepType(self.dd_mat.representation)
 
-        def __set__(self, dd_RepresentationType value):
-            self.dd_mat.representation = value
+    @rep_type.setter
+    def rep_type(self, dd_RepresentationType value):
+        self.dd_mat.representation = value
 
-    property obj_type:
-        def __get__(self):
-            return LPObjType(self.dd_mat.objective)
+    @property
+    def obj_type(self):
+        """Linear programming objective: maximize, minimize, or none."""
+        return LPObjType(self.dd_mat.objective)
 
-        def __set__(self, dd_LPObjectiveType value):
-            self.dd_mat.objective = value
+    @obj_type.setter
+    def obj_type(self, dd_LPObjectiveType value):
+        self.dd_mat.objective = value
 
-    property obj_func:
-        def __get__(self):
-            cdef dd_colrange colindex
-            return [_get_mytype(self.dd_mat.rowvec[colindex])
-                    for colindex in range(self.dd_mat.colsize)]
+    @property
+    def obj_func(self):
+        """Linear programming objective function."""
+        cdef dd_colrange colindex
+        return [_get_mytype(self.dd_mat.rowvec[colindex])
+                for colindex in range(self.dd_mat.colsize)]
 
-        def __set__(self, obj_func):
-            cdef Py_ssize_t colindex
-            if len(obj_func) != self.dd_mat.colsize:
-                raise ValueError(
-                    "objective function does not match matrix column size")
-            for colindex, value in enumerate(obj_func):
-                _set_mytype(self.dd_mat.rowvec[colindex], value)
+    @obj_func.setter
+    def obj_func(self, obj_func):
+        cdef Py_ssize_t colindex
+        if len(obj_func) != self.dd_mat.colsize:
+            raise ValueError(
+                "objective function does not match matrix column size")
+        for colindex, value in enumerate(obj_func):
+            _set_mytype(self.dd_mat.rowvec[colindex], value)
 
     def __str__(self):
         cdef libc.stdio.FILE *pfile
@@ -226,12 +274,13 @@ cdef _get_array_from_matrix(mytype **pp, _Shape shape):
 # create matrix and wrap into Matrix class
 # https://cython.readthedocs.io/en/latest/src/userguide/extension_types.html#instantiation-from-existing-c-c-pointers
 def matrix_from_array(
-    array,
-    lin_set=(),
-    dd_RepresentationType rep_type=dd_Unspecified,
-    dd_LPObjectiveType obj_type=dd_LPnone,
-    obj_func=None,
-):
+    array: Sequence[Sequence[SupportsNumberType]],
+    lin_set: Container[int] = (),
+    rep_type: RepType = RepType.UNSPECIFIED,
+    obj_type: LPObjType = LPObjType.NONE,
+    obj_func: Optional[Sequence[SupportsNumberType]] = None,
+) -> Matrix:
+    """Construct a matrix with the given attributes."""
     cdef Py_ssize_t numrows, numcols, rowindex, colindex
     cdef dd_MatrixPtr dd_mat
     cdef _Shape shape = _array_shape(array)
@@ -241,8 +290,8 @@ def matrix_from_array(
     try:
         _set_matrix_from_array(dd_mat.matrix, shape, array)
         _set_set(dd_mat.linset, lin_set)
-        dd_mat.representation = rep_type
-        dd_mat.objective = obj_type
+        dd_mat.representation = rep_type.value
+        dd_mat.objective = obj_type.value
         if obj_func is not None:
             if len(obj_func) != dd_mat.colsize:
                 raise ValueError(
@@ -255,16 +304,25 @@ def matrix_from_array(
     return matrix_from_ptr(dd_mat)
 
 
-def matrix_copy(Matrix matrix):
-    return matrix_from_ptr(dd_CopyMatrix(matrix.dd_mat))
+def matrix_copy(mat: Matrix) -> Matrix:
+    """Return a copy of *mat*."""
+    return matrix_from_ptr(dd_CopyMatrix(mat.dd_mat))
 
 
-def matrix_append_to(Matrix matrix1, Matrix matrix2):
-    if dd_MatrixAppendTo(&matrix1.dd_mat, matrix2.dd_mat) != 1:
+def matrix_append_to(mat1: Matrix, mat2: Matrix) -> None:
+    """Append *mat2* to *mat1*.
+
+    A :exc:`ValueError` is raised if the column sizes are unequal.
+    """
+    if dd_MatrixAppendTo(&mat1.dd_mat, mat2.dd_mat) != 1:
         raise ValueError("cannot append because column sizes differ")
 
 
-def matrix_canonicalize(Matrix mat):
+def matrix_canonicalize(mat: Matrix) -> tuple[Set[int], Set[int]]:
+    """Transform to canonical representation by recognizing all
+    implicit linearities and all redundancies. These are returned
+    as a pair of sets of row indices.
+    """
     cdef dd_rowset impl_linset
     cdef dd_rowset redset
     cdef dd_rowindex newpos
@@ -285,45 +343,76 @@ def matrix_canonicalize(Matrix mat):
 
 
 cdef class LinProg:
+    """A linear program: a set of inequalities and an objective function to optimize."""
     cdef dd_LPPtr dd_lp
+    __annotations__ = dict(
+        array=Sequence[Sequence[NumberType]],
+        dual_solution=Sequence[tuple[int, NumberType]],
+        obj_type=LPObjType,
+        obj_value=NumberType,
+        primal_solution=Sequence[NumberType],
+        solver=LPSolverType,
+        status=LPStatusType,
+    )
 
-    property array:
-        def __get__(self):
-            cdef _Shape shape = _Shape(self.dd_lp.m, self.dd_lp.d)
-            return _get_array_from_matrix(self.dd_lp.A, shape)
+    @property
+    def array(self):
+        r"""The array representing the linear program. More specifically,
+        the constraints :math:`Ax\le b` and objective function :math:`c^T x`
+        are stored as an array as follows:
 
-    property obj_type:
-        def __get__(self):
-            return LPObjType(self.dd_lp.objective)
+        .. math::
+            \begin{array}{cc} b & -A \\ 0 & c \end{array}
 
-        def __set__(self, dd_LPObjectiveType value):
-            self.dd_lp.objective = value
+        i.e. the constraints are stored as a H-representation (with inequalities only),
+        and the objective function is stored in the final row.
+        Only inequality constraints are represented.
+        Equality constraints can be represented by two opposing inequalities.
+        """
+        cdef _Shape shape = _Shape(self.dd_lp.m, self.dd_lp.d)
+        return _get_array_from_matrix(self.dd_lp.A, shape)
 
-    property status:
-        def __get__(self):
-            return LPStatusType(self.dd_lp.LPS)
+    @property
+    def obj_type(self):
+        """Whether we are minimizing or maximizing."""
+        return LPObjType(self.dd_lp.objective)
 
-    property obj_value:
-        def __get__(self):
-            return _get_mytype(self.dd_lp.optvalue)
+    @obj_type.setter
+    def obj_type(self, dd_LPObjectiveType value):
+        self.dd_lp.objective = value
 
-    property primal_solution:
-        def __get__(self):
-            cdef dd_colrange colindex
-            return [_get_mytype(self.dd_lp.sol[colindex])
-                    for colindex in range(1, self.dd_lp.d)]
+    @property
+    def status(self):
+        """The status of the linear program, after solving."""
+        return LPStatusType(self.dd_lp.LPS)
 
-    property dual_solution:
-        def __get__(self):
-            cdef dd_colrange colindex
-            return [
-                (
-                    self.dd_lp.nbindex[colindex + 1] - 1,
-                    _get_mytype(self.dd_lp.dsol[colindex])
-                )
-                for colindex in range(1, self.dd_lp.d)
-                if self.dd_lp.nbindex[colindex + 1] > 0
-            ]
+    @property
+    def obj_value(self):
+        """The optimal value of the objective function, after solving."""
+        return _get_mytype(self.dd_lp.optvalue)
+
+    @property
+    def primal_solution(self):
+        """The optimal value of the primal variables, after solving."""
+        cdef dd_colrange colindex
+        return [_get_mytype(self.dd_lp.sol[colindex])
+                for colindex in range(1, self.dd_lp.d)]
+
+    @property
+    def dual_solution(self):
+        """The optimal value of the dual variables, after solving.
+        Only the non-basic components are given (the basic components are zero).
+        They are returned as index-value pairs.
+        """
+        cdef dd_colrange colindex
+        return [
+            (
+                self.dd_lp.nbindex[colindex + 1] - 1,
+                _get_mytype(self.dd_lp.dsol[colindex])
+            )
+            for colindex in range(1, self.dd_lp.d)
+            if self.dd_lp.nbindex[colindex + 1] > 0
+        ]
 
     def __str__(self):
         cdef libc.stdio.FILE *pfile
@@ -354,6 +443,11 @@ cdef linprog_from_ptr(dd_LPPtr dd_lp):
 
 
 def linprog_from_matrix(Matrix mat) -> LinProg:
+    """Convert *mat* into a linear program.
+    Note that *mat* must have the H-representation,
+    and its objective type must be set,
+    otherwise a :exc:`ValueError` is raised.
+    """
     # cddlib does not check if obj_type is valid
     if mat.obj_type != dd_LPmax and mat.obj_type != dd_LPmin:
         raise ValueError("obj_type must be MIN or MAX")
@@ -368,7 +462,14 @@ def linprog_from_matrix(Matrix mat) -> LinProg:
     return linprog_from_ptr(dd_lp)
 
 
-def linprog_from_array(array, dd_LPObjectiveType obj_type):
+def linprog_from_array(
+    array: Sequence[Sequence[SupportsNumberType]], obj_type: LPObjType
+) -> LinProg:
+    """Construct a linear program from *array*.
+    The top part of *array* represents a set of inequalities
+    in the H-representation,
+    and the final row of *array* represents the objective function.
+    """
     if obj_type != dd_LPmax and obj_type != dd_LPmin:
         raise ValueError("obj_type must be MIN or MAX")
     cdef _Shape shape = _array_shape(array)
@@ -385,7 +486,10 @@ def linprog_from_array(array, dd_LPObjectiveType obj_type):
     return linprog_from_ptr(dd_lp)
 
 
-def linprog_solve(LinProg lp, dd_LPSolverType solver=dd_DualSimplex):
+def linprog_solve(
+    lp: LinProg, solver: LPSolverType = LPSolverType.DUAL_SIMPLEX
+) -> None:
+    """Solve the linear program *lp* using *solver*."""
     cdef dd_ErrorType error = dd_NoError
     dd_LPSolve(lp.dd_lp, solver, &error)
     if error != dd_NoError:
@@ -393,11 +497,16 @@ def linprog_solve(LinProg lp, dd_LPSolverType solver=dd_DualSimplex):
 
 
 cdef class Polyhedron:
+    """Representation of a polyhedron."""
     cdef dd_PolyhedraPtr dd_poly
+    __annotations__ = dict(
+        rep_type=RepType,
+    )
 
-    property rep_type:
-        def __get__(self):
-            return RepType(self.dd_poly.representation)
+    @property
+    def rep_type(self):
+        """Representation type of the input."""
+        return RepType(self.dd_poly.representation)
 
     def __str__(self):
         cdef libc.stdio.FILE *pfile
@@ -420,7 +529,8 @@ cdef polyhedron_from_ptr(dd_PolyhedraPtr dd_poly):
     return poly
 
 
-def polyhedron_from_matrix(Matrix mat):
+def polyhedron_from_matrix(mat: Matrix) -> Polyhedron:
+    """Run the double description method to convert *mat* into a polyhedron."""
     if mat.rep_type != dd_Inequality and mat.rep_type != dd_Generator:
         raise ValueError("rep_type must be INEQUALITY or GENERATOR")
     cdef dd_ErrorType error = dd_NoError
@@ -433,35 +543,83 @@ def polyhedron_from_matrix(Matrix mat):
     return polyhedron_from_ptr(dd_poly)
 
 
-def copy_input(Polyhedron poly):
+def copy_input(poly: Polyhedron) -> Matrix:
+    """Returns the original matrix that the polyhedron was constructed from.
+
+    .. versionadded:: 3.0.0
+    """
     return matrix_from_ptr(dd_CopyInput(poly.dd_poly))
 
 
-def copy_output(Polyhedron poly):
+def copy_output(poly: Polyhedron) -> Matrix:
+    """Returns the dual representation of the original matrix.
+    If the original was a H-representation, this will return its V-representation,
+    and vice versa.
+
+    .. note::
+
+        The H-representation and/or V-representation are not guaranteed to
+        be minimal, that is, they can still contain redundancy.
+
+    .. versionadded:: 3.0.0
+    """
     return matrix_from_ptr(dd_CopyOutput(poly.dd_poly))
 
 
-def copy_inequalities(Polyhedron poly):
+def copy_inequalities(poly: Polyhedron) -> Matrix:
+    """Copy a H-representation of the inequalities.
+
+    For a polyhedron described as `P = {x | A x <= b}`, the
+    H-representation is the matrix `[b -A]`.
+    """
     return matrix_from_ptr(dd_CopyInequalities(poly.dd_poly))
 
 
-def copy_generators(Polyhedron poly):
+def copy_generators(poly: Polyhedron) -> Matrix:
+    """Copy a V-representation of all the generators.
+
+    For a polyhedron described as
+    `P = conv(v_1, ..., v_n) + nonneg(r_1,..., r_s)`,
+    the V-representation matrix is `[t V]` where `t` is the
+    column vector with `n` ones followed by `s` zeroes, and `V` is the
+    stacked matrix of `n` vertex row vectors on top of `s` ray row vectors.
+    """
     return matrix_from_ptr(dd_CopyGenerators(poly.dd_poly))
 
 
-def copy_adjacency(Polyhedron poly):
+def copy_adjacency(poly: Polyhedron) -> Sequence[Set[int]]:
+    """Get the adjacencies.
+
+    H-representation: For each vertex, list adjacent vertices.
+    V-representation: For each face, list adjacent faces.
+    """
     return _get_dd_setfam(dd_CopyAdjacency(poly.dd_poly))
 
 
-def copy_input_adjacency(Polyhedron poly):
+def copy_input_adjacency(poly: Polyhedron) -> Sequence[Set[int]]:
+    """Get the input adjacencies.
+
+    H-representation: For each face, list adjacent faces.
+    V-representation: For each vertex, list adjacent vertices.
+    """
     return _get_dd_setfam(dd_CopyInputAdjacency(poly.dd_poly))
 
 
-def copy_incidence(Polyhedron poly):
+def copy_incidence(poly: Polyhedron) -> Sequence[Set[int]]:
+    """Get the incidences.
+
+    H-representation: For each vertex, list adjacent faces.
+    V-representation: For each face, list adjacent vertices.
+    """
     return _get_dd_setfam(dd_CopyIncidence(poly.dd_poly))
 
 
-def copy_input_incidence(Polyhedron poly):
+def copy_input_incidence(poly: Polyhedron) -> Sequence[Set[int]]:
+    """Get the input incidences.
+
+    H-representation: For each face, list adjacent vertices.
+    V-representation: For each vertex, list adjacent faces.
+    """
     return _get_dd_setfam(dd_CopyInputIncidence(poly.dd_poly))
 
 

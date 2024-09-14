@@ -8,9 +8,8 @@ Welcome to pycddlib's documentation!
    :maxdepth: 2
 
    quickstart
-   constants
-   matrix
-   linprog
-   polyhedron
+   cdd
+   cddgmp
+   examples
    changes
    license
