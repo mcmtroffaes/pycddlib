@@ -19,6 +19,14 @@
 # with this program; if not, write to the Free Software Foundation, Inc.,
 # 51 Franklin Street, Fifth Floor, Boston, MA 02110-1301 USA.
 
+from fractions import Fraction
+from typing import Union
+
+from cdd import LPObjType, LPSolverType, LPStatusType, RepType
+
+NumberType = Fraction
+SupportsNumberType = Union[Fraction, int]
+
 cdef extern from * nogil:
     "#define GMPRATIONAL"
 
@@ -26,9 +34,6 @@ include "all.pxi"
 include "setoper.pxi"
 include "mytype_gmp.pxi"
 include "cdd.pxi"
-
-from cdd import LPObjType, LPSolverType, LPStatusType, RepType
-
 
 cdef dd_NumberType NUMBER_TYPE = dd_Rational
 

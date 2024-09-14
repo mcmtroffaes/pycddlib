@@ -122,15 +122,8 @@ cdef class Matrix:
 
     property array:
         def __get__(self):
-            cdef dd_rowrange i
-            cdef dd_colrange j
-            return [
-                [
-                    _get_mytype(self.dd_mat.matrix[i][j])
-                    for j in range(self.dd_mat.colsize)
-                ]
-                for i in range(self.dd_mat.rowsize)
-            ]
+            cdef _Shape shape = _Shape(self.dd_mat.rowsize, self.dd_mat.colsize)
+            return _get_array_from_matrix(self.dd_mat.matrix, shape)
 
     property lin_set:
         def __get__(self):
@@ -213,12 +206,21 @@ cdef _array_shape(array):
         raise ValueError("array too large")
     return shape
 
-cdef _set_matrix(mytype **pp, _Shape shape, array):
+cdef _set_matrix_from_array(mytype **pp, _Shape shape, array):
     for rowindex, row in enumerate(array):
         if len(row) != shape.numcols:
             raise ValueError("rows have different lengths")
         for colindex, value in enumerate(row):
             _set_mytype(pp[rowindex][colindex], value)
+
+
+cdef _get_array_from_matrix(mytype **pp, _Shape shape):
+    cdef dd_rowrange i
+    cdef dd_colrange j
+    return [
+        [_get_mytype(pp[i][j]) for j in range(shape.numcols)]
+        for i in range(shape.numrows)
+    ]
 
 
 # create matrix and wrap into Matrix class
@@ -237,7 +239,7 @@ def matrix_from_array(
     if dd_mat == NULL:
         raise MemoryError
     try:
-        _set_matrix(dd_mat.matrix, shape, array)
+        _set_matrix_from_array(dd_mat.matrix, shape, array)
         _set_set(dd_mat.linset, lin_set)
         dd_mat.representation = rep_type
         dd_mat.objective = obj_type
@@ -287,15 +289,8 @@ cdef class LinProg:
 
     property array:
         def __get__(self):
-            cdef dd_rowrange i
-            cdef dd_colrange j
-            return [
-                [
-                    _get_mytype(self.dd_lp.A[i][j])
-                    for j in range(self.dd_lp.d)
-                ]
-                for i in range(self.dd_lp.m)
-            ]
+            cdef _Shape shape = _Shape(self.dd_lp.m, self.dd_lp.d)
+            return _get_array_from_matrix(self.dd_lp.A, shape)
 
     property obj_type:
         def __get__(self):
@@ -383,7 +378,7 @@ def linprog_from_array(array, dd_LPObjectiveType obj_type):
     if dd_lp == NULL:
         raise MemoryError
     try:
-        _set_matrix(dd_lp.A, shape, array)
+        _set_matrix_from_array(dd_lp.A, shape, array)
     except:  # noqa: E722
         dd_FreeLPData(dd_lp)
         raise
@@ -398,8 +393,11 @@ def linprog_solve(LinProg linprog, dd_LPSolverType solver=dd_DualSimplex):
 
 
 cdef class Polyhedron:
-
     cdef dd_PolyhedraPtr dd_poly
+
+    property rep_type:
+        def __get__(self):
+            return RepType(self.dd_poly.representation)
 
     def __str__(self):
         cdef libc.stdio.FILE *pfile
@@ -407,39 +405,67 @@ cdef class Polyhedron:
         dd_WritePolyFile(pfile, self.dd_poly)
         return _tmpread(pfile).rstrip('\n')
 
-    def __cinit__(self, Matrix mat):
-        cdef dd_ErrorType error = dd_NoError
-        # initialize pointers
-        self.dd_poly = NULL
-        # read matrix
-        self.dd_poly = dd_DDMatrix2Poly(mat.dd_mat, &error)
-        if self.dd_poly == NULL or error != dd_NoError:
-            # do not call dd_FreePolyhedra(self.dd_poly)
-            # see issue #7
-            _raise_error(error, "failed to load polyhedra")
+    def __init__(self):
+        raise TypeError("This class cannot be instantiated directly.")
 
     def __dealloc__(self):
         if self.dd_poly:
             dd_FreePolyhedra(self.dd_poly)
         self.dd_poly = NULL
 
-    def get_inequalities(self):
-        return matrix_from_ptr(dd_CopyInequalities(self.dd_poly))
+cdef polyhedron_from_ptr(dd_PolyhedraPtr dd_poly):
+    if dd_poly == NULL:
+        raise MemoryError  # assume malloc failed
+    cdef Polyhedron poly = Polyhedron.__new__(Polyhedron)
+    poly.dd_poly = dd_poly
+    return poly
 
-    def get_generators(self):
-        return matrix_from_ptr(dd_CopyGenerators(self.dd_poly))
 
-    def get_adjacency(self):
-        return _get_dd_setfam(dd_CopyAdjacency(self.dd_poly))
+def polyhedron_from_matrix(Matrix mat):
+    if mat.rep_type != dd_Inequality and mat.rep_type != dd_Generator:
+        raise ValueError("rep_type must be INEQUALITY or GENERATOR")
+    cdef dd_ErrorType error = dd_NoError
+    dd_poly = dd_DDMatrix2Poly(mat.dd_mat, &error)
+    if dd_poly == NULL:
+        raise MemoryError
+    if error != dd_NoError:
+        # TODO should call dd_FreePolyhedra(dd_poly)... see issue #7
+        _raise_error(error, "failed to load polyhedra")
+    return polyhedron_from_ptr(dd_poly)
 
-    def get_input_adjacency(self):
-        return _get_dd_setfam(dd_CopyInputAdjacency(self.dd_poly))
 
-    def get_incidence(self):
-        return _get_dd_setfam(dd_CopyIncidence(self.dd_poly))
+def copy_input(Polyhedron poly):
+    return matrix_from_ptr(dd_CopyInput(poly.dd_poly))
 
-    def get_input_incidence(self):
-        return _get_dd_setfam(dd_CopyInputIncidence(self.dd_poly))
+
+def copy_output(Polyhedron poly):
+    return matrix_from_ptr(dd_CopyOutput(poly.dd_poly))
+
+
+
+def copy_inequalities(Polyhedron poly):
+    return matrix_from_ptr(dd_CopyInequalities(poly.dd_poly))
+
+
+def copy_generators(Polyhedron poly):
+    return matrix_from_ptr(dd_CopyGenerators(poly.dd_poly))
+
+
+def copy_adjacency(Polyhedron poly):
+    return _get_dd_setfam(dd_CopyAdjacency(poly.dd_poly))
+
+
+def copy_input_adjacency(Polyhedron poly):
+    return _get_dd_setfam(dd_CopyInputAdjacency(poly.dd_poly))
+
+
+def copy_incidence(Polyhedron poly):
+    return _get_dd_setfam(dd_CopyIncidence(poly.dd_poly))
+
+
+def copy_input_incidence(Polyhedron poly):
+    return _get_dd_setfam(dd_CopyInputIncidence(poly.dd_poly))
+
 
 # module initialization code comes here
 # initialize module constants

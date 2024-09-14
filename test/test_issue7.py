@@ -5,7 +5,7 @@ import cdd
 
 # Check that numerical inconsistency is reported properly.
 def test_issue7() -> None:
-    m = [
+    array = [
         [1.0, -4.0, -40.0, -4.0, 30.0677432, -0.93140119, -20.75373128],
         [1.0, 4.0, -40.0, -4.0, 31.02398625, 5.00096, -18.98561378],
         [1.0, -4.0, -40.0, -4.0, 31.02398625, -1.09504, -20.07358622],
@@ -17,7 +17,6 @@ def test_issue7() -> None:
         [1.0, -4.0, 40.0, 4.0, -31.21985375, -4.91296, 17.90974622],
         [1.0, 4.0, 40.0, -4.0, -28.86014625, 4.91296, 20.26945371],
     ]
-    m2 = cdd.matrix_from_array(m)
-    m2.rep_type = cdd.RepType.GENERATOR
+    mat = cdd.matrix_from_array(array, rep_type=cdd.RepType.GENERATOR)
     with pytest.raises(RuntimeError, match="inconsistency"):
-        cdd.Polyhedron(m2)
+        cdd.polyhedron_from_matrix(mat)

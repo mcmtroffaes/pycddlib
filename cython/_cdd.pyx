@@ -19,6 +19,11 @@
 # with this program; if not, write to the Free Software Foundation, Inc.,
 # 51 Franklin Street, Fifth Floor, Boston, MA 02110-1301 USA.
 
+from typing import SupportsFloat
+
+NumberType = float
+SupportsNumberType = SupportsFloat
+
 cdef extern from * nogil:
     "#undef GMPRATIONAL"
 

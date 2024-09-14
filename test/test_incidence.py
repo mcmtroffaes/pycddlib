@@ -2,7 +2,7 @@ import cdd
 
 
 def test_vertex_incidence_cube() -> None:
-    # The following lines test that poly.get_vertex_incidence()
+    # The following lines test that cdd.copy_vertex_incidence(poly)
     # returns the correct incidences.
 
     # We start with the H-representation for a cube
@@ -17,8 +17,8 @@ def test_vertex_incidence_cube() -> None:
         ]
     )
     mat.rep_type = cdd.RepType.INEQUALITY
-    poly = cdd.Polyhedron(mat)
-    incidence = poly.get_incidence()
+    poly = cdd.polyhedron_from_matrix(mat)
+    incidence = cdd.copy_incidence(poly)
 
     # Family size should equal the number of vertices of the cube (8)
     assert len(incidence) == 8
@@ -56,7 +56,7 @@ def test_vertex_incidence_vtest_vo() -> None:
     )
 
     mat.rep_type = cdd.RepType.INEQUALITY
-    poly = cdd.Polyhedron(mat)
+    poly = cdd.polyhedron_from_matrix(mat)
 
     incidence_list = [
         {0, 4, 6},
@@ -71,7 +71,7 @@ def test_vertex_incidence_vtest_vo() -> None:
         {2, 4, 5},
     ]
 
-    incidence = poly.get_incidence()
+    incidence = cdd.copy_incidence(poly)
     assert incidence == [frozenset(x) for x in incidence_list]
 
 
@@ -88,8 +88,8 @@ def test_facet_incidence_cube() -> None:
         ]
     )
     mat.rep_type = cdd.RepType.INEQUALITY
-    poly = cdd.Polyhedron(mat)
-    incidence = poly.get_input_incidence()
+    poly = cdd.polyhedron_from_matrix(mat)
+    incidence = cdd.copy_input_incidence(poly)
 
     # Family size should equal the number of facets of the cube (6),
     # plus 1 (the empty infinite ray)
@@ -128,7 +128,7 @@ def test_facet_incidence_vtest_vo() -> None:
     )
 
     mat.rep_type = cdd.RepType.INEQUALITY
-    poly = cdd.Polyhedron(mat)
+    poly = cdd.polyhedron_from_matrix(mat)
 
     incidence_list = [
         {0, 1, 2, 3, 4},
@@ -140,4 +140,4 @@ def test_facet_incidence_vtest_vo() -> None:
         {0, 4, 7, 8},
     ]
 
-    assert poly.get_input_incidence() == [frozenset(x) for x in incidence_list]
+    assert cdd.copy_input_incidence(poly) == [frozenset(x) for x in incidence_list]

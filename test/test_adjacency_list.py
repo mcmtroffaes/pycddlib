@@ -2,7 +2,7 @@ import cdd
 
 
 def test_make_vertex_adjacency_list() -> None:
-    # The following lines test that poly.get_adjacency_list()
+    # The following lines test that cdd.copy_adjacency_list(poly)
     # returns the correct adjacencies.
 
     # We start with the H-representation for a cube
@@ -17,8 +17,10 @@ def test_make_vertex_adjacency_list() -> None:
         ],
         rep_type=cdd.RepType.INEQUALITY,
     )
-    poly = cdd.Polyhedron(mat)
-    adjacency = poly.get_adjacency()
+    assert mat.rep_type == cdd.RepType.INEQUALITY
+    poly = cdd.polyhedron_from_matrix(mat)
+    assert poly.rep_type == cdd.RepType.INEQUALITY
+    adjacency = cdd.copy_adjacency(poly)
 
     # Family size should equal the number of vertices of the cube (8)
     assert len(adjacency) == 8
@@ -55,7 +57,7 @@ def test_make_facet_adjacency_list() -> None:
         ],
         rep_type=cdd.RepType.INEQUALITY,
     )
-    poly = cdd.Polyhedron(mat)
+    poly = cdd.polyhedron_from_matrix(mat)
 
     adjacency_list = [
         [1, 2, 3, 4, 6],
@@ -67,5 +69,5 @@ def test_make_facet_adjacency_list() -> None:
         [0, 3, 4, 5],
     ]
 
-    adjacency = poly.get_input_adjacency()
+    adjacency = cdd.copy_input_adjacency(poly)
     assert adjacency == [frozenset(x) for x in adjacency_list]
