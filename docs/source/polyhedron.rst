@@ -8,6 +8,14 @@
 Working With Polyhedron Representations
 =======================================
 
+.. class:: Polyhedron
+
+    Representation of a polyhedron.
+
+.. attribute:: Polyhedron.rep_type: RepType
+
+    Representation type (see :class:`~cdd.RepType`).
+
 .. function:: polyhedron_from_matrix(mat: Matrix) -> Polyhedron
 
     Run the double description method to convert a matrix representation into a
@@ -24,6 +32,11 @@ Working With Polyhedron Representations
     Returns the dual representation of the original matrix.
     If the original was a H-representation, this will return its V-representation,
     and vice versa.
+
+    .. note::
+
+        The H-representation and/or V-representation are not guaranteed to
+        be minimal, that is, they can still contain redundancy.
 
     .. versionadded:: 3.0.0
 
@@ -71,15 +84,6 @@ Working With Polyhedron Representations
 
     H-representation: For each face, list adjacent vertices.
     V-representation: For each vertex, list adjacent faces.
-
-.. attribute:: Polyhedron.rep_type: RepType
-
-    Representation type (see :class:`~cdd.RepType`).
-
-.. note::
-
-    The H-representation and/or V-representation are not guaranteed to
-    be minimal, that is, they can still contain redundancy.
 
 Examples
 --------
