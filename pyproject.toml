@@ -51,9 +51,5 @@ where = ["src"]
 cdd = ["py.typed"]
 
 [tool.mypy]
-files = ["src/**/*.pyi", "test/**/*.py", "docs/**/*.py"]
+files = ["test/**/*.py", "docs/**/*.py"]
 disallow_untyped_defs = true
-
-[[tool.mypy.overrides]]
-module = ["cdd._cdd", "cdd._cddgmp"]
-ignore_missing_imports = true

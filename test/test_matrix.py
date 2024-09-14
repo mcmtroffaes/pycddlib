@@ -63,3 +63,20 @@ def test_matrix_various() -> None:
     cdd.matrix_canonicalize(mat)
     assert_matrix_almost_equal(mat.array, [[1, 1]])
     assert_matrix_almost_equal(cdd.matrix_copy(mat).array, [[1, 1]])
+
+def test_doctest_1() -> None:
+    # the doctest has the rational version of this, here we check the float variant
+    array = [[1, 2], [3, 4]]
+    mat1 = cdd.matrix_from_array(array)
+    assert_matrix_almost_equal(mat1.array, array)
+    cdd.matrix_append_to(mat1, cdd.matrix_from_array([[5, 6]]))
+    assert_matrix_almost_equal(mat1.array, array + [[5, 6]])
+
+def test_doctest_2() -> None:
+    array = [[2, 1, 2, 3], [0, 1, 2, 3], [3, 0, 1, 2], [0, -2, -4, -6]]
+    mat = cdd.matrix_from_array(array)
+    with pytest.raises(ValueError, match="rep_type unspecified"):
+        cdd.matrix_canonicalize(mat)
+    mat.rep_type = cdd.RepType.INEQUALITY
+    assert cdd.matrix_canonicalize(mat) == ({1, 3}, {0})
+    assert_matrix_almost_equal(mat.array, [[0, 1, 2, 3], [3, 0, 1, 2]])
