@@ -44,9 +44,10 @@ Fully detailed changes:
   ``Matrix``, ``LinProg``, and ``Polyhedron`` objects.
   However, exceptions thrown from this function
   risk leaving the object in an invalid state.
-  Instead, cython recommends using factory functions instead.
-  So, to construct these objects, new factory functions have been introduced:
-  ``matrix_from_array``, ``linprog_from_matrix``, and ``polyhedron_from_matrix``.
+  Instead, cython recommends using factory functions.
+  So, new factory functions have been introduced to replace the old constructors:
+  ``matrix_from_array``, ``linprog_from_matrix``, ``linprog_from_array``,
+  and ``polyhedron_from_matrix``.
   As a consequence, errors during construction are now always correctly handled.
 
 * BACKWARDS INCOMPATIBLE:
@@ -81,7 +82,11 @@ Fully detailed changes:
     - The ``Polyhedron.get_...`` methods are now ``copy_...``. This reflects the
       upstream naming of these functions.
 
-* Pickle support for ``Matrix``, ``LinProg``, and ``Polyhedron`` (see issue #47).
+* Pickle support for ``Matrix``, ``LinProg`` (see issue #47).
+  ``Polyhedron`` does not have pickle support as it is too complex to implement.
+  As a fallback, you can pickle a matrix
+  that you then explicitly convert to a polyhedron,
+  although this will obviously be quite slow.
 
 * Thanks to the reorganization, there now is a standalone Python package that
   installs just the floating point interface without needing the gmp or cddlib
