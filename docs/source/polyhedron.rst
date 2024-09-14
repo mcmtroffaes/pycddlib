@@ -8,81 +8,73 @@
 Working With Polyhedron Representations
 =======================================
 
-.. class:: Polyhedron(mat)
+.. function:: polyhedron_from_matrix(mat: Matrix) -> Polyhedron
 
-    A class for converting between representations of a polyhedron.
+    Run the double description method to convert a matrix representation into a
+    polyhedron.
 
-    :param mat: The matrix to load the polyhedron from.
-    :type mat: :class:`~cdd.Matrix`
+.. function:: copy_input(poly: Polyhedron) -> Matrix
 
-Methods and Attributes
-----------------------
+    Returns the original matrix that the polyhedron was constructed from.
 
-.. method:: Polyhedron.get_inequalities()
+    .. versionadded:: 3.0.0
 
-        Get all inequalities.
+.. function:: copy_output(poly: Polyhedron) -> Matrix
 
-        :returns: H-representation.
-        :rtype: :class:`~cdd.Matrix`
+    Returns the dual representation of the original matrix.
+    If the original was a H-representation, this will return its V-representation,
+    and vice versa.
 
-        For a polyhedron described as `P = {x | A x <= b}`, the
-        H-representation is the matrix `[b -A]`.
+    .. versionadded:: 3.0.0
 
-.. method:: Polyhedron.get_generators()
+.. function:: copy_inequalities(poly: Polyhedron) -> Matrix
 
-        Get all generators.
+    Copy a H-representation of the inequalities.
 
-        :returns: V-representation.
-        :rtype: :class:`~cdd.Matrix`
+    For a polyhedron described as `P = {x | A x <= b}`, the
+    H-representation is the matrix `[b -A]`.
 
-        For a polyhedron described as `P = conv(v_1, ..., v_n) + nonneg(r_1,
-        ..., r_s)`, the V-representation matrix is `[t V]` where `t` is the
-        column vector with `n` ones followed by `s` zeroes, and `V` is the
-        stacked matrix of `n` vertex row vectors on top of `s` ray row vectors.
+.. function:: copy_generators(poly: Polyhedron) -> Matrix
 
-.. method:: Polyhedron.get_adjacency()
+    Copy a V-representation of all the generators.
 
-        Get the adjacencies.
+    For a polyhedron described as
+    `P = conv(v_1, ..., v_n) + nonneg(r_1,..., r_s)`,
+    the V-representation matrix is `[t V]` where `t` is the
+    column vector with `n` ones followed by `s` zeroes, and `V` is the
+    stacked matrix of `n` vertex row vectors on top of `s` ray row vectors.
 
-        :returns: Adjacency list.
-        :rtype: :class:`tuple`
+.. function:: copy_adjacency(poly: Polyhedron) -> Sequence[Set[int]]
 
-        H-representation: For each vertex, list adjacent vertices.
-        V-representation: For each face, list adjacent faces.
+    Get the adjacencies.
 
-.. method:: Polyhedron.get_input_adjacency()
+    H-representation: For each vertex, list adjacent vertices.
+    V-representation: For each face, list adjacent faces.
 
-        Get the input adjacencies.
+.. function:: copy_input_adjacency(poly: Polyhedron) -> Sequence[Set[int]]
 
-        :returns: Input adjacency list.
-        :rtype: :class:`tuple`
+    Get the input adjacencies.
 
-        H-representation: For each face, list adjacent faces.
-        V-representation: For each vertex, list adjacent vertices.
+    H-representation: For each face, list adjacent faces.
+    V-representation: For each vertex, list adjacent vertices.
 
-.. method:: Polyhedron.get_incidence()
+.. function:: copy_incidence(poly: Polyhedron) -> Sequence[Set[int]]
 
-        Get the incidences.
+    Get the incidences.
 
-        :returns: Incidence list.
-        :rtype: :class:`tuple`
+    H-representation: For each vertex, list adjacent faces.
+    V-representation: For each face, list adjacent vertices.
 
-        H-representation: For each vertex, list adjacent faces.
-        V-representation: For each face, list adjacent vertices.
+.. function:: copy_input_incidence(poly: Polyhedron) -> Sequence[Set[int]]
 
-.. method:: Polyhedron.get_input_incidence()
+    Get the input incidences.
 
-        Get the input incidences.
+    H-representation: For each face, list adjacent vertices.
+    V-representation: For each vertex, list adjacent faces.
 
-        :returns: Input incidence list.
-        :rtype: :class:`tuple`
+.. attribute:: Polyhedron.rep_type: RepType
 
-        H-representation: For each face, list adjacent vertices.
-        V-representation: For each vertex, list adjacent faces.
-
-.. attribute:: Polyhedron.rep_type
-
-        Representation (see :class:`~cdd.RepType`).
+    Representation type (see :class:`~cdd.RepType`).
 
 .. note::
 
@@ -176,7 +168,7 @@ end
 [[2, 3], [0, 3], [0, 1], [1, 2], []]
 >>> # add a vertex, and construct new polyhedron
 >>> cdd.matrix_append_to(gen, cdd.matrix_from_array([[1, 0, 2]]))
->>> vpoly = cdd.Polyhedron(gen)
+>>> vpoly = cdd.polyhedron_from_matrix(gen)
 >>> print(cdd.copy_inequalities(vpoly)) # doctest: +NORMALIZE_WHITESPACE
 H-representation
 begin
