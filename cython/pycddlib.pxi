@@ -386,6 +386,11 @@ cdef class LinProg:
         self.dd_lp.objective = value
 
     @property
+    def solver(self):
+        """The solver used when last solving the linear program."""
+        return LPSolverType(self.dd_lp.solver)
+
+    @property
     def status(self):
         """The status of the linear program, after solving."""
         return LPStatusType(self.dd_lp.LPS)
