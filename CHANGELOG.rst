@@ -88,6 +88,8 @@ Fully detailed changes:
   that you then explicitly convert to a polyhedron,
   although this will obviously be quite slow.
 
+* The Fourier and block elimination functions are now exposed (see issue #38).
+
 * Thanks to the reorganization, there now is a standalone Python package that
   installs just the floating point interface without needing the gmp or cddlib
   libraries installed.
