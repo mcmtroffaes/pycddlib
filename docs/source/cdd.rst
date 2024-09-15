@@ -78,3 +78,6 @@ Functions
 .. autofunction:: copy_incidence
 .. autofunction:: copy_input_adjacency
 .. autofunction:: copy_input_incidence
+
+.. autofunction:: fourier_elimination
+.. autofunction:: block_elimination

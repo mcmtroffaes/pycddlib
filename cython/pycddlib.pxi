@@ -648,7 +648,7 @@ def fourier_elimination(mat: Matrix) -> Matrix:
     return result
 
 def block_elimination(mat: Matrix, col_set: Container[int]) -> Matrix:
-    """Eliminate a set of variables from the system of linear inequalities *mat*.
+    """Eliminate the variables *col_set* from the system of linear inequalities *mat*.
     It does this by using the extreme rays of the dual linear system.
 
     .. note:: Does not remove redundancy.
