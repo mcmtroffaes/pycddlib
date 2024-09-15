@@ -84,7 +84,7 @@ If you get an error similar to::
 
     cdd.c(1102): fatal error C1083: Cannot open include file: 'cddlib/setoper.h': No such file or directory
 
-then the include folder that you passed (it should contain all cddlib and gmp ``.h`` files).
+then check the include folder that you passed (it should contain all cddlib and gmp ``.h`` files).
 
 If you get an error similar to::
 
