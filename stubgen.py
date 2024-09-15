@@ -99,9 +99,12 @@ class CythonInspectionStubGenerator(InspectionStubGenerator):
             )
         # TODO fetch getter_type from obj, if Cython ever exposes it?
         # workaround: use __annotations__ dict from class
-        getter_type: str = self.strip_or_import(get_annotation_fullname(
-            self, inspect.get_annotations(class_info.cls).get(name)
-        ) or self.add_name("_typeshed.Incomplete"))
+        getter_type: str = self.strip_or_import(
+            get_annotation_fullname(
+                self, inspect.get_annotations(class_info.cls).get(name)
+            )
+            or self.add_name("_typeshed.Incomplete")
+        )
         # TODO fetch setter_type from obj, if Cython ever exposes it?
         setter_type: str | None = getter_type  # or None, but better generate too much?
 

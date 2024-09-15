@@ -15,7 +15,7 @@
 # with this program; if not, write to the Free Software Foundation, Inc.,
 # 51 Franklin Street, Fifth Floor, Boston, MA 02110-1301 USA.
 
-from collections.abc import Sequence, Set
+from collections.abc import Container, Sequence, Set
 
 cimport cpython.mem
 cimport cpython.unicode
@@ -446,7 +446,7 @@ cdef linprog_from_ptr(dd_LPPtr dd_lp):
     return lp
 
 
-def linprog_from_matrix(Matrix mat) -> LinProg:
+def linprog_from_matrix(mat: Matrix) -> LinProg:
     """Convert *mat* into a linear program.
     Note that *mat* must have the H-representation,
     and its objective type must be set,

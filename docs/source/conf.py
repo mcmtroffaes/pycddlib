@@ -16,6 +16,6 @@ release = importlib.metadata.version("pycddlib")
 version = ".".join(release.split(".")[:2])
 intersphinx_mapping = {"python": ("http://docs.python.org/", None)}
 autodoc_default_options = {
-    'members': True,
-    'member-order': 'bysource',
+    "members": True,
+    "member-order": "bysource",
 }
