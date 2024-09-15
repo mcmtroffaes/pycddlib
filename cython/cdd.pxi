@@ -398,3 +398,6 @@ cdef extern from "cddlib/cdd.h" nogil:
     cdef void dd_FreeLPData(dd_LPPtr)
     cdef void dd_WriteLP(libc.stdio.FILE *f, dd_LPPtr lp)
     cdef void dd_WriteLPResult(libc.stdio.FILE *f, dd_LPPtr lp, dd_ErrorType err)
+
+    cdef dd_MatrixPtr dd_FourierElimination(dd_MatrixPtr, dd_ErrorType *)
+    cdef dd_MatrixPtr dd_BlockElimination(dd_MatrixPtr, dd_colset, dd_ErrorType *)

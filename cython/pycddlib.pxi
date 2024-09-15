@@ -632,6 +632,43 @@ def copy_input_incidence(poly: Polyhedron) -> Sequence[Set[int]]:
     """
     return _get_dd_setfam(dd_CopyInputIncidence(poly.dd_poly))
 
+def fourier_elimination(mat: Matrix) -> Matrix:
+    """Eliminate the last variable from the system of linear inequalities *mat*.
+
+    .. note:: Does not remove redundancy.
+
+    .. versionadded:: 3.0.0
+    """
+    if mat.rep_type != dd_Inequality:
+        raise ValueError("rep_type must be INEQUALITY")
+    cdef dd_ErrorType error = dd_NoError
+    result = matrix_from_ptr(dd_FourierElimination(mat.dd_mat, &error))
+    if error != dd_NoError:
+        _raise_error(error, "failed fourier elimination")
+    return result
+
+def block_elimination(mat: Matrix, col_set: Container[int]) -> Matrix:
+    """Eliminate a set of variables from the system of linear inequalities *mat*.
+    It does this by using the extreme rays of the dual linear system.
+
+    .. note:: Does not remove redundancy.
+
+    .. versionadded:: 3.0.0
+    """
+    cdef set_type dd_colset = NULL
+    cdef dd_ErrorType error = dd_NoError
+    if mat.rep_type != dd_Inequality:
+        raise ValueError("rep_type must be INEQUALITY")
+    set_initialize(&dd_colset, mat.dd_mat.colsize)
+    try:
+        _set_set(dd_colset, col_set)
+        result = matrix_from_ptr(dd_BlockElimination(mat.dd_mat, dd_colset, &error))
+        if error != dd_NoError:
+            _raise_error(error, "failed block elimination")
+        return result
+    finally:
+        set_free(dd_colset)
+
 
 # module initialization code comes here
 # initialize module constants
