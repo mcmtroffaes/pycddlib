@@ -1,4 +1,4 @@
-/venv/
+/*venv*/
 /docs/_build/
 /.eggs/
 *.egg-info/

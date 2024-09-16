@@ -16,6 +16,7 @@
 # 51 Franklin Street, Fifth Floor, Boston, MA 02110-1301 USA.
 
 from collections.abc import Container, Sequence, Set
+from typing import Optional
 
 cimport cpython.mem
 cimport cpython.unicode
