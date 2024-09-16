@@ -71,8 +71,11 @@ Getting Adjacencies and Incidences
 >>> gen = cdd.copy_generators(poly)
 >>> gen.rep_type
 <RepType.GENERATOR: 2>
->>> pprint(gen.array)
-[[1.0, 1.0, -1.0], [1.0, 1.0, 1.0], [1.0, -1.0, 1.0], [1.0, -1.0, -1.0]]
+>>> pprint(gen.array, width=40)
+[[1.0, 1.0, -1.0],
+ [1.0, 1.0, 1.0],
+ [1.0, -1.0, 1.0],
+ [1.0, -1.0, -1.0]]
 >>> gen.lin_set
 set()
 >>> # graphical depiction of vertices and faces:
