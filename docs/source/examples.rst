@@ -64,8 +64,8 @@ Getting Adjacencies and Incidences
 >>> # 0 <= 1 + x2 (face 1)
 >>> # 0 <= 1 - x1 (face 2)
 >>> # 0 <= 1 - x2 (face 3)
->>> mat = cdd.matrix_from_array([[1, 1, 0], [1, 0, 1], [1, -1, 0], [1, 0, -1]])
->>> mat.rep_type = cdd.RepType.INEQUALITY
+>>> array = [[1, 1, 0], [1, 0, 1], [1, -1, 0], [1, 0, -1]]
+>>> mat = cdd.matrix_from_array(array, rep_type=cdd.RepType.INEQUALITY)
 >>> poly = cdd.polyhedron_from_matrix(mat)
 >>> # The V-representation can be printed in the usual way:
 >>> gen = cdd.copy_generators(poly)
