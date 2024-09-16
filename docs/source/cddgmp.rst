@@ -23,13 +23,13 @@ instead of :class:`float`, and all arithmetic is exact.
 
    If the float represents a fraction, you must pass it as a fraction explicitly:
 
-   >>> print(cdd.gmp.matrix_from_array([[Fraction(112, 100)]]).array)
+   >>> cdd.gmp.matrix_from_array([[Fraction(112, 100)]]).array
    [[Fraction(28, 25)]]
 
    If you really must use a float as a fraction,
    pass it explicitly to the :class:`~fractions.Fraction` constructor:
 
-   >>> print(cdd.gmp.matrix_from_array([[Fraction(1.12)]]).array)
+   >>> cdd.gmp.matrix_from_array([[Fraction(1.12)]]).array
    [[Fraction(1261007895663739, 1125899906842624)]]
 
    As you can see from the output above, for typical use cases,
