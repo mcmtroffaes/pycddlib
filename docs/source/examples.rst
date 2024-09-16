@@ -174,6 +174,6 @@ The next example is taken from
 >>> mat2 = cdd.fourier_elimination(mat1)
 >>> mat2.array
 [[-1.0, 0.0, -1.25], [-1.0, -1.0, -1.0], [-1.5, 1.0, -2.833333...]]
->>> mat3 = cdd.block_elimination(mat1, {3})  # last variable, so equivalent to Fourier
+>>> mat3 = cdd.block_elimination(mat1, {3})  # equivalent to Fourier
 >>> mat3.array
 [[-4.0, 0.0, -5.0], [-1.5, -1.5, -1.5], [-9.0, 6.0, -17.0]]
