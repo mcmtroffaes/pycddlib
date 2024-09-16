@@ -1,6 +1,5 @@
 .. testsetup::
 
-   import cdd
    import cdd.gmp
    from fractions import Fraction
 

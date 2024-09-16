@@ -3,57 +3,42 @@ Examples
 
 .. testsetup::
 
-    import cdd.gmp
-    from fractions import Fraction
+    import cdd
     from pprint import pprint
 
-Sets Linear Inequalities or Generators
---------------------------------------
-
-Declaring matrices, and checking some attributes:
-
->>> mat1 = cdd.gmp.matrix_from_array([[1, 2], [3, 4]])
->>> pprint(mat1.array)
-[[Fraction(1, 1), Fraction(2, 1)], [Fraction(3, 1), Fraction(4, 1)]]
->>> cdd.gmp.matrix_append_to(mat1, cdd.gmp.matrix_from_array([[5,6]]))
->>> pprint(mat1.array)
-[[Fraction(1, 1), Fraction(2, 1)],
- [Fraction(3, 1), Fraction(4, 1)],
- [Fraction(5, 1), Fraction(6, 1)]]
-
-Canonicalizing a set of inequalities:
+Canonicalizing Inequalities
+---------------------------
 
 >>> array = [[2, 1, 2, 3], [0, 1, 2, 3], [3, 0, 1, 2], [0, -2, -4, -6]]
->>> mat = cdd.gmp.matrix_from_array(array, rep_type=cdd.RepType.INEQUALITY)
->>> cdd.gmp.matrix_canonicalize(mat)
+>>> mat = cdd.matrix_from_array(array, rep_type=cdd.RepType.INEQUALITY)
+>>> cdd.matrix_canonicalize(mat)
 ({1, 3}, {0})
 >>> pprint(mat.array)
-[[Fraction(0, 1), Fraction(1, 1), Fraction(2, 1), Fraction(3, 1)],
- [Fraction(3, 1), Fraction(0, 1), Fraction(1, 1), Fraction(2, 1)]]
+[[0.0, 1.0, 2.0, 3.0], [3.0, 0.0, 1.0, 2.0]]
 
 Solving Linear Programs
 -----------------------
 
 >>> array = [
-...     [Fraction(4, 3), -2, -1],  # 0 <= 4/3-2x-y
-...     [Fraction(2, 3), 0, -1],  # 0 <= 2/3-y
+...     [4 / 3, -2, -1],  # 0 <= 4/3-2x-y
+...     [2 / 3, 0, -1],  # 0 <= 2/3-y
 ...     [0, 1, 0],  # 0 <= x
 ...     [0, 0, 1],  # 0 <= y
 ...     [0, 3, 4],  # obj func: 3x+4y
 ... ]
->>> lp = cdd.gmp.linprog_from_array(array, obj_type=cdd.LPObjType.MAX)
->>> cdd.gmp.linprog_solve(lp)
+>>> lp = cdd.linprog_from_array(array, obj_type=cdd.LPObjType.MAX)
+>>> cdd.linprog_solve(lp)
 >>> lp.status == cdd.LPStatusType.OPTIMAL
 True
 >>> lp.obj_value
-Fraction(11, 3)
+3.666666...
 >>> lp.primal_solution
-[Fraction(1, 3), Fraction(2, 3)]
+[0.333333..., 0.666666...]
 >>> lp.dual_solution
-[(0, Fraction(3, 2)), (1, Fraction(5, 2))]
+[(0, 1.5), (1, 2.5)]
 
-Polyhedron Representations
---------------------------
+Calculating Extreme Points / Rays
+---------------------------------
 
 This is the :file:`sampleh1.ine` example that comes with cddlib.
 
@@ -71,8 +56,8 @@ This is the :file:`sampleh1.ine` example that comes with cddlib.
 >>> ext.lin_set # note: first row is 0, so fourth row is 3
 {3}
 
-
-The following example illustrates how to get adjacencies and incidences.
+Getting Adjacencies and Incidences
+----------------------------------
 
 >>> # We start with the H-representation for a square
 >>> # 0 <= 1 + x1 (face 0)
@@ -172,3 +157,23 @@ set()
 >>> # for each vertex, list adjacent faces
 >>> cdd.copy_input_incidence(vpoly)
 [{0, 4}, {3, 4}, {1, 2}, {0, 2}, {1, 3}]
+
+Fourier and Block Elimination
+-----------------------------
+
+The next example is taken from
+`Wikipedia <https://en.wikipedia.org/wiki/Fourier%E2%80%93Motzkin_elimination#Example>`_.
+
+>>> array = [
+...     [10, -2, 5, -4],  # 2x-5y+4z<=10
+...     [9, -3, 6, -3],  # 3x-6y+3z<=9
+...     [-7, 1, -5, 2],  # -x+5y-2z<=-7
+...     [12, 3, -2, -6],  # -3x+2y+6z<=12
+... ]
+>>> mat1 = cdd.matrix_from_array(array, rep_type=cdd.RepType.INEQUALITY)
+>>> mat2 = cdd.fourier_elimination(mat1)
+>>> mat2.array
+[[-1.0, 0.0, -1.25], [-1.0, -1.0, -1.0], [-1.5, 1.0, -2.833333...]]
+>>> mat3 = cdd.block_elimination(mat1, {3})  # last variable, so equivalent to Fourier
+>>> mat3.array
+[[-4.0, 0.0, -5.0], [-1.5, -1.5, -1.5], [-9.0, 6.0, -17.0]]
