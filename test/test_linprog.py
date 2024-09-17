@@ -109,15 +109,21 @@ def test_linprog_bad_obj_type() -> None:
         ([[0, 1], [-1, -1], [0, 1]], LPObjType.MIN, LPStatusType.INCONSISTENT, None),
         ([[0, 1], [-1, -1], [0, 1]], LPObjType.MAX, LPStatusType.INCONSISTENT, None),
         # corner case where constraints contain no variables
-        # 0 <= 1, obj func 0 + x
+        # primal: max x s.t. 0 <= 1 -> unbounded
+        # dual:   min y s.t. 0 >= 1 -> inconsistent
         ([[1, 0], [0, 1]], LPObjType.MIN, LPStatusType.STRUC_DUAL_INCONSISTENT, None),
         ([[1, 0], [0, 1]], LPObjType.MAX, LPStatusType.STRUC_DUAL_INCONSISTENT, None),
         # https://math.stackexchange.com/a/4864771
         # corner case where both primal and dual are inconsistent
-        # primal: max x  s.t. 0 <= -1
-        # dual:   min -y s.t. 0 >= 1
+        # primal: max x  s.t. 0 <= -1 -> inconsistent
+        # dual:   min -y s.t. 0 >= 1  -> inconsistent
         ([[-1, 0], [0, 1]], LPObjType.MAX, LPStatusType.STRUC_DUAL_INCONSISTENT, None),
         ([[-1, 0], [0, -1]], LPObjType.MIN, LPStatusType.STRUC_DUAL_INCONSISTENT, None),
+        # corner case where everything is zero
+        # primal: max 0x s.t. 0 <= 0 -> optimal
+        # dual:   min 0y s.t. 0 >= 0 -> optimal
+        ([[0, 0], [0, 0]], LPObjType.MAX, LPStatusType.OPTIMAL, None),
+        ([[0, 0], [0, 0]], LPObjType.MIN, LPStatusType.OPTIMAL, None),
     ],
 )
 def test_linprog_1(
