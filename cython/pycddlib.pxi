@@ -139,7 +139,7 @@ cdef class Matrix:
         polyhedron described by
 
         .. math::
-           0\le  b_i + A_i x \qquad \forall i\in\{0,\dots,n-1\}\setminus L \\
+           0&\le b_i + A_i x \qquad \forall i\in\{0,\dots,n-1\}\setminus L \\
            0&=   b_i + A_i x \qquad \forall i\in L
 
         where :math:`L` is :attr:`~cdd.Matrix.lin_set` and :math:`A_i`
