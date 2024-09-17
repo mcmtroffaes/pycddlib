@@ -1,11 +1,11 @@
-# https://peps.python.org/pep-0484/#the-numeric-tower
-# numbers.Real and numbers.Rational are broken with mypy
 from collections.abc import Sequence
 from fractions import Fraction
 from typing import Union
 
 import pytest
 
+# https://peps.python.org/pep-0484/#the-numeric-tower
+# numbers.Real and numbers.Rational are broken with mypy
 Real = Union[float, Fraction]
 
 

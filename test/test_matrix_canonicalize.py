@@ -21,3 +21,12 @@ def test_matrix_canonicalize_2() -> None:
     mat.rep_type = cdd.RepType.INEQUALITY
     assert cdd.matrix_canonicalize(mat) == ({1, 3}, {0})
     assert_matrix_almost_equal(mat.array, [[0, 1, 2, 3], [3, 0, 1, 2]])
+
+
+def test_matrix_canonicalize_3() -> None:
+    # test on an inconsistent system
+    array = [[1, 1], [1, -1]]  # 0 = 1 + x, 0 = 1 - x
+    mat = cdd.matrix_from_array(array, rep_type=cdd.RepType.INEQUALITY, lin_set={0, 1})
+    assert cdd.matrix_canonicalize(mat) == (set(), set())
+    assert_matrix_almost_equal(mat.array, [[1, 1], [1, -1]])
+    assert mat.lin_set == {0, 1}
