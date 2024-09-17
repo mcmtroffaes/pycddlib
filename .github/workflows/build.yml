@@ -43,7 +43,6 @@ jobs:
         os: ['ubuntu-latest', 'macos-latest']
         python-version: ['3.9', '3.10', '3.11', '3.12']
     steps:
-    - uses: actions/checkout@v4
     - name: Download sdist
       uses: actions/download-artifact@v4
       with:
@@ -67,6 +66,7 @@ jobs:
     - name: Install tarball (MacOS)
       if: matrix.os == 'macos-latest'
       run: env "CFLAGS=-I$(brew --prefix)/include -L$(brew --prefix)/lib" python -m pip install $(ls dist/*.tar.gz| head -1)
+    - uses: actions/checkout@v4
     - name: Run test suite
       run: |
         mypy
