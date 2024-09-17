@@ -284,6 +284,7 @@ def matrix_from_array(
     """Construct a matrix with the given attributes.
 
     See :attr:`cdd.Matrix.array` for an explanation of how *array* must be laid out.
+    This function also accepts 2-dimensional numpy arrays.
     """
     cdef Py_ssize_t numrows, numcols, rowindex, colindex
     cdef dd_MatrixPtr dd_mat
@@ -482,6 +483,7 @@ def linprog_from_array(
     """Construct a linear program from *array*.
 
     See :attr:`cdd.LinProg.array` for an explanation of how *array* must be laid out.
+    This function also accepts 2-dimensional numpy arrays.
 
     .. versionadded:: 3.0.0
     """
