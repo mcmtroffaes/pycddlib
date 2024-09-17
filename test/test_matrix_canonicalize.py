@@ -1,0 +1,23 @@
+import pytest
+
+import cdd
+
+from . import assert_matrix_almost_equal
+
+
+def test_matrix_canonicalize_1() -> None:
+    array = [[1, 1], [2, 1]]  # 0 <= 1 + x, 0 <= 2 + x
+    mat = cdd.matrix_from_array(array, rep_type=cdd.RepType.INEQUALITY)
+    cdd.matrix_canonicalize(mat)
+    assert_matrix_almost_equal(mat.array, [[1, 1]])
+    assert not mat.lin_set
+
+
+def test_matrix_canonicalize_2() -> None:
+    array = [[2, 1, 2, 3], [0, 1, 2, 3], [3, 0, 1, 2], [0, -2, -4, -6]]
+    mat = cdd.matrix_from_array(array)
+    with pytest.raises(ValueError, match="rep_type unspecified"):
+        cdd.matrix_canonicalize(mat)
+    mat.rep_type = cdd.RepType.INEQUALITY
+    assert cdd.matrix_canonicalize(mat) == ({1, 3}, {0})
+    assert_matrix_almost_equal(mat.array, [[0, 1, 2, 3], [3, 0, 1, 2]])
