@@ -459,10 +459,10 @@ def linprog_from_matrix(mat: Matrix) -> LinProg:
     otherwise a :exc:`ValueError` is raised.
     """
     # cddlib does not check if obj_type is valid
-    if mat.obj_type != dd_LPmax and mat.obj_type != dd_LPmin:
+    if mat.dd_mat.objective != dd_LPmax and mat.dd_mat.objective != dd_LPmin:
         raise ValueError("obj_type must be MIN or MAX")
     # cddlib assumes H-representation
-    if mat.rep_type != dd_Inequality:
+    if mat.dd_mat.representation != dd_Inequality:
         raise ValueError("rep_type must be INEQUALITY")
     cdef dd_ErrorType error = dd_NoError
     # note: dd_Matrix2LP never reports error... so ignore
@@ -539,13 +539,16 @@ cdef polyhedron_from_ptr(dd_PolyhedraPtr dd_poly):
 
 def polyhedron_from_matrix(mat: Matrix) -> Polyhedron:
     """Run the double description method to convert *mat* into a polyhedron."""
-    if mat.rep_type != dd_Inequality and mat.rep_type != dd_Generator:
+    if (
+        mat.dd_mat.representation != dd_Inequality
+        and mat.dd_mat.representation != dd_Generator
+    ):
         raise ValueError("rep_type must be INEQUALITY or GENERATOR")
     cdef dd_ErrorType error = dd_NoError
     dd_poly = dd_DDMatrix2Poly(mat.dd_mat, &error)
     if error != dd_NoError:
         dd_FreePolyhedra(dd_poly)
-        _raise_error(error, "failed to load polyhedra")
+        _raise_error(error, "failed to run double description method")
     return polyhedron_from_ptr(dd_poly)
 
 
@@ -564,8 +567,9 @@ def copy_output(poly: Polyhedron) -> Matrix:
 
     .. note::
 
-        The H-representation and/or V-representation are not guaranteed to
-        be minimal, that is, they can still contain redundancy.
+        The output is not guaranteed to be minimal,
+        that is, it can still contain redundancy.
+        Use :func:`cdd.matrix_canonicalize` on the output to remove redundancies.
 
     .. versionadded:: 3.0.0
     """
@@ -631,11 +635,22 @@ def copy_input_incidence(poly: Polyhedron) -> Sequence[Set[int]]:
 def fourier_elimination(mat: Matrix) -> Matrix:
     """Eliminate the last variable from the system of linear inequalities *mat*.
 
-    .. note:: Does not remove redundancy.
+    .. warning::
+
+        This implementation can only handle inequality constraints.
+        If your system has equality constraints,
+        either convert them into pairs of inequalities first,
+        or use :func:`cdd.block_elimination` instead.
+
+    .. note::
+
+        The output is not guaranteed to be minimal,
+        that is, it can still contain redundancy.
+        Use :func:`cdd.matrix_canonicalize` on the output to remove redundancies.
 
     .. versionadded:: 3.0.0
     """
-    if mat.rep_type != dd_Inequality:
+    if mat.dd_mat.representation != dd_Inequality:
         raise ValueError("rep_type must be INEQUALITY")
     cdef dd_ErrorType error = dd_NoError
     cdef dd_MatrixPtr dd_mat = dd_FourierElimination(mat.dd_mat, &error)
@@ -646,23 +661,30 @@ def fourier_elimination(mat: Matrix) -> Matrix:
 
 def block_elimination(mat: Matrix, col_set: Container[int]) -> Matrix:
     """Eliminate the variables *col_set* from the system of linear inequalities *mat*.
-    It does this by using the extreme rays of the dual linear system.
+    It does this by using the generators of the dual linear system,
+    where the generators are calculated using the double description algorithm.
 
-    .. note:: Does not remove redundancy.
+    .. note::
+
+        The output is not guaranteed to be minimal,
+        that is, it can still contain redundancy.
+        Use :func:`cdd.matrix_canonicalize` on the output to remove redundancies.
 
     .. versionadded:: 3.0.0
     """
-    cdef set_type dd_colset = NULL
-    cdef dd_ErrorType error = dd_NoError
-    if mat.rep_type != dd_Inequality:
+    if mat.dd_mat.representation != dd_Inequality:
         raise ValueError("rep_type must be INEQUALITY")
+    cdef set_type dd_colset = NULL
+    cdef dd_MatrixPtr dd_mat = NULL
+    cdef dd_ErrorType error = dd_NoError
     set_initialize(&dd_colset, mat.dd_mat.colsize)
     try:
         _set_set(dd_colset, col_set)
-        result = matrix_from_ptr(dd_BlockElimination(mat.dd_mat, dd_colset, &error))
+        dd_mat = dd_BlockElimination(mat.dd_mat, dd_colset, &error)
         if error != dd_NoError:
+            dd_FreeMatrix(dd_mat)
             _raise_error(error, "failed block elimination")
-        return result
+        return matrix_from_ptr(dd_mat)
     finally:
         set_free(dd_colset)
 

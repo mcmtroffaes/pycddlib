@@ -6,10 +6,13 @@ from . import assert_matrix_almost_equal
 
 
 def test_fourier_elimination_1() -> None:
-    array = [[1, 1, 1], [1, 1, -1]]
+    # 0 <= 1 + x + y, 0 <= 1 + 3x - y
+    array = [[1, 1, 1], [1, 3, -1]]
     mat1 = cdd.matrix_from_array(array, rep_type=cdd.RepType.INEQUALITY)
     mat2 = cdd.fourier_elimination(mat1)
-    assert_matrix_almost_equal(mat2.array, [[1.0, 1.0]])
+    # 0 <= 1 + 2x
+    assert_matrix_almost_equal(mat2.array, [[1, 2]])
+    assert mat2.lin_set == set()
 
 
 def test_fourier_elimination_2() -> None:
