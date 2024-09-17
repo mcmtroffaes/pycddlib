@@ -135,12 +135,12 @@ cdef class Matrix:
     def array(self):
         r"""Array representing the inequalities or generators.
 
-        An array :math:`[b \quad -A]` in the H-representation corresponds to a
+        An array :math:`[b \quad A]` in the H-representation corresponds to a
         polyhedron described by
 
         .. math::
-           A_i x &\le b_i \qquad \forall i\in\{0,\dots,n-1\}\setminus L \\
-           A_i x &=   b_i \qquad \forall i\in L
+           0\le  b_i + A_i x \qquad \forall i\in\{0,\dots,n-1\}\setminus L \\
+           0&=   b_i + A_i x \qquad \forall i\in L
 
         where :math:`L` is :attr:`~cdd.Matrix.lin_set` and :math:`A_i`
         corresponds to the :math:`i`-th row of :math:`A`.
@@ -369,12 +369,12 @@ cdef class LinProg:
     @property
     def array(self):
         r"""The array representing the linear program. More specifically,
-        the constraints :math:`Ax\le b`
+        the constraints :math:`0\le b+Ax`
         and objective function :math:`\gamma + c^T x`
         are stored as an array as follows:
 
         .. math::
-            \begin{array}{cc} b & -A \\ \gamma & c \end{array}
+            \begin{array}{cc} b & A \\ \gamma & c \end{array}
 
         i.e. the constraints are stored as a H-representation (with inequalities only),
         and the objective function is stored in the final row.
