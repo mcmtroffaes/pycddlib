@@ -549,14 +549,14 @@ cdef polyhedron_from_ptr(dd_PolyhedraPtr dd_poly):
 
 
 def polyhedron_from_matrix(
-    mat: Matrix, row_order_type: Optional[RowOrder] = None
+    mat: Matrix, row_order: Optional[RowOrder] = None
 ) -> Polyhedron:
     """Run the double description method to convert *mat* into a polyhedron,
-    using *row_order_type* if specified.
+    using *row_order* if specified.
 
     .. versionadded:: 3.0.0
 
-        The *row_order_type* parameter.
+        The *row_order* parameter.
     """
     if (
         mat.dd_mat.representation != dd_Inequality
@@ -564,10 +564,10 @@ def polyhedron_from_matrix(
     ):
         raise ValueError("rep must be INEQUALITY or GENERATOR")
     cdef dd_ErrorType error = dd_NoError
-    if row_order_type is None:
+    if row_order is None:
         dd_poly = dd_DDMatrix2Poly(mat.dd_mat, &error)
     else:
-        dd_poly = dd_DDMatrix2Poly2(mat.dd_mat, row_order_type, &error)
+        dd_poly = dd_DDMatrix2Poly2(mat.dd_mat, row_order, &error)
     if error != dd_NoError:
         dd_FreePolyhedra(dd_poly)
         _raise_error(error, "failed to run double description method")
