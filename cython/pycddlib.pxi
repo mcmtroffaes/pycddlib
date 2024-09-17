@@ -327,9 +327,9 @@ def matrix_canonicalize(mat: Matrix) -> tuple[Set[int], Set[int]]:
     implicit linearities and all redundancies. These are returned
     as a pair of sets of row indices.
     """
-    cdef dd_rowset impl_linset
-    cdef dd_rowset redset
-    cdef dd_rowindex newpos
+    cdef dd_rowset impl_linset = NULL
+    cdef dd_rowset redset = NULL
+    cdef dd_rowindex newpos = NULL
     cdef dd_ErrorType error = dd_NoError
     cdef dd_boolean success
     if mat.dd_mat.representation == dd_Unspecified:
@@ -337,13 +337,20 @@ def matrix_canonicalize(mat: Matrix) -> tuple[Set[int], Set[int]]:
     success = dd_MatrixCanonicalize(
         &mat.dd_mat, &impl_linset, &redset, &newpos, &error
     )
-    result = (_get_set(impl_linset), _get_set(redset))
-    set_free(impl_linset)
-    set_free(redset)
-    libc.stdlib.free(newpos)
-    if not success or error != dd_NoError:
-        _raise_error(error, "failed to canonicalize matrix")
-    return result
+    try:
+        if (
+            not success
+            or error != dd_NoError
+            or impl_linset == NULL
+            or redset == NULL
+            or newpos == NULL
+        ):
+            _raise_error(error, "failed to canonicalize matrix")
+        return (_get_set(impl_linset), _get_set(redset))
+    finally:
+        set_free(impl_linset)
+        set_free(redset)
+        libc.stdlib.free(newpos)
 
 
 cdef class LinProg:
