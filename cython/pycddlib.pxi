@@ -466,10 +466,7 @@ def linprog_from_matrix(mat: Matrix) -> LinProg:
         raise ValueError("rep_type must be INEQUALITY")
     cdef dd_ErrorType error = dd_NoError
     # note: dd_Matrix2LP never reports error... so ignore
-    cdef dd_LPPtr dd_lp = dd_Matrix2LP(mat.dd_mat, &error)
-    if dd_lp == NULL:
-        raise MemoryError
-    return linprog_from_ptr(dd_lp)
+    return linprog_from_ptr(dd_Matrix2LP(mat.dd_mat, &error))
 
 
 def linprog_from_array(
