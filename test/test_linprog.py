@@ -1,4 +1,5 @@
 from collections.abc import Sequence
+from typing import Optional
 
 import pytest
 
@@ -123,7 +124,7 @@ def test_linprog_1(
     array: Sequence[Sequence[float]],
     obj_type: LPObjType,
     status: LPStatusType,
-    primal_solution: Sequence[float] | None,
+    primal_solution: Optional[Sequence[float]],
 ) -> None:
     lp = linprog_from_array(array, obj_type=obj_type)
     linprog_solve(lp)
