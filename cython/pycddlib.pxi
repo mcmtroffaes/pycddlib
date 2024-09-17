@@ -543,8 +543,6 @@ def polyhedron_from_matrix(mat: Matrix) -> Polyhedron:
         raise ValueError("rep_type must be INEQUALITY or GENERATOR")
     cdef dd_ErrorType error = dd_NoError
     dd_poly = dd_DDMatrix2Poly(mat.dd_mat, &error)
-    if dd_poly == NULL:
-        raise MemoryError
     if error != dd_NoError:
         dd_FreePolyhedra(dd_poly)
         _raise_error(error, "failed to load polyhedra")
@@ -640,10 +638,11 @@ def fourier_elimination(mat: Matrix) -> Matrix:
     if mat.rep_type != dd_Inequality:
         raise ValueError("rep_type must be INEQUALITY")
     cdef dd_ErrorType error = dd_NoError
-    result = matrix_from_ptr(dd_FourierElimination(mat.dd_mat, &error))
+    cdef dd_MatrixPtr dd_mat = dd_FourierElimination(mat.dd_mat, &error)
     if error != dd_NoError:
+        dd_FreeMatrix(dd_mat)
         _raise_error(error, "failed fourier elimination")
-    return result
+    return matrix_from_ptr(dd_mat)
 
 def block_elimination(mat: Matrix, col_set: Container[int]) -> Matrix:
     """Eliminate the variables *col_set* from the system of linear inequalities *mat*.

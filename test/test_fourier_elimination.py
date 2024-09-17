@@ -1,7 +1,18 @@
+import pytest
+
 import cdd
 
+from . import assert_matrix_almost_equal
 
-def test_fourier_elimination() -> None:
+
+def test_fourier_elimination_1() -> None:
+    array = [[1, 1, 1], [1, 1, -1]]
+    mat1 = cdd.matrix_from_array(array, rep_type=cdd.RepType.INEQUALITY)
+    mat2 = cdd.fourier_elimination(mat1)
+    assert_matrix_almost_equal(mat2.array, [[1.0, 1.0]])
+
+
+def test_fourier_elimination_2() -> None:
     # https://en.wikipedia.org/wiki/Fourier%E2%80%93Motzkin_elimination#Example
     array = [
         [10, -2, 5, -4],  # 2x-5y+4z<=10
@@ -11,8 +22,18 @@ def test_fourier_elimination() -> None:
     ]
     mat1 = cdd.matrix_from_array(array, rep_type=cdd.RepType.INEQUALITY)
     mat2 = cdd.fourier_elimination(mat1)
-    assert mat2.array == [
-        [-4 / 4, 0, -5 / 4],  # 5y<=-4
-        [-1, -1, -1],  # x+y<=-1
-        [-9 / 6, 6 / 6, -17 / 6],  # -6x+17y<=-9
-    ]
+    assert_matrix_almost_equal(
+        mat2.array,
+        [
+            [-4 / 4, 0, -5 / 4],  # 5y<=-4
+            [-1, -1, -1],  # x+y<=-1
+            [-9 / 6, 6 / 6, -17 / 6],  # -6x+17y<=-9
+        ],
+    )
+
+
+def test_fourier_elimination_3() -> None:
+    array = [[1, 1, 1]]
+    mat = cdd.matrix_from_array(array, rep_type=cdd.RepType.INEQUALITY, lin_set=[0])
+    with pytest.raises(RuntimeError, match="cannot handle linearity"):
+        cdd.fourier_elimination(mat)
