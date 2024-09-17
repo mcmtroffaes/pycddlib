@@ -2,7 +2,7 @@ from collections.abc import Container, Sequence, Set
 from fractions import Fraction
 from typing import Optional, Union
 
-from cdd import LPObjType, LPSolverType, LPStatusType, RepType
+from cdd import LPObjType, LPSolverType, LPStatusType, RepType, RowOrderType
 
 NumberType = Fraction
 SupportsNumberType = Union[Fraction, int]
@@ -76,4 +76,6 @@ def matrix_from_array(
     obj_type: LPObjType = LPObjType.NONE,
     obj_func: Optional[Sequence[SupportsNumberType]] = None,
 ) -> Matrix: ...
-def polyhedron_from_matrix(mat: Matrix) -> Polyhedron: ...
+def polyhedron_from_matrix(
+    mat: Matrix, row_order_type: Optional[RowOrderType] = None
+) -> Polyhedron: ...

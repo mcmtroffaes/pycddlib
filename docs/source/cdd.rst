@@ -46,6 +46,20 @@ Enums
         INEQUALITY
         GENERATOR
 
+.. autoclass:: RowOrderType(value)
+    :show-inheritance:
+
+    .. attribute::
+        MAX_INDEX
+        MIN_INDEX
+        MIN_CUTOFF
+        MAX_CUTOFF
+        MIX_CUTOFF
+        LEX_MIN
+        LEX_MAX
+        RANDOM_ROW
+
+
 Classes
 -------
 

@@ -40,7 +40,8 @@ class RepType(IntEnum):
     INEQUALITY = dd_Inequality
     GENERATOR = dd_Generator
 
-class _RowOrderType(IntEnum):
+class RowOrderType(IntEnum):
+    """Type of row order to use in the double description method."""
     MAX_INDEX = dd_MaxIndex
     MIN_INDEX = dd_MinIndex
     MIN_CUTOFF = dd_MinCutoff

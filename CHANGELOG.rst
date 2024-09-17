@@ -90,6 +90,10 @@ Fully detailed changes:
 
 * The Fourier and block elimination functions are now exposed (see issue #38).
 
+* You can now specify the row order type
+  when constructing a ``Polyhedron`` from a matrix.
+  (This exposes the ``dd_DDMatrix2Poly2`` function.)
+
 * Thanks to the reorganization, there now is a standalone Python package that
   installs just the floating point interface without needing the gmp or cddlib
   libraries installed.

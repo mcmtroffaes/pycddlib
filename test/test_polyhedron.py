@@ -1,5 +1,8 @@
 from collections.abc import Sequence, Set
 from fractions import Fraction
+from typing import Optional
+
+import pytest
 
 import cdd
 
@@ -78,3 +81,28 @@ def test_polyhedron_cube_2() -> None:
     poly = cdd.polyhedron_from_matrix(mat)
     assert_matrix_almost_equal(cdd.copy_generators(poly).array, generators)
     assert_matrix_almost_equal(cdd.copy_inequalities(poly).array, inequalities)
+
+
+@pytest.mark.parametrize(
+    "row_order_type,order",
+    [
+        (cdd.RowOrderType.MAX_INDEX, [2, 3, 0, 1]),
+        (cdd.RowOrderType.MIN_INDEX, [2, 1, 0, 3]),
+        (cdd.RowOrderType.MIN_CUTOFF, [1, 0, 2, 3]),
+        (cdd.RowOrderType.MAX_CUTOFF, [1, 0, 2, 3]),
+        (cdd.RowOrderType.MIX_CUTOFF, [1, 0, 2, 3]),
+        (cdd.RowOrderType.LEX_MIN, [0, 1, 2, 3]),
+        (cdd.RowOrderType.LEX_MAX, [2, 3, 0, 1]),
+    ],
+)
+def test_polyhedron_row_order_type(
+    row_order_type: Optional[cdd.RowOrderType], order: Sequence[int]
+) -> None:
+    generators = [[1, 1, 0], [1, 0, 0], [1, 0, 1], [1, 1, 1]]
+    inequalities = [[0, 0, 1], [0, 1, 0], [1, 0, -1], [1, -1, 0]]
+    mat = cdd.matrix_from_array(inequalities, rep_type=cdd.RepType.INEQUALITY)
+    poly = cdd.polyhedron_from_matrix(mat, row_order_type=row_order_type)
+    print(cdd.copy_generators(poly).array)
+    assert_matrix_almost_equal(
+        cdd.copy_generators(poly).array, [generators[i] for i in order]
+    )
