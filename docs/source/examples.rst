@@ -10,7 +10,7 @@ Canonicalizing Inequalities
 ---------------------------
 
 >>> array = [[2, 1, 2, 3], [0, 1, 2, 3], [3, 0, 1, 2], [0, -2, -4, -6]]
->>> mat = cdd.matrix_from_array(array, rep_type=cdd.RepType.INEQUALITY)
+>>> mat = cdd.matrix_from_array(array, rep=cdd.Rep.INEQUALITY)
 >>> cdd.matrix_canonicalize(mat)
 ({1, 3}, {0})
 >>> pprint(mat.array)
@@ -26,9 +26,9 @@ Solving Linear Programs
 ...     [0, 0, 1],  # 0 <= y
 ...     [0, 3, 4],  # obj func: 3x+4y
 ... ]
->>> lp = cdd.linprog_from_array(array, obj_type=cdd.LPObjType.MAX)
+>>> lp = cdd.linprog_from_array(array, obj=cdd.LPObj.MAX)
 >>> cdd.linprog_solve(lp)
->>> lp.status == cdd.LPStatusType.OPTIMAL
+>>> lp.status == cdd.LPStatus.OPTIMAL
 True
 >>> lp.obj_value
 3.666666...
@@ -43,11 +43,11 @@ Calculating Extreme Points / Rays
 This is the :file:`sampleh1.ine` example that comes with cddlib.
 
 >>> array = [[2, -1, -1, 0], [0, 1, 0, 0], [0, 0, 1, 0]]
->>> mat = cdd.matrix_from_array(array, rep_type=cdd.RepType.INEQUALITY)
+>>> mat = cdd.matrix_from_array(array, rep=cdd.Rep.INEQUALITY)
 >>> poly = cdd.polyhedron_from_matrix(mat)
 >>> ext = cdd.copy_generators(poly)
->>> ext.rep_type
-<RepType.GENERATOR: 2>
+>>> ext.rep
+<Rep.GENERATOR: 2>
 >>> pprint(ext.array) # doctest: +NORMALIZE_WHITESPACE
 [[1.0, 0.0, 0.0, 0.0],
  [1.0, 2.0, 0.0, 0.0],
@@ -65,12 +65,12 @@ Getting Adjacencies and Incidences
 >>> # 0 <= 1 - x1 (face 2)
 >>> # 0 <= 1 - x2 (face 3)
 >>> array = [[1, 1, 0], [1, 0, 1], [1, -1, 0], [1, 0, -1]]
->>> mat = cdd.matrix_from_array(array, rep_type=cdd.RepType.INEQUALITY)
+>>> mat = cdd.matrix_from_array(array, rep=cdd.Rep.INEQUALITY)
 >>> poly = cdd.polyhedron_from_matrix(mat)
 >>> # The V-representation can be printed in the usual way:
 >>> gen = cdd.copy_generators(poly)
->>> gen.rep_type
-<RepType.GENERATOR: 2>
+>>> gen.rep
+<Rep.GENERATOR: 2>
 >>> pprint(gen.array, width=40)
 [[1.0, 1.0, -1.0],
  [1.0, 1.0, 1.0],
@@ -116,8 +116,8 @@ set()
 >>> cdd.matrix_append_to(gen, cdd.matrix_from_array([[1, 0, 2]]))
 >>> vpoly = cdd.polyhedron_from_matrix(gen)
 >>> vmat = cdd.copy_inequalities(vpoly)
->>> vmat.rep_type
-<RepType.INEQUALITY: 1>
+>>> vmat.rep
+<Rep.INEQUALITY: 1>
 >>> pprint(vmat.array)
 [[1.0, 0.0, 1.0],
  [2.0, 1.0, -1.0],
@@ -173,7 +173,7 @@ The next example is taken from
 ...     [-7, 1, -5, 2],  # -x+5y-2z<=-7
 ...     [12, 3, -2, -6],  # -3x+2y+6z<=12
 ... ]
->>> mat1 = cdd.matrix_from_array(array, rep_type=cdd.RepType.INEQUALITY)
+>>> mat1 = cdd.matrix_from_array(array, rep=cdd.Rep.INEQUALITY)
 >>> mat2 = cdd.fourier_elimination(mat1)
 >>> mat2.array
 [[-1.0, 0.0, -1.25], [-1.0, -1.0, -1.0], [-1.5, 1.0, -2.833333...]]

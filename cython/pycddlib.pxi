@@ -124,11 +124,11 @@ cdef class Matrix:
     cdef dd_MatrixPtr dd_mat
     # hack for annotation of properties
     __annotations__ = dict(
-        array=Sequence[Sequence[NumberType]],
+        array=Sequence[Sequence[Number]],
         lin_set=Set[int],
-        rep_type=RepType,
-        obj_type=LPObjType,
-        obj_func=Sequence[NumberType],
+        rep=Rep,
+        obj=LPObj,
+        obj_func=Sequence[Number],
     )
 
     @property
@@ -176,23 +176,23 @@ cdef class Matrix:
         _set_set(self.dd_mat.linset, value)
 
     @property
-    def rep_type(self):
+    def rep(self):
         """Representation:
         inequalities (H-representation), generators (V-representation), or unspecified.
         """
-        return RepType(self.dd_mat.representation)
+        return Rep(self.dd_mat.representation)
 
-    @rep_type.setter
-    def rep_type(self, dd_RepresentationType value):
+    @rep.setter
+    def rep(self, dd_RepresentationType value):
         self.dd_mat.representation = value
 
     @property
-    def obj_type(self):
+    def obj(self):
         """Linear programming objective: maximize, minimize, or none."""
-        return LPObjType(self.dd_mat.objective)
+        return LPObj(self.dd_mat.objective)
 
-    @obj_type.setter
-    def obj_type(self, dd_LPObjectiveType value):
+    @obj.setter
+    def obj(self, dd_LPObjectiveType value):
         self.dd_mat.objective = value
 
     @property
@@ -227,7 +227,7 @@ cdef class Matrix:
     def __reduce__(self):
         return (
             matrix_from_array,
-            (self.array, self.lin_set, self.rep_type, self.obj_type, self.obj_func),
+            (self.array, self.lin_set, self.rep, self.obj, self.obj_func),
         )
 
 
@@ -277,11 +277,11 @@ cdef _get_array_from_matrix(mytype **pp, _Shape shape):
 # create matrix and wrap into Matrix class
 # https://cython.readthedocs.io/en/latest/src/userguide/extension_types.html#instantiation-from-existing-c-c-pointers
 def matrix_from_array(
-    array: Sequence[Sequence[SupportsNumberType]],
+    array: Sequence[Sequence[SupportsNumber]],
     lin_set: Container[int] = (),
-    rep_type: RepType = RepType.UNSPECIFIED,
-    obj_type: LPObjType = LPObjType.NONE,
-    obj_func: Optional[Sequence[SupportsNumberType]] = None,
+    rep: Rep = Rep.UNSPECIFIED,
+    obj: LPObj = LPObj.NONE,
+    obj_func: Optional[Sequence[SupportsNumber]] = None,
 ) -> Matrix:
     """Construct a matrix with the given attributes.
 
@@ -297,8 +297,8 @@ def matrix_from_array(
     try:
         _set_matrix_from_array(dd_mat.matrix, shape, array)
         _set_set(dd_mat.linset, lin_set)
-        dd_mat.representation = rep_type.value
-        dd_mat.objective = obj_type.value
+        dd_mat.representation = rep.value
+        dd_mat.objective = obj.value
         if obj_func is not None:
             if len(obj_func) != dd_mat.colsize:
                 raise ValueError(
@@ -336,7 +336,7 @@ def matrix_canonicalize(mat: Matrix) -> tuple[Set[int], Set[int]]:
     cdef dd_ErrorType error = dd_NoError
     cdef dd_boolean success
     if mat.dd_mat.representation == dd_Unspecified:
-        raise ValueError("rep_type unspecified")
+        raise ValueError("rep unspecified")
     success = dd_MatrixCanonicalize(
         &mat.dd_mat, &impl_linset, &redset, &newpos, &error
     )
@@ -360,13 +360,13 @@ cdef class LinProg:
     """A linear program: a set of inequalities and an objective function to optimize."""
     cdef dd_LPPtr dd_lp
     __annotations__ = dict(
-        array=Sequence[Sequence[NumberType]],
-        dual_solution=Sequence[tuple[int, NumberType]],
-        obj_type=LPObjType,
-        obj_value=NumberType,
-        primal_solution=Sequence[NumberType],
-        solver=LPSolverType,
-        status=LPStatusType,
+        array=Sequence[Sequence[Number]],
+        dual_solution=Sequence[tuple[int, Number]],
+        obj=LPObj,
+        obj_value=Number,
+        primal_solution=Sequence[Number],
+        solver=LPSolver,
+        status=LPStatus,
     )
 
     @property
@@ -388,23 +388,23 @@ cdef class LinProg:
         return _get_array_from_matrix(self.dd_lp.A, shape)
 
     @property
-    def obj_type(self):
+    def obj(self):
         """Whether we are minimizing or maximizing."""
-        return LPObjType(self.dd_lp.objective)
+        return LPObj(self.dd_lp.objective)
 
-    @obj_type.setter
-    def obj_type(self, dd_LPObjectiveType value):
+    @obj.setter
+    def obj(self, dd_LPObjectiveType value):
         self.dd_lp.objective = value
 
     @property
     def solver(self):
         """The solver used when last solving the linear program."""
-        return LPSolverType(self.dd_lp.solver)
+        return LPSolver(self.dd_lp.solver)
 
     @property
     def status(self):
         """The status of the linear program, after solving."""
-        return LPStatusType(self.dd_lp.LPS)
+        return LPStatus(self.dd_lp.LPS)
 
     @property
     def obj_value(self):
@@ -451,7 +451,7 @@ cdef class LinProg:
         self.dd_lp = NULL
 
     def __reduce__(self):
-        return linprog_from_array, (self.array, self.obj_type)
+        return linprog_from_array, (self.array, self.obj)
 
 
 cdef linprog_from_ptr(dd_LPPtr dd_lp):
@@ -468,19 +468,19 @@ def linprog_from_matrix(mat: Matrix) -> LinProg:
     and its objective type must be set,
     otherwise a :exc:`ValueError` is raised.
     """
-    # cddlib does not check if obj_type is valid
+    # cddlib does not check if obj is valid
     if mat.dd_mat.objective != dd_LPmax and mat.dd_mat.objective != dd_LPmin:
-        raise ValueError("obj_type must be MIN or MAX")
+        raise ValueError("obj must be MIN or MAX")
     # cddlib assumes H-representation
     if mat.dd_mat.representation != dd_Inequality:
-        raise ValueError("rep_type must be INEQUALITY")
+        raise ValueError("rep must be INEQUALITY")
     cdef dd_ErrorType error = dd_NoError
     # note: dd_Matrix2LP never reports error... so ignore
     return linprog_from_ptr(dd_Matrix2LP(mat.dd_mat, &error))
 
 
 def linprog_from_array(
-    array: Sequence[Sequence[SupportsNumberType]], obj_type: LPObjType
+    array: Sequence[Sequence[SupportsNumber]], obj: LPObj
 ) -> LinProg:
     """Construct a linear program from *array*.
 
@@ -489,11 +489,11 @@ def linprog_from_array(
 
     .. versionadded:: 3.0.0
     """
-    if obj_type != dd_LPmax and obj_type != dd_LPmin:
-        raise ValueError("obj_type must be MIN or MAX")
+    if obj != dd_LPmax and obj != dd_LPmin:
+        raise ValueError("obj must be MIN or MAX")
     cdef _Shape shape = _array_shape(array)
     cdef dd_LPPtr dd_lp = dd_CreateLPData(
-        obj_type, NUMBER_TYPE, shape.numrows, shape.numcols
+        obj, NUMBER_TYPE, shape.numrows, shape.numcols
     )
     if dd_lp == NULL:
         raise MemoryError
@@ -506,7 +506,7 @@ def linprog_from_array(
 
 
 def linprog_solve(
-    lp: LinProg, solver: LPSolverType = LPSolverType.DUAL_SIMPLEX
+    lp: LinProg, solver: LPSolver = LPSolver.DUAL_SIMPLEX
 ) -> None:
     """Solve the linear program *lp* using *solver*."""
     cdef dd_ErrorType error = dd_NoError
@@ -519,13 +519,13 @@ cdef class Polyhedron:
     """Representation of a polyhedron."""
     cdef dd_PolyhedraPtr dd_poly
     __annotations__ = dict(
-        rep_type=RepType,
+        rep=Rep,
     )
 
     @property
-    def rep_type(self):
+    def rep(self):
         """Representation type of the input."""
-        return RepType(self.dd_poly.representation)
+        return Rep(self.dd_poly.representation)
 
     def __str__(self):
         cdef libc.stdio.FILE *pfile
@@ -549,7 +549,7 @@ cdef polyhedron_from_ptr(dd_PolyhedraPtr dd_poly):
 
 
 def polyhedron_from_matrix(
-    mat: Matrix, row_order_type: Optional[RowOrderType] = None
+    mat: Matrix, row_order_type: Optional[RowOrder] = None
 ) -> Polyhedron:
     """Run the double description method to convert *mat* into a polyhedron,
     using *row_order_type* if specified.
@@ -562,7 +562,7 @@ def polyhedron_from_matrix(
         mat.dd_mat.representation != dd_Inequality
         and mat.dd_mat.representation != dd_Generator
     ):
-        raise ValueError("rep_type must be INEQUALITY or GENERATOR")
+        raise ValueError("rep must be INEQUALITY or GENERATOR")
     cdef dd_ErrorType error = dd_NoError
     if row_order_type is None:
         dd_poly = dd_DDMatrix2Poly(mat.dd_mat, &error)
@@ -663,7 +663,7 @@ def fourier_elimination(mat: Matrix) -> Matrix:
     .. versionadded:: 3.0.0
     """
     if mat.dd_mat.representation != dd_Inequality:
-        raise ValueError("rep_type must be INEQUALITY")
+        raise ValueError("rep must be INEQUALITY")
     cdef dd_ErrorType error = dd_NoError
     cdef dd_MatrixPtr dd_mat = dd_FourierElimination(mat.dd_mat, &error)
     if error != dd_NoError:
@@ -686,7 +686,7 @@ def block_elimination(mat: Matrix, col_set: Container[int]) -> Matrix:
     .. versionadded:: 3.0.0
     """
     if mat.dd_mat.representation != dd_Inequality:
-        raise ValueError("rep_type must be INEQUALITY")
+        raise ValueError("rep must be INEQUALITY")
     cdef set_type dd_colset = NULL
     cdef dd_MatrixPtr dd_mat = NULL
     cdef dd_ErrorType error = dd_NoError

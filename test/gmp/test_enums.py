@@ -7,8 +7,8 @@ import cdd.gmp
 
 
 @pytest.mark.parametrize(
-    "name", ["RepType", "LPObjType", "LPStatusType", "LPSolverType"]
+    "name", ["Rep", "LPObj", "LPStatus", "LPSolver"]
 )
-def test_gmp_rep_type(name: str) -> None:
+def test_gmp_rep(name: str) -> None:
     assert issubclass(getattr(cdd, name), IntEnum)
     assert getattr(cdd, name) is getattr(cdd.gmp, name)

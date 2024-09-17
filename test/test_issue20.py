@@ -12,7 +12,7 @@ def test_issue20() -> None:
         [[1, -1, -1], [0, 1, 0], [0, 0, 1]], dtype=np.float16
     )
     mat = cdd.matrix_from_array(arr)  # type: ignore
-    mat.rep_type = cdd.RepType.GENERATOR
+    mat.rep = cdd.Rep.GENERATOR
     cdd_poly = cdd.polyhedron_from_matrix(mat)
     ineq = np.array(cdd.copy_inequalities(cdd_poly).array)
     assert ((ref_ineq - ineq) == 0).all()
