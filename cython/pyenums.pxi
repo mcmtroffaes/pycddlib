@@ -21,15 +21,18 @@
 
 from enum import IntEnum
 
+
 class _AdjacencyTestType(IntEnum):
     COMBINATORIAL = dd_Combinatorial
     ALGEBRAIC = dd_Algebraic
+
 
 class _NumberType(IntEnum):
     UNKNOWN = dd_Unknown
     REAL = dd_Real
     RATIONAL = dd_Rational
     INTEGER = dd_Integer
+
 
 class RepType(IntEnum):
     """Type of representation.
@@ -39,6 +42,7 @@ class RepType(IntEnum):
     UNSPECIFIED = dd_Unspecified
     INEQUALITY = dd_Inequality
     GENERATOR = dd_Generator
+
 
 class RowOrderType(IntEnum):
     """Type of row order to use in the double description method."""
@@ -50,6 +54,7 @@ class RowOrderType(IntEnum):
     LEX_MIN = dd_LexMin
     LEX_MAX = dd_LexMax
     RANDOM_ROW = dd_RandomRow
+
 
 class _Error(IntEnum):
     DIMENSION_TOO_LARGE = dd_DimensionTooLarge
@@ -71,10 +76,12 @@ class _Error(IntEnum):
     NUMERICALLY_INCONSISTENT = dd_NumericallyInconsistent
     NO_ERROR = dd_NoError
 
+
 class _CompStatus(IntEnum):
     IN_PROGRESS = dd_InProgress
     ALL_FOUND = dd_AllFound
     REGION_EMPTY = dd_RegionEmpty
+
 
 class LPObjType(IntEnum):
     """Type of objective for a linear program."""
@@ -82,10 +89,12 @@ class LPObjType(IntEnum):
     MAX = dd_LPmax
     MIN = dd_LPmin
 
+
 class LPSolverType(IntEnum):
     """Type of solver for a linear program."""
     CRISS_CROSS = dd_CrissCross
     DUAL_SIMPLEX = dd_DualSimplex
+
 
 class LPStatusType(IntEnum):
     """Status of a linear program."""

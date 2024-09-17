@@ -149,7 +149,9 @@ cdef class Matrix:
         polyhedron described by
 
         .. math::
-           \mathrm{conv}\{V_i\colon t_i=1\}+\mathrm{nonnegspan}\{V_i\colon t_i=0,i\not\in L\}+\mathrm{linspan}\{V_i\colon t_i=0,i\in L\}
+           \mathrm{conv}\{V_i\colon t_i=1\}
+           +\mathrm{nonnegspan}\{V_i\colon t_i=0,i\not\in L\}
+           +\mathrm{linspan}\{V_i\colon t_i=0,i\in L\}
 
         where :math:`L` is :attr:`~cdd.Matrix.lin_set` and :math:`V_i`
         corresponds to the :math:`i`-th row of :math:`V`. Here
@@ -641,6 +643,7 @@ def copy_input_incidence(poly: Polyhedron) -> Sequence[Set[int]]:
     """
     return _get_dd_setfam(dd_CopyInputIncidence(poly.dd_poly))
 
+
 def fourier_elimination(mat: Matrix) -> Matrix:
     """Eliminate the last variable from the system of linear inequalities *mat*.
 
@@ -667,6 +670,7 @@ def fourier_elimination(mat: Matrix) -> Matrix:
         dd_FreeMatrix(dd_mat)
         _raise_error(error, "failed fourier elimination")
     return matrix_from_ptr(dd_mat)
+
 
 def block_elimination(mat: Matrix, col_set: Container[int]) -> Matrix:
     """Eliminate the variables *col_set* from the system of linear inequalities *mat*.
