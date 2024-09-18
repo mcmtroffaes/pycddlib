@@ -17,6 +17,6 @@ def test_issue7() -> None:
         [1.0, -4.0, 40.0, 4.0, -31.21985375, -4.91296, 17.90974622],
         [1.0, 4.0, 40.0, -4.0, -28.86014625, 4.91296, 20.26945371],
     ]
-    mat = cdd.matrix_from_array(array, rep=cdd.Rep.GENERATOR)
+    mat = cdd.matrix_from_array(array, rep_type=cdd.RepType.GENERATOR)
     with pytest.raises(RuntimeError, match="inconsistency"):
         cdd.polyhedron_from_matrix(mat)

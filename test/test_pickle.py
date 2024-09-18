@@ -13,18 +13,18 @@ def test_pickle_matrix() -> None:
         cdd.matrix_from_array(
             array=array,
             lin_set=lin_set,
-            rep=cdd.Rep.GENERATOR,
+            rep_type=cdd.RepType.GENERATOR,
             obj_func=obj_func,
-            obj=cdd.LPObj.MIN,
+            obj_type=cdd.LPObjType.MIN,
         )
     )
     mat = loads(data)
     assert isinstance(mat, cdd.Matrix)
     assert_matrix_almost_equal(mat.array, array)
     assert mat.lin_set == lin_set
-    assert mat.rep == cdd.Rep.GENERATOR
+    assert mat.rep_type == cdd.RepType.GENERATOR
     assert mat.obj_func == obj_func
-    assert mat.obj == cdd.LPObj.MIN
+    assert mat.obj_type == cdd.LPObjType.MIN
 
 
 def test_pickle_linprog() -> None:
@@ -32,10 +32,10 @@ def test_pickle_linprog() -> None:
     data = dumps(
         cdd.linprog_from_array(
             array=array,
-            obj=cdd.LPObj.MIN,
+            obj_type=cdd.LPObjType.MIN,
         )
     )
     lp = loads(data)
     assert isinstance(lp, cdd.LinProg)
     assert_matrix_almost_equal(lp.array, array)
-    assert lp.obj == cdd.LPObj.MIN
+    assert lp.obj_type == cdd.LPObjType.MIN

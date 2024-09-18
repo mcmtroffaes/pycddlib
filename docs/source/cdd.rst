@@ -10,7 +10,7 @@ Enums
 
 .. autoclass has trouble finding attributes of enums, so list explicitly
 
-.. autoclass:: LPObj(value)
+.. autoclass:: LPObjType(value)
     :show-inheritance:
 
     .. attribute::
@@ -18,14 +18,14 @@ Enums
         MAX
         MIN
 
-.. autoclass:: LPSolver(value)
+.. autoclass:: LPSolverType(value)
     :show-inheritance:
 
     .. attribute::
         CRISS_CROSS
         DUAL_SIMPLEX
 
-.. autoclass:: LPStatus(value)
+.. autoclass:: LPStatusType(value)
     :show-inheritance:
 
     .. attribute::
@@ -38,7 +38,7 @@ Enums
         UNBOUNDED
         DUAL_UNBOUNDED
 
-.. autoclass:: Rep(value)
+.. autoclass:: RepType(value)
     :show-inheritance:
 
     .. attribute::
@@ -46,7 +46,7 @@ Enums
         INEQUALITY
         GENERATOR
 
-.. autoclass:: RowOrder(value)
+.. autoclass:: RowOrderType(value)
     :show-inheritance:
 
     .. attribute::

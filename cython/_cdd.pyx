@@ -21,8 +21,8 @@
 
 from typing import SupportsFloat
 
-Number = float
-SupportsNumber = SupportsFloat
+NumberType = float
+SupportsNumberType = SupportsFloat
 
 cdef extern from * nogil:
     "#undef GMPRATIONAL"

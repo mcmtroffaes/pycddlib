@@ -19,10 +19,10 @@ def test_matrix_init_1() -> None:
     assert_matrix_almost_equal(mat.array, rows)
     assert isinstance(mat.lin_set, Set)
     assert not mat.lin_set
-    assert isinstance(mat.rep, cdd.Rep)
-    assert mat.rep == cdd.Rep.UNSPECIFIED
-    assert isinstance(mat.obj, cdd.LPObj)
-    assert mat.obj == cdd.LPObj.NONE
+    assert isinstance(mat.rep_type, cdd.RepType)
+    assert mat.rep_type == cdd.RepType.UNSPECIFIED
+    assert isinstance(mat.obj_type, cdd.LPObjType)
+    assert mat.obj_type == cdd.LPObjType.NONE
     assert isinstance(mat.obj_func, Sequence)
     assert_vector_almost_equal(mat.obj_func, [0.0, 0.0, 0.0])
 
@@ -59,16 +59,16 @@ def test_matrix_copy_1() -> None:
     mat1 = cdd.matrix_from_array(
         [[1, 1], [0, 2]],
         lin_set={1},
-        rep=cdd.Rep.GENERATOR,
-        obj=cdd.LPObj.MIN,
+        rep_type=cdd.RepType.GENERATOR,
+        obj_type=cdd.LPObjType.MIN,
         obj_func=[3, 4],
     )
     mat2 = cdd.matrix_copy(mat1)
     assert_matrix_almost_equal(mat2.array, [[1, 1], [0, 2]])
     assert_vector_almost_equal(mat2.obj_func, [3, 4])
     assert mat2.lin_set == {1}
-    assert mat2.rep == cdd.Rep.GENERATOR
-    assert mat2.obj == cdd.LPObj.MIN
+    assert mat2.rep_type == cdd.RepType.GENERATOR
+    assert mat2.obj_type == cdd.LPObjType.MIN
 
 
 def test_matrix_append_to_1() -> None:

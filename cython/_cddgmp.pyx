@@ -22,10 +22,10 @@
 from fractions import Fraction
 from typing import Union
 
-from cdd import LPObj, LPSolver, LPStatus, Rep
+from cdd import LPObjType, LPSolverType, LPStatusType, RepType
 
-Number = Fraction
-SupportsNumber = Union[Fraction, int]
+NumberType = Fraction
+SupportsNumberType = Union[Fraction, int]
 
 cdef extern from * nogil:
     "#define GMPRATIONAL"

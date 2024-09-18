@@ -16,7 +16,7 @@ def test_vertex_incidence_cube() -> None:
             [1, 0, 0, -1],
         ]
     )
-    mat.rep = cdd.Rep.INEQUALITY
+    mat.rep_type = cdd.RepType.INEQUALITY
     poly = cdd.polyhedron_from_matrix(mat)
     incidence = cdd.copy_incidence(poly)
 
@@ -55,7 +55,7 @@ def test_vertex_incidence_vtest_vo() -> None:
         ]
     )
 
-    mat.rep = cdd.Rep.INEQUALITY
+    mat.rep_type = cdd.RepType.INEQUALITY
     poly = cdd.polyhedron_from_matrix(mat)
 
     incidence_list = [
@@ -87,7 +87,7 @@ def test_facet_incidence_cube() -> None:
             [1, 0, 0, -1],
         ]
     )
-    mat.rep = cdd.Rep.INEQUALITY
+    mat.rep_type = cdd.RepType.INEQUALITY
     poly = cdd.polyhedron_from_matrix(mat)
     incidence = cdd.copy_input_incidence(poly)
 
@@ -127,7 +127,7 @@ def test_facet_incidence_vtest_vo() -> None:
         ]
     )
 
-    mat.rep = cdd.Rep.INEQUALITY
+    mat.rep_type = cdd.RepType.INEQUALITY
     poly = cdd.polyhedron_from_matrix(mat)
 
     incidence_list = [

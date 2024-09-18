@@ -15,11 +15,11 @@ def test_make_vertex_adjacency_list() -> None:
             [1, 0, -1, 0],
             [1, 0, 0, -1],
         ],
-        rep=cdd.Rep.INEQUALITY,
+        rep_type=cdd.RepType.INEQUALITY,
     )
-    assert mat.rep == cdd.Rep.INEQUALITY
+    assert mat.rep_type == cdd.RepType.INEQUALITY
     poly = cdd.polyhedron_from_matrix(mat)
-    assert poly.rep == cdd.Rep.INEQUALITY
+    assert poly.rep_type == cdd.RepType.INEQUALITY
     adjacency = cdd.copy_adjacency(poly)
 
     # Family size should equal the number of vertices of the cube (8)
@@ -55,7 +55,7 @@ def test_make_facet_adjacency_list() -> None:
             [16, 0, -8, 1],
             [32, -8, -8, 1],
         ],
-        rep=cdd.Rep.INEQUALITY,
+        rep_type=cdd.RepType.INEQUALITY,
     )
     poly = cdd.polyhedron_from_matrix(mat)
 

@@ -22,19 +22,19 @@
 from enum import IntEnum
 
 
-class _AdjacencyTest(IntEnum):
+class _AdjacencyTestType(IntEnum):
     COMBINATORIAL = dd_Combinatorial
     ALGEBRAIC = dd_Algebraic
 
 
-class _Number(IntEnum):
+class _NumberType(IntEnum):
     UNKNOWN = dd_Unknown
     REAL = dd_Real
     RATIONAL = dd_Rational
     INTEGER = dd_Integer
 
 
-class Rep(IntEnum):
+class RepType(IntEnum):
     """Representation.
     Use :attr:`INEQUALITY` for H-representation
     and :attr:`GENERATOR` for V-representation.
@@ -44,7 +44,7 @@ class Rep(IntEnum):
     GENERATOR = dd_Generator
 
 
-class RowOrder(IntEnum):
+class RowOrderType(IntEnum):
     """Row order for the double description method."""
     MAX_INDEX = dd_MaxIndex
     MIN_INDEX = dd_MinIndex
@@ -83,20 +83,20 @@ class _CompStatus(IntEnum):
     REGION_EMPTY = dd_RegionEmpty
 
 
-class LPObj(IntEnum):
+class LPObjType(IntEnum):
     """Objective for a linear program."""
     NONE = dd_LPnone
     MAX = dd_LPmax
     MIN = dd_LPmin
 
 
-class LPSolver(IntEnum):
+class LPSolverType(IntEnum):
     """Solver for a linear program."""
     CRISS_CROSS = dd_CrissCross
     DUAL_SIMPLEX = dd_DualSimplex
 
 
-class LPStatus(IntEnum):
+class LPStatusType(IntEnum):
     """Status of a linear program."""
     UNDECIDED = dd_LPSundecided
     OPTIMAL = dd_Optimal
