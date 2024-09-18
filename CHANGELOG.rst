@@ -85,10 +85,13 @@ Fully detailed changes:
 * Enumeration classes now inherit from :class:`enums.IntEnum`.
 
 * Pickle support for ``Matrix`` and ``LinProg`` (see issue #47).
-  ``Polyhedron`` does not have pickle support as it is too complex to implement.
+  ``Polyhedron`` does not have pickle support as it has no public interface to
+  construct it without running the double description method, which can be very slow.
   As a fallback, you can pickle a matrix
-  that you then explicitly convert to a polyhedron,
-  although this will obviously be quite slow.
+  that you then convert to a polyhedron
+  (as noted, this may be be quite slow),
+  or simply pickle the outputs that you need for your application
+  (i.e. inequalities, generators, adjacencies, incidences, ...).
 
 * Additional functions have been exposed:
 
