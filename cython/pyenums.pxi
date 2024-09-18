@@ -35,7 +35,7 @@ class _Number(IntEnum):
 
 
 class Rep(IntEnum):
-    """Type of representation.
+    """Representation.
     Use :attr:`INEQUALITY` for H-representation
     and :attr:`GENERATOR` for V-representation.
     """
@@ -45,7 +45,7 @@ class Rep(IntEnum):
 
 
 class RowOrder(IntEnum):
-    """Type of row order to use in the double description method."""
+    """Row order for the double description method."""
     MAX_INDEX = dd_MaxIndex
     MIN_INDEX = dd_MinIndex
     MIN_CUTOFF = dd_MinCutoff
@@ -84,14 +84,14 @@ class _CompStatus(IntEnum):
 
 
 class LPObj(IntEnum):
-    """Type of objective for a linear program."""
+    """Objective for a linear program."""
     NONE = dd_LPnone
     MAX = dd_LPmax
     MIN = dd_LPmin
 
 
 class LPSolver(IntEnum):
-    """Type of solver for a linear program."""
+    """Solver for a linear program."""
     CRISS_CROSS = dd_CrissCross
     DUAL_SIMPLEX = dd_DualSimplex
 
