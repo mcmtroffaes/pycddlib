@@ -77,5 +77,5 @@ def matrix_from_array(
     obj_func: Optional[Sequence[SupportsNumberType]] = None,
 ) -> Matrix: ...
 def polyhedron_from_matrix(
-    mat: Matrix, row_order_type: Optional[RowOrderType] = None
+    mat: Matrix, row_order: Optional[RowOrderType] = None
 ) -> Polyhedron: ...

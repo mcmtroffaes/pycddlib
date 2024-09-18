@@ -84,7 +84,7 @@ def test_polyhedron_cube_2() -> None:
 
 
 @pytest.mark.parametrize(
-    "row_order_type,order",
+    "row_order,order",
     [
         (cdd.RowOrderType.MAX_INDEX, [2, 3, 0, 1]),
         (cdd.RowOrderType.MIN_INDEX, [2, 1, 0, 3]),
@@ -95,13 +95,13 @@ def test_polyhedron_cube_2() -> None:
         (cdd.RowOrderType.LEX_MAX, [2, 3, 0, 1]),
     ],
 )
-def test_polyhedron_row_order_type(
-    row_order_type: Optional[cdd.RowOrderType], order: Sequence[int]
+def test_polyhedron_row_order(
+    row_order: Optional[cdd.RowOrderType], order: Sequence[int]
 ) -> None:
     generators = [[1, 1, 0], [1, 0, 0], [1, 0, 1], [1, 1, 1]]
     inequalities = [[0, 0, 1], [0, 1, 0], [1, 0, -1], [1, -1, 0]]
     mat = cdd.matrix_from_array(inequalities, rep_type=cdd.RepType.INEQUALITY)
-    poly = cdd.polyhedron_from_matrix(mat, row_order_type=row_order_type)
+    poly = cdd.polyhedron_from_matrix(mat, row_order=row_order)
     print(cdd.copy_generators(poly).array)
     assert_matrix_almost_equal(
         cdd.copy_generators(poly).array, [generators[i] for i in order]
