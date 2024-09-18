@@ -80,13 +80,13 @@ cdef _get_set(set_type set_):
     # create Python Set from given set_type
     cdef unsigned long elem
     return {
-        elem for elem from 0 <= elem < set_[0] if set_member(elem + 1, set_)
+        elem for elem in range(set_[0]) if set_member(elem + 1, set_)
     }
 
 cdef _set_set(set_type set_, pset):
     # set elements of set_type by elements from a Python Container
     cdef unsigned long elem
-    for elem from 0 <= elem < set_[0]:
+    for elem in range(set_[0]):
         if elem in pset:
             set_addelem(set_, elem + 1)
         else:
@@ -96,16 +96,17 @@ cdef _get_dd_setfam(dd_SetFamilyPtr setfam):
     # create Python Sequence[Set] from dd_SetFamilyPtr, and
     # free the pointer; indexing of the sets start at 0, unlike the
     # string output from cddlib, which starts at 1
-    cdef long elem
+    cdef dd_bigrange elem
+    cdef dd_bigrange i
     if setfam == NULL:
         raise ValueError("failed to get set family")
     result = [
         {
             elem
-            for elem from 0 <= elem < setfam.setsize
+            for elem in range(setfam.setsize)
             if set_member(elem + 1, setfam.set[i])
         }
-        for i from 0 <= i < setfam.famsize
+        for i in range(setfam.famsize)
     ]
     dd_FreeSetFamily(setfam)
     return result
