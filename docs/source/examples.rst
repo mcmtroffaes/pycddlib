@@ -219,10 +219,8 @@ The next example is taken from
 ...     [-7, 1, -5, 2],  # -x+5y-2z<=-7
 ...     [12, 3, -2, -6],  # -3x+2y+6z<=12
 ... ]
->>> mat1 = cdd.matrix_from_array(array, rep_type=cdd.RepType.INEQUALITY)
->>> mat2 = cdd.fourier_elimination(mat1)
->>> mat2.array
+>>> mat = cdd.matrix_from_array(array, rep_type=cdd.RepType.INEQUALITY)
+>>> cdd.fourier_elimination(mat).array
 [[-1.0, 0.0, -1.25], [-1.0, -1.0, -1.0], [-1.5, 1.0, -2.833333...]]
->>> mat3 = cdd.block_elimination(mat1, {3})  # equivalent to Fourier
->>> mat3.array
+>>> cdd.block_elimination(mat, {3}).array
 [[-4.0, 0.0, -5.0], [-1.5, -1.5, -1.5], [-9.0, 6.0, -17.0]]
