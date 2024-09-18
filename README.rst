@@ -13,6 +13,7 @@ The library can also solve a variety of other problems related to linear algebra
 This includes linear programming,
 Fourier elimination,
 computing ranks,
+computing adjacencies and incidences,
 and removing redundancies from systems of linear inequalities.
 
 * Download: https://pypi.org/project/pycddlib/#files
