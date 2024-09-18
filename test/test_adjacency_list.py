@@ -58,7 +58,6 @@ def test_make_facet_adjacency_list() -> None:
         rep_type=cdd.RepType.INEQUALITY,
     )
     poly = cdd.polyhedron_from_matrix(mat)
-
     adjacency_list = [
         {1, 2, 3, 4, 6},
         {0, 2, 3, 5},
@@ -68,6 +67,4 @@ def test_make_facet_adjacency_list() -> None:
         {1, 2, 3, 4, 6},
         {0, 3, 4, 5},
     ]
-
-    adjacency = cdd.copy_input_adjacency(poly)
-    assert adjacency == adjacency_list
+    assert cdd.copy_input_adjacency(poly) == adjacency_list

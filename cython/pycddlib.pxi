@@ -16,6 +16,7 @@
 # 51 Franklin Street, Fifth Floor, Boston, MA 02110-1301 USA.
 
 from collections.abc import Container, Sequence, Set
+from contextlib import contextmanager
 from typing import Optional
 
 cimport cpython.mem
@@ -83,11 +84,11 @@ cdef _get_set(set_type set_):
         elem for elem in range(set_[0]) if set_member(elem + 1, set_)
     }
 
-cdef _set_set(set_type set_, pset):
+cdef _set_set(set_type set_, elems):
     # set elements of set_type by elements from a Python Container
     cdef unsigned long elem
     for elem in range(set_[0]):
-        if elem in pset:
+        if elem in elems:
             set_addelem(set_, elem + 1)
         else:
             set_delelem(set_, elem + 1)
@@ -355,6 +356,71 @@ def matrix_canonicalize(mat: Matrix) -> tuple[Set[int], Set[int]]:
         set_free(impl_linset)
         set_free(redset)
         libc.stdlib.free(newpos)
+
+
+def matrix_adjacency(mat: Matrix) -> Sequence[Set[int]]:
+    """Generate the adjacency facet/graph of a polyheron H/V-represented by *mat*.
+
+    .. note::
+
+        The implementation uses linear programming,
+        instead of the double description method,
+        so this function should work for large scale problems.
+    """
+    cdef dd_ErrorType error = dd_NoError
+    cdef dd_SetFamilyPtr dd_setfam = dd_Matrix2Adjacency(mat.dd_mat, &error)
+    if error != dd_NoError:
+        dd_FreeSetFamily(dd_setfam)
+        _raise_error(error, "failed matrix adjacency")
+    return _get_dd_setfam(dd_setfam)
+
+def matrix_weak_adjacency(mat: Matrix) -> Sequence[Set[int]]:
+    """Generate the weak-adjacency facet/graph of a polyheron H/V-represented by *mat*.
+
+    .. note::
+
+        The implementation uses linear programming,
+        instead of the double description method,
+        so this function should work for large scale problems.
+    """
+    cdef dd_ErrorType error = dd_NoError
+    cdef dd_SetFamilyPtr dd_setfam = dd_Matrix2WeakAdjacency(mat.dd_mat, &error)
+    if error != dd_NoError:
+        dd_FreeSetFamily(dd_setfam)
+        _raise_error(error, "failed matrix adjacency")
+    return _get_dd_setfam(dd_setfam)
+
+
+def matrix_rank(
+    mat: Matrix, ignored_rows: Container[int] = (), ignored_cols: Container[int] = ()
+) -> tuple[Set[int], Set[int], int]:
+    """Return a row basis, a column basis, and rank, of *mat*,
+    whilst ignoring *ignored_rows* and *ignored_cols*.
+    """
+    cdef set_type dd_ignored_rows = NULL
+    cdef set_type dd_ignored_cols = NULL
+    cdef set_type rowbasis = NULL
+    cdef set_type colbasis = NULL
+    cdef long rank = 0
+    set_initialize(&dd_ignored_rows, mat.dd_mat.rowsize)
+    try:
+        if ignored_rows:
+            _set_set(dd_ignored_rows, ignored_rows)
+        set_initialize(&dd_ignored_cols, mat.dd_mat.colsize)
+        try:
+            if ignored_cols:
+                _set_set(dd_ignored_cols, ignored_cols)
+            rank = dd_MatrixRank(
+                mat.dd_mat, dd_ignored_rows, dd_ignored_cols, &rowbasis, &colbasis
+            )
+            result = (_get_set(rowbasis), _get_set(colbasis), rank)
+            set_free(rowbasis)
+            set_free(colbasis)
+        finally:
+            set_free(dd_ignored_cols)
+    finally:
+        set_free(dd_ignored_rows)
+    return result
 
 
 cdef class LinProg:
