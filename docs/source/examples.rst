@@ -56,10 +56,57 @@ This is the :file:`sampleh1.ine` example that comes with cddlib.
 >>> ext.lin_set # note: first row is 0, so fourth row is 3
 {3}
 
-Getting Adjacencies and Incidences
-----------------------------------
+Matrix Rank
+-----------
 
->>> # We start with the H-representation for a square
+>>> # row 3 = row 1 - row 2
+>>> # col 2 = 2 * col 1
+>>> array = [[1, 2, 0, 1], [1, 2, 1, 3], [0, 0, -1, -2]]
+>>> mat = cdd.matrix_from_array(array)
+>>> row_basis, col_basis, rank = cdd.matrix_rank(mat)
+>>> row_basis
+{0, 1}
+>>> col_basis
+{0, 2}
+>>> rank
+2
+
+Matrix Adjacencies
+------------------
+
+>>> # H-representation of a square
+>>> # 0 <= 1 + x1 (face 0)
+>>> # 0 <= 1 + x2 (face 1)
+>>> # 0 <= 1 - x1 (face 2)
+>>> # 0 <= 1 - x2 (face 3)
+>>> #
+>>> #   +---(3)---+
+>>> #   |         |
+>>> #   |         |
+>>> #  (0)       (2)
+>>> #   |         |
+>>> #   |         |
+>>> #   +---(1)---+
+>>> array = [[1, 1, 0], [1, 0, 1], [1, -1, 0], [1, 0, -1]]
+>>> mat = cdd.matrix_from_array(array, rep_type=cdd.RepType.INEQUALITY)
+>>> cdd.matrix_adjacency(mat)
+[{1, 3}, {0, 2}, {1, 3}, {0, 2}]
+
+>>> # V-representation of a square
+>>> #
+>>> #   1-----3
+>>> #   |     |
+>>> #   |     |
+>>> #   0-----2
+>>> array = [[1, -1, -1], [1, -1, 1], [1, 1, -1], [1, 1, 1]]
+>>> mat = cdd.matrix_from_array(array, rep_type=cdd.RepType.GENERATOR)
+>>> cdd.matrix_adjacency(mat)
+[{1, 2}, {0, 3}, {0, 3}, {1, 2}]
+
+Polyhedron Adjacencies and Incidences
+-------------------------------------
+
+>>> # H-representation of a square
 >>> # 0 <= 1 + x1 (face 0)
 >>> # 0 <= 1 + x2 (face 1)
 >>> # 0 <= 1 - x1 (face 2)
@@ -67,7 +114,6 @@ Getting Adjacencies and Incidences
 >>> array = [[1, 1, 0], [1, 0, 1], [1, -1, 0], [1, 0, -1]]
 >>> mat = cdd.matrix_from_array(array, rep_type=cdd.RepType.INEQUALITY)
 >>> poly = cdd.polyhedron_from_matrix(mat)
->>> # The V-representation can be printed in the usual way:
 >>> gen = cdd.copy_generators(poly)
 >>> gen.rep_type
 <RepType.GENERATOR: 2>
@@ -78,7 +124,7 @@ Getting Adjacencies and Incidences
  [1.0, -1.0, -1.0]]
 >>> gen.lin_set
 set()
->>> # graphical depiction of vertices and faces:
+>>> # V-representation of this square
 >>> #
 >>> #   2---(3)---1
 >>> #   |         |
