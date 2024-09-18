@@ -90,7 +90,13 @@ Fully detailed changes:
   that you then explicitly convert to a polyhedron,
   although this will obviously be quite slow.
 
-* The Fourier and block elimination functions are now exposed (see issue #38).
+* Additional functions have been exposed:
+
+    - Fourier and block elimination (see issue #38).
+
+    - Matrix adjacency and weak adjacency.
+
+    - Matrix rank.
 
 * You can now specify the row order type
   when constructing a ``Polyhedron`` from a matrix.
