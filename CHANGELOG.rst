@@ -97,7 +97,8 @@ Fully detailed changes:
 
     - Fourier and block elimination (see issue #38).
 
-    - Matrix adjacency and weak adjacency.
+    - Matrix adjacency and weak adjacency using linear programming
+      (i.e. without running the double description method).
 
     - Matrix rank.
 
