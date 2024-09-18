@@ -93,24 +93,31 @@ cdef _set_set(set_type set_, elems):
         else:
             set_delelem(set_, elem + 1)
 
-cdef _get_dd_setfam(dd_SetFamilyPtr setfam):
+cdef setfam_from_ptr(dd_SetFamilyPtr dd_setfam):
     # create Python Sequence[Set] from dd_SetFamilyPtr, and
     # free the pointer; indexing of the sets start at 0, unlike the
     # string output from cddlib, which starts at 1
     cdef dd_bigrange elem
     cdef dd_bigrange i
-    if setfam == NULL:
-        raise ValueError("failed to get set family")
+    if dd_setfam == NULL:
+        raise MemoryError
     result = [
         {
             elem
-            for elem in range(setfam.setsize)
-            if set_member(elem + 1, setfam.set[i])
+            for elem in range(dd_setfam.setsize)
+            if set_member(elem + 1, dd_setfam.set[i])
         }
-        for i in range(setfam.famsize)
+        for i in range(dd_setfam.famsize)
     ]
-    dd_FreeSetFamily(setfam)
+    dd_FreeSetFamily(dd_setfam)
     return result
+
+cdef setfam_from_ptr_with_error(dd_SetFamilyPtr dd_setfam, dd_ErrorType error, str msg):
+    if error != dd_NoError:
+        dd_FreeSetFamily(dd_setfam)
+        _raise_error(error, msg)
+    return setfam_from_ptr(dd_setfam)
+
 
 cdef _raise_error(dd_ErrorType error, msg):
     cdef libc.stdio.FILE *pfile
@@ -243,6 +250,13 @@ cdef matrix_from_ptr(dd_MatrixPtr dd_mat):
     return mat
 
 
+cdef matrix_from_ptr_with_error(dd_MatrixPtr dd_mat, dd_ErrorType error, str msg):
+    if error != dd_NoError:
+        dd_FreeMatrix(dd_mat)
+        _raise_error(error, msg)
+    return matrix_from_ptr(dd_mat)
+
+
 cdef struct _Shape:
     dd_rowrange numrows
     dd_colrange numcols
@@ -372,10 +386,7 @@ def matrix_adjacency(mat: Matrix) -> Sequence[Set[int]]:
     """
     cdef dd_ErrorType error = dd_NoError
     cdef dd_SetFamilyPtr dd_setfam = dd_Matrix2Adjacency(mat.dd_mat, &error)
-    if error != dd_NoError:
-        dd_FreeSetFamily(dd_setfam)
-        _raise_error(error, "failed matrix adjacency")
-    return _get_dd_setfam(dd_setfam)
+    return setfam_from_ptr_with_error(dd_setfam, error, "failed matrix adjacency")
 
 def matrix_weak_adjacency(mat: Matrix) -> Sequence[Set[int]]:
     """Generate the weak input adjacency of the polyhedron represented by *mat*.
@@ -391,10 +402,7 @@ def matrix_weak_adjacency(mat: Matrix) -> Sequence[Set[int]]:
     """
     cdef dd_ErrorType error = dd_NoError
     cdef dd_SetFamilyPtr dd_setfam = dd_Matrix2WeakAdjacency(mat.dd_mat, &error)
-    if error != dd_NoError:
-        dd_FreeSetFamily(dd_setfam)
-        _raise_error(error, "failed matrix adjacency")
-    return _get_dd_setfam(dd_setfam)
+    return setfam_from_ptr_with_error(dd_setfam, error, "failed matrix weak adjacency")
 
 
 def matrix_rank(
@@ -689,7 +697,7 @@ def copy_adjacency(poly: Polyhedron) -> Sequence[Set[int]]:
     H-representation: For each vertex, list adjacent vertices.
     V-representation: For each face, list adjacent faces.
     """
-    return _get_dd_setfam(dd_CopyAdjacency(poly.dd_poly))
+    return setfam_from_ptr(dd_CopyAdjacency(poly.dd_poly))
 
 
 def copy_input_adjacency(poly: Polyhedron) -> Sequence[Set[int]]:
@@ -698,7 +706,7 @@ def copy_input_adjacency(poly: Polyhedron) -> Sequence[Set[int]]:
     H-representation: For each face, list adjacent faces.
     V-representation: For each vertex, list adjacent vertices.
     """
-    return _get_dd_setfam(dd_CopyInputAdjacency(poly.dd_poly))
+    return setfam_from_ptr(dd_CopyInputAdjacency(poly.dd_poly))
 
 
 def copy_incidence(poly: Polyhedron) -> Sequence[Set[int]]:
@@ -707,7 +715,7 @@ def copy_incidence(poly: Polyhedron) -> Sequence[Set[int]]:
     H-representation: For each vertex, list adjacent faces.
     V-representation: For each face, list adjacent vertices.
     """
-    return _get_dd_setfam(dd_CopyIncidence(poly.dd_poly))
+    return setfam_from_ptr(dd_CopyIncidence(poly.dd_poly))
 
 
 def copy_input_incidence(poly: Polyhedron) -> Sequence[Set[int]]:
@@ -716,7 +724,7 @@ def copy_input_incidence(poly: Polyhedron) -> Sequence[Set[int]]:
     H-representation: For each face, list adjacent vertices.
     V-representation: For each vertex, list adjacent faces.
     """
-    return _get_dd_setfam(dd_CopyInputIncidence(poly.dd_poly))
+    return setfam_from_ptr(dd_CopyInputIncidence(poly.dd_poly))
 
 
 def fourier_elimination(mat: Matrix) -> Matrix:
@@ -741,10 +749,7 @@ def fourier_elimination(mat: Matrix) -> Matrix:
         raise ValueError("rep_type must be INEQUALITY")
     cdef dd_ErrorType error = dd_NoError
     cdef dd_MatrixPtr dd_mat = dd_FourierElimination(mat.dd_mat, &error)
-    if error != dd_NoError:
-        dd_FreeMatrix(dd_mat)
-        _raise_error(error, "failed fourier elimination")
-    return matrix_from_ptr(dd_mat)
+    return matrix_from_ptr_with_error(dd_mat, error, "failed fourier elimination")
 
 
 def block_elimination(mat: Matrix, col_set: Container[int]) -> Matrix:
@@ -769,10 +774,7 @@ def block_elimination(mat: Matrix, col_set: Container[int]) -> Matrix:
     try:
         _set_set(dd_colset, col_set)
         dd_mat = dd_BlockElimination(mat.dd_mat, dd_colset, &error)
-        if error != dd_NoError:
-            dd_FreeMatrix(dd_mat)
-            _raise_error(error, "failed block elimination")
-        return matrix_from_ptr(dd_mat)
+        return matrix_from_ptr_with_error(dd_mat, error, "failed block elimination")
     finally:
         set_free(dd_colset)
 
