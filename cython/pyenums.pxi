@@ -56,7 +56,7 @@ class RowOrderType(IntEnum):
     RANDOM_ROW = dd_RandomRow
 
 
-class _Error(IntEnum):
+class _ErrorType(IntEnum):
     DIMENSION_TOO_LARGE = dd_DimensionTooLarge
     IMPROPER_INPUT_FORMAT = dd_ImproperInputFormat
     NEGATIVE_MATRIX_SIZE = dd_NegativeMatrixSize
@@ -77,7 +77,7 @@ class _Error(IntEnum):
     NO_ERROR = dd_NoError
 
 
-class _CompStatus(IntEnum):
+class _CompStatusType(IntEnum):
     IN_PROGRESS = dd_InProgress
     ALL_FOUND = dd_AllFound
     REGION_EMPTY = dd_RegionEmpty
