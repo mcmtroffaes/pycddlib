@@ -108,6 +108,24 @@ you can also call ``setup.py`` directly to create the wheel, as follows::
 However, note that
 `running setup.py directly is deprecated <https://blog.ganssle.io/articles/2021/10/setup-py-deprecated.html>`_.
 
+Standalone
+~~~~~~~~~~
+
+On some systems, such as for instance Google Colab,
+cddlib and gmp cannot be installed.
+For this reason, a standalone version of pycddlib,
+which provides just the :mod:`cdd` module
+without the :mod:`cdd.gmp` module,
+is maintained at
+`pycddlib-standalone <https://github.com/mcmtroffaes/pycddlib-standalone>`_.
+
+It can be installed simply with::
+
+    python -m pip install pycddlib-standalone
+
+You still need a compiler so that Python can compile the extension module,
+but otherwise it has no dependencies.
+
 Build Scripts
 ~~~~~~~~~~~~~
 
