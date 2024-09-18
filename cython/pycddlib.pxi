@@ -359,7 +359,10 @@ def matrix_canonicalize(mat: Matrix) -> tuple[Set[int], Set[int]]:
 
 
 def matrix_adjacency(mat: Matrix) -> Sequence[Set[int]]:
-    """Generate the adjacency facet/graph of a polyheron H/V-represented by *mat*.
+    """Generate the input adjacency of the polyhedron represented by *mat*.
+
+    H-representation: For each face, list adjacent faces.
+    V-representation: For each vertex, list adjacent vertices.
 
     .. note::
 
@@ -375,7 +378,10 @@ def matrix_adjacency(mat: Matrix) -> Sequence[Set[int]]:
     return _get_dd_setfam(dd_setfam)
 
 def matrix_weak_adjacency(mat: Matrix) -> Sequence[Set[int]]:
-    """Generate the weak-adjacency facet/graph of a polyheron H/V-represented by *mat*.
+    """Generate the weak input adjacency of the polyhedron represented by *mat*.
+
+    H-representation: For each face, list adjacent faces.
+    V-representation: For each vertex, list adjacent vertices.
 
     .. note::
 

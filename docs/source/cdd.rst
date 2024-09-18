@@ -79,8 +79,13 @@ Functions
 ---------
 
 .. autofunction:: matrix_append_to
-.. autofunction:: matrix_canonicalize
 .. autofunction:: matrix_copy
+
+.. autofunction:: matrix_adjacency
+.. autofunction:: matrix_weak_adjacency
+
+.. autofunction:: matrix_canonicalize
+.. autofunction:: matrix_rank
 
 .. autofunction:: linprog_solve
 
