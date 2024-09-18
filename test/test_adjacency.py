@@ -2,10 +2,7 @@ import cdd
 
 
 def test_make_vertex_adjacency_list() -> None:
-    # The following lines test that cdd.copy_adjacency_list(poly)
-    # returns the correct adjacencies.
-
-    # We start with the H-representation for a cube
+    # cube
     mat = cdd.matrix_from_array(
         [
             [1, 1, 0, 0],
@@ -21,17 +18,9 @@ def test_make_vertex_adjacency_list() -> None:
     poly = cdd.polyhedron_from_matrix(mat)
     assert poly.rep_type == cdd.RepType.INEQUALITY
     adjacency = cdd.copy_adjacency(poly)
-
-    # Family size should equal the number of vertices of the cube (8)
-    assert len(adjacency) == 8
-
-    # All the vertices of the cube should be connected by three other vertices
-    assert [len(adj) for adj in adjacency] == [3] * 8
-
-    # The vertices must be numbered consistently
-    # The first vertex is adjacent to the second, fourth and eighth
-    # (note the conversion to a pythonic numbering system)
-    adjacency_list = [
+    assert len(adjacency) == 8  # adjacency for each of 8 vertices
+    assert [len(adj) for adj in adjacency] == [3] * 8  # each vertex has 3 neighbours
+    expected_adjacency = [
         {1, 3, 7},
         {0, 2, 6},
         {1, 3, 4},
@@ -41,7 +30,19 @@ def test_make_vertex_adjacency_list() -> None:
         {1, 4, 7},
         {0, 5, 6},
     ]
-    assert adjacency == adjacency_list
+    assert adjacency == expected_adjacency
+    expected_input_adjacency = [
+        {1, 2, 4, 5},
+        {0, 2, 3, 5},
+        {0, 1, 3, 4},
+        {1, 2, 4, 5},
+        {0, 2, 3, 5},
+        {0, 1, 3, 4},
+        set(),
+    ]
+    assert cdd.copy_input_adjacency(poly) == expected_input_adjacency
+    assert cdd.matrix_adjacency(mat) == expected_input_adjacency[:-1]
+    assert cdd.matrix_weak_adjacency(mat) == expected_input_adjacency[:-1]
 
 
 def test_make_facet_adjacency_list() -> None:
@@ -58,7 +59,7 @@ def test_make_facet_adjacency_list() -> None:
         rep_type=cdd.RepType.INEQUALITY,
     )
     poly = cdd.polyhedron_from_matrix(mat)
-    adjacency_list = [
+    expected_input_adjacency = [
         {1, 2, 3, 4, 6},
         {0, 2, 3, 5},
         {0, 1, 4, 5},
@@ -67,4 +68,7 @@ def test_make_facet_adjacency_list() -> None:
         {1, 2, 3, 4, 6},
         {0, 3, 4, 5},
     ]
-    assert cdd.copy_input_adjacency(poly) == adjacency_list
+    assert cdd.copy_input_adjacency(poly) == expected_input_adjacency
+    expected_matrix_adjacency = [adj - {6} for adj in expected_input_adjacency[:-1]]
+    assert cdd.matrix_adjacency(mat) == expected_matrix_adjacency
+    assert cdd.matrix_weak_adjacency(mat) == expected_matrix_adjacency
