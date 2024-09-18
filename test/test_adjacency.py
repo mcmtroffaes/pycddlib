@@ -1,7 +1,7 @@
 import cdd
 
 
-def test_make_vertex_adjacency_list() -> None:
+def test_vertex_adjacency_1() -> None:
     # cube
     mat = cdd.matrix_from_array(
         [
@@ -45,7 +45,47 @@ def test_make_vertex_adjacency_list() -> None:
     assert cdd.matrix_weak_adjacency(mat) == expected_input_adjacency[:-1]
 
 
-def test_make_facet_adjacency_list() -> None:
+def test_facet_adjacency_1() -> None:
+    mat = cdd.matrix_from_array(
+        [
+            [1, 1, 0, 0],
+            [1, 0, 1, 0],
+            [1, -1, 0, 0],
+            [1, 0, -1, 0],
+            [0, 0, 0, 1],
+            [1, 0, 0, 1],  # redundant
+        ],
+        rep_type=cdd.RepType.INEQUALITY,
+    )
+    poly = cdd.polyhedron_from_matrix(mat)
+    assert cdd.copy_input_adjacency(poly) == [
+        {1, 3, 4},
+        {0, 2, 4},
+        {1, 3, 4},
+        {0, 2, 4},
+        {0, 1, 2, 3},
+        set(),
+        set(),
+    ]
+    assert cdd.matrix_adjacency(mat) == [
+        {1, 3, 4},
+        {0, 2, 4},
+        {1, 3, 4},
+        {0, 2, 4},
+        {0, 1, 2, 3},
+        {4},
+    ]
+    assert cdd.matrix_weak_adjacency(mat) == [
+        {1, 3, 4},
+        {0, 2, 4},
+        {1, 3, 4},
+        {0, 2, 4},
+        {0, 1, 2, 3},
+        {0, 1, 2, 3, 4},
+    ]
+
+
+def test_facet_adjacency_2() -> None:
     # This matrix is the same as in vtest_vo.ine
     mat = cdd.matrix_from_array(
         [
