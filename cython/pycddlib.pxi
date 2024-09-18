@@ -419,9 +419,11 @@ def matrix_rank(
             rank = dd_MatrixRank(
                 mat.dd_mat, dd_ignored_rows, dd_ignored_cols, &rowbasis, &colbasis
             )
-            result = (_get_set(rowbasis), _get_set(colbasis), rank)
-            set_free(rowbasis)
-            set_free(colbasis)
+            try:
+                result = (_get_set(rowbasis), _get_set(colbasis), rank)
+            finally:
+                set_free(rowbasis)
+                set_free(colbasis)
         finally:
             set_free(dd_ignored_cols)
     finally:
