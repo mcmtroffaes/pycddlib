@@ -47,3 +47,23 @@ def test_matrix_rank_1(
         basis_cols,
         rank,
     )
+
+
+def test_matrix_rank_2() -> None:
+    # check ignored_cols and ignored_rows
+    assert cdd.matrix_rank(
+        cdd.matrix_from_array([[0, 1], [1, 0]]), ignored_rows={0}
+    ) == ({1}, {0}, 1)
+    assert cdd.matrix_rank(
+        cdd.matrix_from_array([[0, 1], [1, 0]]), ignored_cols={0}
+    ) == ({0}, {1}, 1)
+    assert cdd.matrix_rank(
+        cdd.matrix_from_array([[1, 0, 0], [0, 0, 1], [0, 1, 0]]),
+        ignored_rows={1},
+        ignored_cols={2},
+    ) == ({0, 2}, {0, 1}, 2)
+    assert cdd.matrix_rank(
+        cdd.matrix_from_array([[1, 1, 0], [0, 0, 1], [2, 2, 0], [0, 1, 0]]),
+        ignored_rows={1},
+        ignored_cols={2},
+    ) == ({0, 3}, {0, 1}, 2)
