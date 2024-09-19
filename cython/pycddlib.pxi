@@ -402,9 +402,22 @@ def redundant(
 
     Returns a certificate in case of non-redundancy.
     For the H-representation, the certificate :math:`x`
-    is a solution violating only inequality *row*.
+    is a solution violating only inequality *row*
+    i.e. satisfying (denoting *row* by :math:`j`)
+
+    .. math::
+       0&> b_j+A_j x \\
+       0&<=b_i+A_i x \qquad\forall i\not\in L,\,i\neq j
+       0&= b_i+A_i x \qquad\forall i\in L,\,i\neq j
+
     For the V-representation, the certificate :math:`(z_0,z)`
-    is a hyperplane :math:`H_{z_0,z}` that separates *row* from the rest.
+    is a hyperplane :math:`H_{z_0,z}` that separates *row* from the rest,
+    i.e. satisfying
+
+    .. math::
+       0&> b_j z_0 + A_j z \\
+       0&<=b_i z_0 + A_i z \qquad\forall i\not\in L,\,i\neq j
+       0&= b_i z_0 + A_i z \qquad\forall i\in L,\,i\neq j
     """
     if (
         mat.dd_mat.representation != dd_Inequality
