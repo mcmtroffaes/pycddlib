@@ -87,7 +87,7 @@ def test_redundant_generators_4() -> None:
     assert_redundant_equal(mat, 0, True, [0, 0])
     assert_redundant_equal(mat, 1, True, [0, 0])
     assert_redundant_equal(mat, 2, False, [1, -0.5])
-    # TODO is this a bug in cddlib? no certificate for rows 0 and 1...
+    # TODO bug in cddlib... https://github.com/cddlib/cddlib/pull/73
     assert_redundant_equal(mat, 0, False, [0, 0], True)
     assert_redundant_equal(mat, 1, False, [0, 0], True)
     assert_redundant_equal(mat, 2, False, [1, -0.5], True)
