@@ -205,6 +205,9 @@ cdef class Matrix:
             \text{ and }
             \forall i\not\in L\colon\lambda_i\ge 0
             \right\}
+
+        For this reason, the :math:`V_i` are called the *generators*
+        of the polyhedron.
         """
         cdef _Shape shape = _Shape(self.dd_mat.rowsize, self.dd_mat.colsize)
         return _get_array_from_matrix(self.dd_mat.matrix, shape)
