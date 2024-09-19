@@ -102,7 +102,6 @@ def test_polyhedron_row_order(
     inequalities = [[0, 0, 1], [0, 1, 0], [1, 0, -1], [1, -1, 0]]
     mat = cdd.matrix_from_array(inequalities, rep_type=cdd.RepType.INEQUALITY)
     poly = cdd.polyhedron_from_matrix(mat, row_order=row_order)
-    print(cdd.copy_generators(poly).array)
     assert_matrix_almost_equal(
         cdd.copy_generators(poly).array, [generators[i] for i in order]
     )

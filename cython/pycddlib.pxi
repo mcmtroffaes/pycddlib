@@ -77,6 +77,10 @@ cdef _tmpread(libc.stdio.FILE *pfile):
         cpython.mem.PyMem_RawFree(buffer)
     return result
 
+cdef _get_arow(dd_colrange size, dd_Arow row):
+    # create Python Sequence from given dd_Arow, starting at index 1
+    return [_get_mytype(row[i]) for i in range(1, size)]
+
 cdef _get_set(set_type set_):
     # create Python Set from given set_type
     cdef unsigned long elem
@@ -112,18 +116,18 @@ cdef setfam_from_ptr(dd_SetFamilyPtr dd_setfam):
     dd_FreeSetFamily(dd_setfam)
     return result
 
-cdef setfam_from_ptr_with_error(dd_SetFamilyPtr dd_setfam, dd_ErrorType error, str msg):
+cdef setfam_from_ptr_with_error(dd_SetFamilyPtr dd_setfam, dd_ErrorType error):
     if error != dd_NoError:
         dd_FreeSetFamily(dd_setfam)
-        _raise_error(error, msg)
+        _raise_error(error)
     return setfam_from_ptr(dd_setfam)
 
 
-cdef _raise_error(dd_ErrorType error, msg):
+cdef _raise_error(dd_ErrorType error):
     cdef libc.stdio.FILE *pfile
     pfile = _tmpfile()
     dd_WriteErrorMessages(pfile, error)
-    raise RuntimeError(msg + "\n" + _tmpread(pfile).rstrip('\n'))
+    raise RuntimeError(_tmpread(pfile).rstrip('\n'))
 
 # extension classes to wrap matrix, linear program, and polyhedron
 
@@ -250,10 +254,10 @@ cdef matrix_from_ptr(dd_MatrixPtr dd_mat):
     return mat
 
 
-cdef matrix_from_ptr_with_error(dd_MatrixPtr dd_mat, dd_ErrorType error, str msg):
+cdef matrix_from_ptr_with_error(dd_MatrixPtr dd_mat, dd_ErrorType error):
     if error != dd_NoError:
         dd_FreeMatrix(dd_mat)
-        _raise_error(error, msg)
+        _raise_error(error)
     return matrix_from_ptr(dd_mat)
 
 
@@ -341,6 +345,37 @@ def matrix_append_to(mat1: Matrix, mat2: Matrix) -> None:
         raise ValueError("cannot append because column sizes differ")
 
 
+def redundant(mat: Matrix, row: int) -> tuple[bool, Sequence[NumberType]]:
+    """Checks whether *row* is redundant for the representation *mat*.
+    Linearity rows are not checked.
+
+    Returns a certificate in case of non-redundancy.
+    For the H-representation, the certificate x
+    is a solution violating only inequality *row*.
+    For the V-representation, the certificate (x_0, x)
+    is a hyperplane right hand side and normal that separates *row* from the rest.
+    """
+    if (
+        mat.dd_mat.representation != dd_Inequality
+        and mat.dd_mat.representation != dd_Generator
+    ):
+        raise ValueError("rep_type must be INEQUALITY or GENERATOR")
+    cdef dd_ErrorType error = dd_NoError
+    cdef dd_colrange certificate_size = mat.dd_mat.colsize + (
+        1 if mat.dd_mat.representation == dd_Generator else 0
+    )
+    cdef dd_Arow certificate = NULL
+    cdef dd_boolean is_redundant = 0
+    cdef dd_rowrange crow = row
+    dd_InitializeArow(certificate_size, &certificate)
+    try:
+        is_redundant = dd_Redundant(mat.dd_mat, crow + 1, certificate, &error)
+        if error != dd_NoError:
+            _raise_error(error)
+        return bool(is_redundant), _get_arow(certificate_size, certificate)
+    finally:
+        dd_FreeArow(certificate_size, certificate)
+
 def matrix_canonicalize(mat: Matrix) -> tuple[Set[int], Set[int]]:
     """Transform to canonical representation by recognizing all
     implicit linearities and all redundancies. These are returned
@@ -364,7 +399,7 @@ def matrix_canonicalize(mat: Matrix) -> tuple[Set[int], Set[int]]:
             or redset == NULL
             or newpos == NULL
         ):
-            _raise_error(error, "failed to canonicalize matrix")
+            _raise_error(error)
         return (_get_set(impl_linset), _get_set(redset))
     finally:
         set_free(impl_linset)
@@ -386,7 +421,7 @@ def matrix_adjacency(mat: Matrix) -> Sequence[Set[int]]:
     """
     cdef dd_ErrorType error = dd_NoError
     cdef dd_SetFamilyPtr dd_setfam = dd_Matrix2Adjacency(mat.dd_mat, &error)
-    return setfam_from_ptr_with_error(dd_setfam, error, "failed matrix adjacency")
+    return setfam_from_ptr_with_error(dd_setfam, error)
 
 def matrix_weak_adjacency(mat: Matrix) -> Sequence[Set[int]]:
     """Generate the weak input adjacency of the polyhedron represented by *mat*.
@@ -402,7 +437,7 @@ def matrix_weak_adjacency(mat: Matrix) -> Sequence[Set[int]]:
     """
     cdef dd_ErrorType error = dd_NoError
     cdef dd_SetFamilyPtr dd_setfam = dd_Matrix2WeakAdjacency(mat.dd_mat, &error)
-    return setfam_from_ptr_with_error(dd_setfam, error, "failed matrix weak adjacency")
+    return setfam_from_ptr_with_error(dd_setfam, error)
 
 
 def matrix_rank(
@@ -595,7 +630,7 @@ def linprog_solve(
     cdef dd_ErrorType error = dd_NoError
     dd_LPSolve(lp.dd_lp, solver, &error)
     if error != dd_NoError:
-        _raise_error(error, "failed to solve linear program")
+        _raise_error(error)
 
 
 cdef class Polyhedron:
@@ -653,7 +688,7 @@ def polyhedron_from_matrix(
         dd_poly = dd_DDMatrix2Poly2(mat.dd_mat, row_order, &error)
     if error != dd_NoError:
         dd_FreePolyhedra(dd_poly)
-        _raise_error(error, "failed to run double description method")
+        _raise_error(error)
     return polyhedron_from_ptr(dd_poly)
 
 
@@ -749,7 +784,7 @@ def fourier_elimination(mat: Matrix) -> Matrix:
         raise ValueError("rep_type must be INEQUALITY")
     cdef dd_ErrorType error = dd_NoError
     cdef dd_MatrixPtr dd_mat = dd_FourierElimination(mat.dd_mat, &error)
-    return matrix_from_ptr_with_error(dd_mat, error, "failed fourier elimination")
+    return matrix_from_ptr_with_error(dd_mat, error)
 
 
 def block_elimination(mat: Matrix, col_set: Container[int]) -> Matrix:
@@ -774,7 +809,7 @@ def block_elimination(mat: Matrix, col_set: Container[int]) -> Matrix:
     try:
         _set_set(dd_colset, col_set)
         dd_mat = dd_BlockElimination(mat.dd_mat, dd_colset, &error)
-        return matrix_from_ptr_with_error(dd_mat, error, "failed block elimination")
+        return matrix_from_ptr_with_error(dd_mat, error)
     finally:
         set_free(dd_colset)
 

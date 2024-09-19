@@ -9,13 +9,11 @@ from mypy.stubgenc import ArgSig, FunctionContext, FunctionSig, InspectionStubGe
 from mypy.stubutil import ClassInfo
 
 
-def get_annotation_fullname(
-    gen: InspectionStubGenerator, annotation: object
-) -> str | None:
+def get_annotation_fullname(gen: InspectionStubGenerator, annotation: object) -> str:
     if annotation is inspect.Parameter.empty:
-        return None
+        return "_typeshed.Incomplete"
     elif annotation is inspect.Signature.empty:
-        return None
+        return "_typeshed.Incomplete"
     elif isinstance(annotation, str):
         return annotation
     elif orig := typing.get_origin(annotation):
@@ -31,7 +29,7 @@ def get_annotation_fullname(
     elif isinstance(annotation, type):
         return gen.get_type_fullname(annotation)
     else:
-        return None
+        return "_typeshed.Incomplete"
 
 
 class CythonInspectionStubGenerator(InspectionStubGenerator):
@@ -58,10 +56,8 @@ class CythonInspectionStubGenerator(InspectionStubGenerator):
         if type(func).__name__ != "cython_function_or_method":
             return super().get_default_function_sig(func, ctx)
 
-        # inspect.signature requires Callable
-        assert isinstance(func, Callable)
-
-        sig = inspect.signature(func)
+        # inspect.signature requires Callable but base class uses just "object"
+        sig = inspect.signature(func)  # type: ignore
         args = [
             ArgSig(
                 param.name,
@@ -103,13 +99,14 @@ class CythonInspectionStubGenerator(InspectionStubGenerator):
             get_annotation_fullname(
                 self, inspect.get_annotations(class_info.cls).get(name)
             )
-            or self.add_name("_typeshed.Incomplete")
+            if class_info is not None and class_info.cls is not None
+            else "_typeshed.Incomplete"
         )
         # TODO fetch setter_type from obj, if Cython ever exposes it?
         setter_type: str | None = getter_type  # or None, but better generate too much?
 
         def getter_properties() -> Iterable[str]:
-            yield f"{self._indent}@property",
+            yield f"{self._indent}@property"
             yield FunctionSig(name, [ArgSig("self")], getter_type).format_sig(
                 indent=self._indent
             )

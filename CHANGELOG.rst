@@ -102,6 +102,8 @@ Fully detailed changes:
 
     - Matrix rank.
 
+    - Redundancy checks and certificates.
+
 * You can now specify the row order type
   when constructing a ``Polyhedron`` from a matrix.
   (This exposes the ``dd_DDMatrix2Poly2`` function.)
