@@ -47,3 +47,24 @@ def test_redundant_inequalities_3() -> None:
     assert_redundant_equal(mat, 1, False, [-15, 10])
     # 0 <= 1 - 28 + 27, 0 <= 4 + 14 - 18, 0 <= 5 - 14 + 9
     assert_redundant_equal(mat, 2, True, [-14, 9])
+
+
+def test_redundant_generators_1() -> None:
+    mat = cdd.matrix_from_array([[1, 1]], rep_type=cdd.RepType.GENERATOR, lin_set={0})
+    assert cdd.redundant(mat, 0) == (False, [0, 0])
+
+
+def test_redundant_generators_2() -> None:
+    mat = cdd.matrix_from_array([[1, 1], [1, 2], [1, 3]], rep_type=cdd.RepType.GENERATOR)
+    assert_redundant_equal(mat, 0, False, [-2, 1])
+    assert_redundant_equal(mat, 1, True, [0, 0])
+    assert_redundant_equal(mat, 2, False, [2, -1])
+
+
+def test_redundant_generators_3() -> None:
+    mat = cdd.matrix_from_array(
+        [[1, 1, 3], [1, 5, 1], [1, 3, 2]], rep_type=cdd.RepType.GENERATOR
+    )
+    assert_redundant_equal(mat, 0, False, [-1.5, 0.5, 0])
+    assert_redundant_equal(mat, 1, False, [1.5, -0.5, 0])
+    assert_redundant_equal(mat, 2, True, [0, 0, 0])
