@@ -87,6 +87,8 @@ Functions
 .. autofunction:: matrix_canonicalize
 .. autofunction:: matrix_rank
 
+.. autofunction:: redundant
+
 .. autofunction:: linprog_solve
 
 .. autofunction:: copy_input

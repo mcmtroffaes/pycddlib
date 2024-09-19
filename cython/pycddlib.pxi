@@ -348,7 +348,8 @@ def matrix_append_to(mat1: Matrix, mat2: Matrix) -> None:
 def redundant(
     mat: Matrix, row: int, strong: bool = False
 ) -> tuple[bool, Sequence[NumberType]]:
-    """Checks whether *row* is (strongly) redundant for the representation *mat*.
+    """Checks whether *row* is
+    (strongly if *strong* is ``True``) redundant for the representation *mat*.
     Linearity rows are not checked
     i.e. *row* should not be in the :attr:`~cdd.Matrix.lin_set`.
 
