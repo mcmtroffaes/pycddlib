@@ -1,7 +1,7 @@
 # stubgen patch to make it play nice with Cython
 import inspect
 import typing
-from collections.abc import Callable, Iterable
+from collections.abc import Iterable
 from unittest import mock
 
 from mypy.stubgen import main

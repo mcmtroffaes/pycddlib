@@ -345,9 +345,19 @@ def matrix_append_to(mat1: Matrix, mat2: Matrix) -> None:
         raise ValueError("cannot append because column sizes differ")
 
 
-def redundant(mat: Matrix, row: int) -> tuple[bool, Sequence[NumberType]]:
-    """Checks whether *row* is redundant for the representation *mat*.
-    Linearity rows are not checked.
+def redundant(
+    mat: Matrix, row: int, strong: bool = False
+) -> tuple[bool, Sequence[NumberType]]:
+    """Checks whether *row* is (strongly) redundant for the representation *mat*.
+    Linearity rows are not checked
+    i.e. *row* should not be in the :attr:`~cdd.Matrix.lin_set`.
+
+    A row is redundant if its removal does not change the shape of the polyhedron.
+
+    A row is strongly redundant in the H-representation if every point in
+    the polyhedron satisfies it with strict inequality.
+    A row is strongly redundant in the V-representation if it is in
+    the interior of the polyhedron.
 
     Returns a certificate in case of non-redundancy.
     For the H-representation, the certificate x
@@ -369,7 +379,10 @@ def redundant(mat: Matrix, row: int) -> tuple[bool, Sequence[NumberType]]:
     cdef dd_rowrange crow = row
     dd_InitializeArow(certificate_size, &certificate)
     try:
-        is_redundant = dd_Redundant(mat.dd_mat, crow + 1, certificate, &error)
+        if strong:
+            is_redundant = dd_SRedundant(mat.dd_mat, crow + 1, certificate, &error)
+        else:
+            is_redundant = dd_Redundant(mat.dd_mat, crow + 1, certificate, &error)
         if error != dd_NoError:
             _raise_error(error)
         return bool(is_redundant), _get_arow(certificate_size, certificate)

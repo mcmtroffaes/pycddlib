@@ -7,9 +7,9 @@ import cdd
 
 
 def assert_redundant_equal(
-    mat: cdd.Matrix, row: int, exp_is_redundant: bool, exp_certificate: Sequence[float]
+    mat: cdd.Matrix, row: int, exp_is_redundant: bool, exp_certificate: Sequence[float], strong: bool = False,
 ) -> None:
-    is_redundant, certificate = cdd.redundant(mat, row)
+    is_redundant, certificate = cdd.redundant(mat, row, strong)
     assert is_redundant == exp_is_redundant
     assert_vector_almost_equal(certificate, exp_certificate)
 
@@ -49,13 +49,25 @@ def test_redundant_inequalities_3() -> None:
     assert_redundant_equal(mat, 2, True, [-14, 9])
 
 
+def test_redundant_inequalities_4() -> None:
+    # row 0: 0 <= 1 + x
+    # row 1: 0 <= 2 + 2x
+    mat = cdd.matrix_from_array([[1, 1], [2, 2]], rep_type=cdd.RepType.INEQUALITY)
+    assert_redundant_equal(mat, 0, True, [-1])
+    assert_redundant_equal(mat, 1, True, [-1])
+    assert_redundant_equal(mat, 0, False, [-1], True)
+    assert_redundant_equal(mat, 1, False, [-1], True)
+
+
 def test_redundant_generators_1() -> None:
     mat = cdd.matrix_from_array([[1, 1]], rep_type=cdd.RepType.GENERATOR, lin_set={0})
     assert cdd.redundant(mat, 0) == (False, [0, 0])
 
 
 def test_redundant_generators_2() -> None:
-    mat = cdd.matrix_from_array([[1, 1], [1, 2], [1, 3]], rep_type=cdd.RepType.GENERATOR)
+    mat = cdd.matrix_from_array(
+        [[1, 1], [1, 2], [1, 3]], rep_type=cdd.RepType.GENERATOR
+    )
     assert_redundant_equal(mat, 0, False, [-2, 1])
     assert_redundant_equal(mat, 1, True, [0, 0])
     assert_redundant_equal(mat, 2, False, [2, -1])
@@ -68,3 +80,14 @@ def test_redundant_generators_3() -> None:
     assert_redundant_equal(mat, 0, False, [-1.5, 0.5, 0])
     assert_redundant_equal(mat, 1, False, [1.5, -0.5, 0])
     assert_redundant_equal(mat, 2, True, [0, 0, 0])
+
+
+def test_redundant_generators_4() -> None:
+    mat = cdd.matrix_from_array([[1, 2], [1, 2], [1, 4]], rep_type=cdd.RepType.GENERATOR)
+    assert_redundant_equal(mat, 0, True, [0, 0])
+    assert_redundant_equal(mat, 1, True, [0, 0])
+    assert_redundant_equal(mat, 2, False, [1, -0.5])
+    # TODO is this a bug in cddlib? no certificate for rows 0 and 1...
+    assert_redundant_equal(mat, 0, False, [0, 0], True)
+    assert_redundant_equal(mat, 1, False, [0, 0], True)
+    assert_redundant_equal(mat, 2, False, [1, -0.5], True)
