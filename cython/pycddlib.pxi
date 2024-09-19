@@ -132,7 +132,7 @@ cdef _raise_error(dd_ErrorType error):
 # extension classes to wrap matrix, linear program, and polyhedron
 
 cdef class Matrix:
-    """A set of linear inequalities or a set of linear generators."""
+    """A set of inequalities or a set of generators."""
 
     cdef dd_MatrixPtr dd_mat
     # hack for annotation of properties
