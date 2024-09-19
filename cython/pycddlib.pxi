@@ -152,26 +152,59 @@ cdef class Matrix:
         polyhedron described by
 
         .. math::
-           0&\le b_i + A_i x \qquad \forall i\in\{0,\dots,n-1\}\setminus L \\
+           0&\le b_i + A_i x \qquad \forall i\not\in L \\
            0&=   b_i + A_i x \qquad \forall i\in L
 
         where :math:`L` is :attr:`~cdd.Matrix.lin_set` and :math:`A_i`
         corresponds to the :math:`i`-th row of :math:`A`.
 
-        A array :math:`[t \quad V]` in the V-representation corresponds to a
-        polyhedron described by
+        For any real number :math:`z_0` and vector :math:`z`,
+        define the hyperplane
 
         .. math::
-           \mathrm{conv}\{V_i\colon t_i=1\}
-           +\mathrm{nonnegspan}\{V_i\colon t_i=0,i\not\in L\}
-           +\mathrm{linspan}\{V_i\colon t_i=0,i\in L\}
+            H_{z_0,z}=\{x\colon z_0+x^T z\ge 0\}
 
-        where :math:`L` is :attr:`~cdd.Matrix.lin_set` and :math:`V_i`
-        corresponds to the :math:`i`-th row of :math:`V`. Here
-        :math:`\mathrm{conv}` is the convex hull operator,
-        :math:`\mathrm{nonnegspan}` is the non-negative span operator, and
-        :math:`\mathrm{linspan}` is the linear span operator. All entries
-        of :math:`t` must be either :math:`0` or :math:`1`.
+        An array :math:`[b \quad A]` in the V-representation
+        corresponds to the polyhedron formed by the intersection of all
+        hyperplanes :math:`H_{z_0,z}` subject to
+
+        .. math::
+           0&\le b_i z_0 + A_i z \qquad \forall i\not\in L \\
+           0&=   b_i z_0 + A_i z \qquad \forall i\in L
+
+        To make the V-representation easier to visualize,
+        in cddlib, by convention,
+        each equation is divided by :math:`b_i` if :math:`b_i\neq 0`.
+        This then leads to an array :math:`[t \quad V]`
+        where each component of :math:`t` is either zero or one.
+        Then :math:`H_{z_0,z}` is a feasible hyperplane if and only if
+
+        .. math::
+           0\le t_i z_0 + V_i z \qquad &\forall i\not\in L \\
+           0=   t_i z_0 + V_i z \qquad &\forall i\in L
+
+        Consider :math:`x^T=\sum_i \lambda_i V_i`.
+        Then
+
+        .. math::
+           z_0+x^T z
+           &= z_0 + \sum_i \lambda_i V_i z \\
+           &=\sum_i \lambda_i (t_i z_0 + V_i z)
+           &\ge 0
+
+        provided that :math:`\sum_i \lambda_i t_i=1`
+        and :math:`\lambda_i\ge 0` for all :math:`i\not\in L`.
+        In other words, the V-representation describes the polyhedron
+        generated as follows:
+
+        .. math::
+
+            \left\{
+            \sum_i \lambda_i V_i\colon
+            \sum_{i\colon t_i=1} \lambda_i=1
+            \text{ and }
+            \forall i\not\in L\colon\lambda_i\ge 0
+            \right\}
         """
         cdef _Shape shape = _Shape(self.dd_mat.rowsize, self.dd_mat.colsize)
         return _get_array_from_matrix(self.dd_mat.matrix, shape)
@@ -353,7 +386,11 @@ def redundant(
     Linearity rows are not checked
     i.e. *row* should not be in the :attr:`~cdd.Matrix.lin_set`.
 
-    A row is redundant if its removal does not change the shape of the polyhedron.
+    A row is redundant in the H-representation if its removal does not affect
+    the polyhedron.
+    A row is redundant in the V-representation if its removal does not affect
+    the set of hyperplanes that describe the polyhedron
+    (see :attr:`cdd.Matrix.array` for an explanation of what this means).
 
     A row is strongly redundant in the H-representation if every point in
     the polyhedron satisfies it with strict inequality.
@@ -361,10 +398,10 @@ def redundant(
     the interior of the polyhedron.
 
     Returns a certificate in case of non-redundancy.
-    For the H-representation, the certificate x
+    For the H-representation, the certificate :math:`x`
     is a solution violating only inequality *row*.
-    For the V-representation, the certificate (x_0, x)
-    is a hyperplane right hand side and normal that separates *row* from the rest.
+    For the V-representation, the certificate :math:`(z_0,z)`
+    is a hyperplane :math:`H_{z_0,z}` that separates *row* from the rest.
     """
     if (
         mat.dd_mat.representation != dd_Inequality
