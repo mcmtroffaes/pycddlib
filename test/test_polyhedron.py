@@ -105,3 +105,37 @@ def test_polyhedron_row_order(
     assert_matrix_almost_equal(
         cdd.copy_generators(poly).array, [generators[i] for i in order]
     )
+
+
+def test_polyhedron_nonstandard_v_rep_1() -> None:
+    # conv((0.5, 0), (0, 0)) + span_ge((0, 2))
+    generators = [[2, 1, 0], [0.5, 0, 0], [0, 0, 2]]
+    mat = cdd.matrix_from_array(generators, rep_type=cdd.RepType.GENERATOR)
+    poly = cdd.polyhedron_from_matrix(mat)
+    mat2 = cdd.copy_output(poly)
+    # 0 <= 1 - 2 x1
+    # 0 <= x1
+    # 0 <= x2
+    assert not mat2.lin_set
+    assert_matrix_almost_equal(mat2.array, [[1, -2, 0], [0, 1, 0], [0, 0, 1]])
+    poly2 = cdd.polyhedron_from_matrix(mat2)
+    mat3 = cdd.copy_output(poly2)
+    assert not mat3.lin_set
+    assert mat3.array == [[1, 0.5, 0], [1, 0, 0], [0, 0, 1]]
+
+
+def test_polyhedron_nonstandard_v_rep_2() -> None:
+    # (1-lambda)*(0.5, 0.5) + lambda*(1.5, 1) s.t. lambda>=0
+    # this is a half-line starting at (0.5, 0.5) and intersecting (1.5, 1)
+    generators = [[2, 1, 1], [4, 6, 4]]
+    mat = cdd.matrix_from_array(generators, rep_type=cdd.RepType.GENERATOR, lin_set={0})
+    poly = cdd.polyhedron_from_matrix(mat)
+    mat2 = cdd.copy_output(poly)
+    # 0 <= -1 + 2 x1
+    # 0 = -0.25 - 0.5 x1 + x2
+    assert mat2.lin_set == {1}
+    assert_matrix_almost_equal(mat2.array, [[-1, 2, 0], [-0.25, -0.5, 1]])
+    poly2 = cdd.polyhedron_from_matrix(mat2)
+    mat3 = cdd.copy_output(poly2)
+    assert not mat3.lin_set
+    assert_matrix_almost_equal(mat3.array, [[0, 2, 1], [1, 0.5, 0.5]])
