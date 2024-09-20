@@ -109,7 +109,7 @@ def test_polyhedron_row_order(
 
 def test_polyhedron_nonstandard_v_rep_1() -> None:
     # conv((0.5, 0), (0, 0)) + span_ge((0, 2))
-    generators = [[2, 1, 0], [0.5, 0, 0], [0, 0, 2]]
+    generators: Sequence[Sequence[float]] = [[2, 1, 0], [0.5, 0, 0], [0, 0, 2]]
     mat = cdd.matrix_from_array(generators, rep_type=cdd.RepType.GENERATOR)
     poly = cdd.polyhedron_from_matrix(mat)
     mat2 = cdd.copy_output(poly)
