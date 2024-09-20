@@ -132,7 +132,128 @@ cdef _raise_error(dd_ErrorType error):
 # extension classes to wrap matrix, linear program, and polyhedron
 
 cdef class Matrix:
-    """A set of inequalities or a set of generators."""
+    r"""A set of inequalities/equalities (H-representation)
+    or a set of non-linear/linear generators (V-representation)
+    described by an array :math:`[b \quad A]` and a row index set :math:`L`.
+
+    For this class,
+    :attr:`~ccd.Matrix.rep_type` determines the representation type,
+    :attr:`~cdd.Matrix.array` determines the array :math:`[b \quad A]`, and
+    :attr:`~cdd.Matrix.lin_set` determines the row index set :math:`L`.
+
+    The H-representation corresponds to a polyhedron :math:`P` formed by
+    all points :math:`x` satisfying
+
+    .. math::
+        0&\le b_i + A_i x \qquad \forall i\notin L \\
+        0&=   b_i + A_i x \qquad \forall i\in L \\
+
+    where :math:`A_i` denotes the :math:`i`-th row of :math:`A`.
+
+    To understand the V-representation,
+    first we need the concept of a *halfspace*.
+    For any real number :math:`z_0` and row vector :math:`z`,
+    we define a halfspace as follows:
+
+    .. math::
+        H_{z_0,z}^{\ge}=\{x\colon z_0+x^T z\ge 0\}
+
+    Note that :math:`z` is allowed to be the zero vector,
+    in which case the halfspace is either the complete space (if :math:`z_0\ge 0`)
+    or the empty space (if :math:`z_0<0`).
+
+    The V-representation corresponds to the polyhedron
+    formed by the intersection of all
+    halfspaces :math:`H_{z_0,z}^{\ge}` satisfying
+
+    .. math::
+        0&\le b_i z_0 + A_i z \qquad \forall i\notin L \\
+        0&=   b_i z_0 + A_i z \qquad \forall i\in L
+
+    A halfspace that satisfies these constraints is called *feasible*.
+    The set of feasible halfspaces forms a convex cone, denoted :math:`Z`,
+    in the :math:`(z_0,z)`-space.
+    This cone has a dual:
+
+    .. math::
+        Z^*=\{(x_0,x)\colon x_0z_0+x^Tz\ge 0\, \forall z\in Z\}
+
+    In other words, the polyhedron described by the V-representation
+    is the intersection of
+    the dual cone :math:`Z^*` and
+    the hyperplane determined by :math:`x_0=1`:
+
+    .. math::
+        P=Z^*\cap\{(x_0,x)\colon x_0=1\}
+
+    To make this easier to visualize,
+    by convention,
+    each equation is divided by :math:`b_i` if :math:`b_i\neq 0`, i.e.
+
+    .. math::
+        [t_i \quad V_i]=
+        \begin{cases}
+        [0 \quad A_i]\text{ if }b_i=0 \\
+        [1 \quad A_i/b_i]\text{ if }b_i\neq 0
+        \end{cases}
+
+    This then leads to an array :math:`[t \quad V]`,
+    representing the same polyhedron :math:`P`
+    as :math:`[b \quad A]`:
+    indeed, :math:`H_{z_0,z}^{\ge}` is feasible if and only if
+
+    .. math::
+        0\le t_i z_0 + V_i z \qquad &\forall i\notin L \\
+        0=   t_i z_0 + V_i z \qquad &\forall i\in L
+
+    For any point of the form :math:`x=\sum_i \lambda_i V_i^T`,
+    with :math:`\sum_i \lambda_i t_i=1`
+    and :math:`\lambda_i\ge 0` for all :math:`i\notin L`,
+    we have that
+    :math:`x` belongs to the polyhedron, because in that case
+
+    .. math::
+       z_0+x^T z
+       &= z_0 + \sum_i \lambda_i V_i z \\
+       &=\sum_i \lambda_i (t_i z_0 + V_i z)
+       &\ge 0
+
+    It can be shown that this describes the entire polyhedron, i.e.
+    the polyhedron in the V-representation is the set of points
+
+    .. math::
+
+        P=\left\{
+        \sum_i \lambda_i V_i\colon
+        \sum_{i} \lambda_i t_i=1
+        \text{ and }
+        \forall i\notin L\colon\lambda_i\ge 0
+        \right\}
+
+    For this reason, the :math:`V_i` are called the *generators*
+    of the polyhedron.
+    By the Minkowski-Weyl theorem,
+    without loss of generality,
+    it can be assumed that
+    :math:`i\notin L` whenever :math:`t_i=1`. In that case,
+
+    .. math::
+           P=
+           \mathrm{conv}\{V_i\colon t_i=1\}
+           +\mathrm{span}_{\ge}\{V_i\colon t_i=0,i\not\in L\}
+           +\mathrm{span}\{V_i\colon t_i=0,i\in L\}
+
+    where
+    :math:`\mathrm{conv}` is the convex hull operator,
+    :math:`\mathrm{span}_{\ge}` is the linear span operator
+    with non-negative coefficients, and
+    :math:`\mathrm{span}` is the linear span operator
+    with free coefficients.
+
+    The library will always output V-representations
+    in this form, i.e. so that all components of the first column are zero or one,
+    and so that :math:`L` does not contain rows whose first component is one.
+    """
 
     cdef dd_MatrixPtr dd_mat
     # hack for annotation of properties
@@ -146,69 +267,7 @@ cdef class Matrix:
 
     @property
     def array(self):
-        r"""Array representing the inequalities or generators.
-
-        An array :math:`[b \quad A]` in the H-representation corresponds to a
-        polyhedron described by
-
-        .. math::
-           0&\le b_i + A_i x \qquad \forall i\not\in L \\
-           0&=   b_i + A_i x \qquad \forall i\in L
-
-        where :math:`L` is :attr:`~cdd.Matrix.lin_set` and :math:`A_i`
-        corresponds to the :math:`i`-th row of :math:`A`.
-
-        For any real number :math:`z_0` and vector :math:`z`,
-        define the hyperplane
-
-        .. math::
-            H_{z_0,z}=\{x\colon z_0+x^T z\ge 0\}
-
-        An array :math:`[b \quad A]` in the V-representation
-        corresponds to the polyhedron formed by the intersection of all
-        hyperplanes :math:`H_{z_0,z}` subject to
-
-        .. math::
-           0&\le b_i z_0 + A_i z \qquad \forall i\not\in L \\
-           0&=   b_i z_0 + A_i z \qquad \forall i\in L
-
-        To make the V-representation easier to visualize,
-        in cddlib, by convention,
-        each equation is divided by :math:`b_i` if :math:`b_i\neq 0`.
-        This then leads to an array :math:`[t \quad V]`
-        where each component of :math:`t` is either zero or one.
-        Then :math:`H_{z_0,z}` is a feasible hyperplane if and only if
-
-        .. math::
-           0\le t_i z_0 + V_i z \qquad &\forall i\not\in L \\
-           0=   t_i z_0 + V_i z \qquad &\forall i\in L
-
-        Consider :math:`x^T=\sum_i \lambda_i V_i`.
-        Then
-
-        .. math::
-           z_0+x^T z
-           &= z_0 + \sum_i \lambda_i V_i z \\
-           &=\sum_i \lambda_i (t_i z_0 + V_i z)
-           &\ge 0
-
-        provided that :math:`\sum_i \lambda_i t_i=1`
-        and :math:`\lambda_i\ge 0` for all :math:`i\not\in L`.
-        In other words, the V-representation describes the polyhedron
-        generated as follows:
-
-        .. math::
-
-            \left\{
-            \sum_i \lambda_i V_i\colon
-            \sum_{i\colon t_i=1} \lambda_i=1
-            \text{ and }
-            \forall i\not\in L\colon\lambda_i\ge 0
-            \right\}
-
-        For this reason, the :math:`V_i` are called the *generators*
-        of the polyhedron.
-        """
+        """Array representing the inequalities or generators."""
         cdef _Shape shape = _Shape(self.dd_mat.rowsize, self.dd_mat.colsize)
         return _get_array_from_matrix(self.dd_mat.matrix, shape)
 
@@ -384,16 +443,13 @@ def matrix_append_to(mat1: Matrix, mat2: Matrix) -> None:
 def redundant(
     mat: Matrix, row: int, strong: bool = False
 ) -> tuple[bool, Sequence[NumberType]]:
-    """Checks whether *row* is
+    r"""Checks whether *row* is
     (strongly if *strong* is ``True``) redundant for the representation *mat*.
     Linearity rows are not checked
     i.e. *row* should not be in the :attr:`~cdd.Matrix.lin_set`.
 
-    A row is redundant in the H-representation if its removal does not affect
+    A row is redundant in the H- or V-representation if its removal does not affect
     the polyhedron.
-    A row is redundant in the V-representation if its removal does not affect
-    the set of hyperplanes that describe the polyhedron
-    (see :attr:`cdd.Matrix.array` for an explanation of what this means).
 
     A row is strongly redundant in the H-representation if every point in
     the polyhedron satisfies it with strict inequality.
@@ -407,16 +463,20 @@ def redundant(
 
     .. math::
        0&> b_j+A_j x \\
-       0&<=b_i+A_i x \qquad\forall i\not\in L,\,i\neq j
+       0&<=b_i+A_i x \qquad\forall i\notin L,\,i\neq j
        0&= b_i+A_i x \qquad\forall i\in L,\,i\neq j
 
     For the V-representation, the certificate :math:`(z_0,z)`
-    is a hyperplane :math:`H_{z_0,z}` that separates *row* from the rest,
-    i.e. satisfying
+    is a hyperplane
+
+    .. math::
+        H_{z_0,z}^{=}=\{x\colon z_0 + x^T z=0\}
+
+    that separates *row* from the rest, i.e. satisfying
 
     .. math::
        0&> b_j z_0 + A_j z \\
-       0&<=b_i z_0 + A_i z \qquad\forall i\not\in L,\,i\neq j
+       0&<=b_i z_0 + A_i z \qquad\forall i\notin L,\,i\neq j
        0&= b_i z_0 + A_i z \qquad\forall i\in L,\,i\neq j
     """
     if (
