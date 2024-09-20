@@ -137,7 +137,7 @@ cdef class Matrix:
     described by an array :math:`[b \quad A]` and a row index set :math:`L`.
 
     For this class,
-    :attr:`~ccd.Matrix.rep_type` determines the representation type,
+    :attr:`~cdd.Matrix.rep_type` determines the representation type,
     :attr:`~cdd.Matrix.array` determines the array :math:`[b \quad A]`, and
     :attr:`~cdd.Matrix.lin_set` determines the row index set :math:`L`.
 
