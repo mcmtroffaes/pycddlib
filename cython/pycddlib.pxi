@@ -459,7 +459,8 @@ def redundant(
     Returns a certificate in case of non-redundancy.
     For the H-representation, the certificate :math:`x`
     is a solution violating only inequality *row*
-    i.e. satisfying (denoting *row* by :math:`j`)
+    i.e. if we denote *row* by :math:`j`,
+    the certificate :math:`x` of non-redundancy satisfies
 
     .. math::
        0&>   b_j+A_j x \\
