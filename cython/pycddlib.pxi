@@ -152,7 +152,7 @@ cdef class Matrix:
 
     To understand the V-representation,
     first we need the concept of a *halfspace*.
-    For any real number :math:`z_0` and row vector :math:`z`,
+    For any real number :math:`z_0` and column vector :math:`z`,
     we define a halfspace as follows:
 
     .. math::
