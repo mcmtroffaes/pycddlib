@@ -468,13 +468,12 @@ def redundant(
        0&=   b_i+A_i x \qquad\forall i\in L,\,i\neq j
 
     For the V-representation, the certificate :math:`(z_0,z)`
-    is a hyperplane
+    is a halfspace
 
     .. math::
-        H_{z_0,z}^{=}=\{x\colon z_0 + x^T z=0\}
+        H_{z_0,z}^{\ge}=\{x\colon z_0 + x^T z\ge 0\}
 
-    that separates the generator represented by *row*
-    from all other generators, i.e. satisfying
+    that contains all generators except *row*, i.e. satisfying
 
     .. math::
        0&>   b_j z_0 + A_j z \\
