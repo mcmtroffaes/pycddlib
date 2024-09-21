@@ -462,9 +462,9 @@ def redundant(
     i.e. satisfying (denoting *row* by :math:`j`)
 
     .. math::
-       0&> b_j+A_j x \\
-       0&<=b_i+A_i x \qquad\forall i\notin L,\,i\neq j
-       0&= b_i+A_i x \qquad\forall i\in L,\,i\neq j
+       0&>   b_j+A_j x \\
+       0&\le b_i+A_i x \qquad\forall i\notin L,\,i\neq j \\
+       0&=   b_i+A_i x \qquad\forall i\in L,\,i\neq j
 
     For the V-representation, the certificate :math:`(z_0,z)`
     is a hyperplane
@@ -475,9 +475,9 @@ def redundant(
     that separates *row* from the rest, i.e. satisfying
 
     .. math::
-       0&> b_j z_0 + A_j z \\
-       0&<=b_i z_0 + A_i z \qquad\forall i\notin L,\,i\neq j
-       0&= b_i z_0 + A_i z \qquad\forall i\in L,\,i\neq j
+       0&>   b_j z_0 + A_j z \\
+       0&\le b_i z_0 + A_i z \qquad\forall i\notin L,\,i\neq j \\
+       0&=   b_i z_0 + A_i z \qquad\forall i\in L,\,i\neq j
     """
     if (
         mat.dd_mat.representation != dd_Inequality
