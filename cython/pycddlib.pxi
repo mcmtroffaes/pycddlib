@@ -473,7 +473,8 @@ def redundant(
     .. math::
         H_{z_0,z}^{=}=\{x\colon z_0 + x^T z=0\}
 
-    that separates *row* from the rest, i.e. satisfying
+    that separates the generator represented by *row*
+    from all other generators, i.e. satisfying
 
     .. math::
        0&>   b_j z_0 + A_j z \\
