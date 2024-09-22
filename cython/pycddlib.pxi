@@ -598,6 +598,8 @@ def redundant_rows(mat: Matrix) -> Set[int]:
     """Returns all non-linearity rows that are
     redundant
     for *mat*.
+
+    .. versionadded:: 3.0.0
     """
     return _certificate_rows(mat.dd_mat, _ROW_CHECK_TYPE_REDUNDANT)
 
@@ -605,6 +607,8 @@ def s_redundant_rows(mat: Matrix) -> Set[int]:
     """Returns all non-linearity rows that are
     strongly redundant
     for *mat*.
+
+    .. versionadded:: 3.0.0
     """
     return _certificate_rows(mat.dd_mat, _ROW_CHECK_TYPE_STRONGLY_REDUNDANT)
 
@@ -612,6 +616,8 @@ def implicit_linearity_rows(mat: Matrix) -> Set[int]:
     """Returns all non-linearity rows that are
     implicitly linear
     for *mat*.
+
+    .. versionadded:: 3.0.0
     """
     return _certificate_rows(mat.dd_mat, _ROW_CHECK_TYPE_IMPLICIT_LINEARITY)
 
