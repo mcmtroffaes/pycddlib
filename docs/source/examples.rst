@@ -11,14 +11,16 @@ Checking and Removing Redundancies
 
 >>> array = [[2, 1, 2, 3], [0, 1, 2, 3], [3, 0, 1, 2], [0, -2, -4, -6]]
 >>> mat = cdd.matrix_from_array(array, rep_type=cdd.RepType.INEQUALITY)
->>> cdd.redundant(mat, 0)
-(True, [6.0, -3.0, 0.0])
+>>> cdd.redundant(mat, 0) is None
+True
 >>> cdd.redundant(mat, 1)
-(False, [5.0, -3.0, 0.0])
+[5.0, -3.0, 0.0]
 >>> cdd.redundant(mat, 2)
-(False, [8.0, -4.0, 0.0])
+[8.0, -4.0, 0.0]
 >>> cdd.redundant(mat, 3)
-(False, [6.4999..., -3.0, 0.0])
+[6.4999..., -3.0, 0.0]
+>>> cdd.redundant_rows(mat)
+{0}
 >>> cdd.matrix_canonicalize(mat)
 ({1, 3}, {0})
 >>> pprint(mat.array)

@@ -17,6 +17,7 @@
 
 from collections.abc import Container, Sequence, Set
 from contextlib import contextmanager
+from enum import IntEnum
 from typing import Optional
 
 cimport cpython.mem
@@ -439,26 +440,56 @@ def matrix_append_to(mat1: Matrix, mat2: Matrix) -> None:
     if dd_MatrixAppendTo(&mat1.dd_mat, mat2.dd_mat) != 1:
         raise ValueError("cannot append because column sizes differ")
 
+cdef int _ROW_CHECK_TYPE_REDUNDANT = 0
+cdef int _ROW_CHECK_TYPE_STRONGLY_REDUNDANT = 1
+cdef int _ROW_CHECK_TYPE_IMPLICIT_LINEARITY = 2
 
-def redundant(
-    mat: Matrix, row: int, strong: bool = False
-) -> tuple[bool, Sequence[NumberType]]:
-    r"""Checks whether *row* is
-    (strongly if *strong* is ``True``) redundant for the representation *mat*.
-    Linearity rows are not checked
-    i.e. *row* should not be in the :attr:`~cdd.Matrix.lin_set`.
+# () -> Optional[Sequence[NumberType]]
+cdef _certificate(dd_MatrixPtr dd_mat, int row, int row_check_type):
+    """Returns a certificate to prove that *row_check_type* is not satisfied,
+    otherwise returns ``None``.
+    """
+    if (
+        dd_mat.representation != dd_Inequality
+        and dd_mat.representation != dd_Generator
+    ):
+        raise ValueError("rep_type must be INEQUALITY or GENERATOR")
+    if set_member(row + 1, dd_mat.linset):
+        raise ValueError("row must not be in lin_set")
+    cdef dd_ErrorType error = dd_NoError
+    cdef dd_colrange certificate_size = dd_mat.colsize + (
+        1 if dd_mat.representation == dd_Generator else 0
+    )
+    cdef dd_Arow certificate = NULL
+    cdef dd_boolean is_red = 0
+    cdef dd_rowrange crow = row
+    dd_InitializeArow(certificate_size, &certificate)
+    try:
+        if row_check_type == _ROW_CHECK_TYPE_REDUNDANT:
+            is_red = dd_Redundant(dd_mat, crow + 1, certificate, &error)
+        elif row_check_type == _ROW_CHECK_TYPE_STRONGLY_REDUNDANT:
+            is_red = dd_SRedundant(dd_mat, crow + 1, certificate, &error)
+        elif row_check_type == _ROW_CHECK_TYPE_IMPLICIT_LINEARITY:
+            is_red = dd_ImplicitLinearity(dd_mat, crow + 1, certificate, &error)
+        else:
+            raise ValueError(f"invalid certificate type: {row_check_type}")
+        if error != dd_NoError:
+            _raise_error(error)
+        return _get_arow(certificate_size, certificate) if not is_red else None
+    finally:
+        dd_FreeArow(certificate_size, certificate)
 
-    A row is redundant in the H- or V-representation if its removal does not affect
-    the polyhedron.
+def redundant(mat: Matrix, row: int) -> Optional[Sequence[NumberType]]:
+    r"""A certificate in case *row* is
+    not redundant
+    for *mat*, otherwise ``None``.
 
-    A row is strongly redundant in the H-representation if every point in
-    the polyhedron satisfies it with strict inequality.
-    A row is strongly redundant in the V-representation if it is in
-    the interior of the polyhedron.
+    A row is redundant in the H- or V-representation
+    if its removal does not affect the polyhedron.
 
-    Returns a certificate in case of non-redundancy.
-    For the H-representation, the certificate :math:`x`
-    is a solution violating only inequality *row*
+    For the H-representation, the no redundancy certificate :math:`x`
+    is a solution
+    that satisfies all inequalities except *row*
     i.e. if we denote *row* by :math:`j`,
     the certificate :math:`x` of non-redundancy satisfies
 
@@ -467,7 +498,7 @@ def redundant(
        0&\le b_i+A_i x \qquad\forall i\notin L,\,i\neq j \\
        0&=   b_i+A_i x \qquad\forall i\in L,\,i\neq j
 
-    For the V-representation, the certificate :math:`(z_0,z)`
+    For the V-representation, the no redundancy certificate :math:`(z_0,z)`
     is a halfspace
 
     .. math::
@@ -479,48 +510,110 @@ def redundant(
        0&>   b_j z_0 + A_j z \\
        0&\le b_i z_0 + A_i z \qquad\forall i\notin L,\,i\neq j \\
        0&=   b_i z_0 + A_i z \qquad\forall i\in L,\,i\neq j
-    """
-    if (
-        mat.dd_mat.representation != dd_Inequality
-        and mat.dd_mat.representation != dd_Generator
-    ):
-        raise ValueError("rep_type must be INEQUALITY or GENERATOR")
-    cdef dd_ErrorType error = dd_NoError
-    cdef dd_colrange certificate_size = mat.dd_mat.colsize + (
-        1 if mat.dd_mat.representation == dd_Generator else 0
-    )
-    cdef dd_Arow certificate = NULL
-    cdef dd_boolean is_redundant = 0
-    cdef dd_rowrange crow = row
-    dd_InitializeArow(certificate_size, &certificate)
-    try:
-        if strong:
-            is_redundant = dd_SRedundant(mat.dd_mat, crow + 1, certificate, &error)
-        else:
-            is_redundant = dd_Redundant(mat.dd_mat, crow + 1, certificate, &error)
-        if error != dd_NoError:
-            _raise_error(error)
-        return bool(is_redundant), _get_arow(certificate_size, certificate)
-    finally:
-        dd_FreeArow(certificate_size, certificate)
 
-def redundant_rows(mat: Matrix, strong: bool = False) -> Set[int]:
-    """Returns all non-linearity rows that are
-    (strongly if *strong* is ``True``) redundant for the representation *mat*.
+    .. warning::
+        Linearity rows are not checked
+        i.e. *row* should not be in the :attr:`~cdd.Matrix.lin_set`.
+
+    .. versionadded:: 3.0.0
+    """
+    return _certificate(mat.dd_mat, row, _ROW_CHECK_TYPE_REDUNDANT)
+
+def s_redundant(mat: Matrix, row: int) -> Optional[Sequence[NumberType]]:
+    r"""A certificate in case *row* is
+    not strongly redundant
+    for *mat*, otherwise ``None``.
+
+    A row is strongly redundant in the H-representation if every point in
+    the polyhedron satisfies it with strict inequality.
+    A row is strongly redundant in the V-representation if it is in
+    the relative interior of the polyhedron.
+
+    See :func:`redundant` for an explanation of the certificate.
+
+    .. warning::
+        Linearity rows are not checked
+        i.e. *row* should not be in the :attr:`~cdd.Matrix.lin_set`.
+
+    .. versionadded:: 3.0.0
+    """
+    return _certificate(mat.dd_mat, row, _ROW_CHECK_TYPE_STRONGLY_REDUNDANT)
+
+def implicit_linearity(mat: Matrix, row: int) -> Optional[Sequence[NumberType]]:
+    r"""A certificate in case *row* is
+    not implicitly linear
+    for *mat*, otherwise ``None``.
+
+    A row is implicitly linear in the H- or V-representation
+    if adding it to the linearity set :attr:`~cdd.Matrix.lin_set`
+    does not affect the polyhedron.
+
+    For the H-representation, the no implicit linearity certificate
+    is a solution satisfying inequality *row*
+    with strict inequality, i.e.
+
+    .. math::
+       0&<   b_j+A_j x \\
+       0&\le b_i+A_i x \qquad\forall i\notin L,\,i\neq j \\
+       0&=   b_i+A_i x \qquad\forall i\in L,\,i\neq j
+
+    For the V-representation,
+    the certificate of no implicit linearity :math:`(z_0,z)` is a halfspace
+    that contains all generators and strictly containing *row*, i.e. satisfying
+
+    .. math::
+       0&<   b_j z_0 + A_j x \\
+       0&\le b_i z_0 + A_i x \qquad\forall i\notin L,\,i\neq j \\
+       0&=   b_i z_0 + A_i x \qquad\forall i\in L,\,i\neq j
+
+    .. warning::
+        Linearity rows are not checked
+        i.e. *row* should not be in the :attr:`~cdd.Matrix.lin_set`.
+
+    .. versionadded:: 3.0.0
+    """
+    return _certificate(mat.dd_mat, row, _ROW_CHECK_TYPE_IMPLICIT_LINEARITY)
+
+# () -> Set[int]
+cdef _certificate_rows(dd_MatrixPtr dd_mat, int row_check_type):
+    """Returns all non-linearity rows that have no certificate,
+    in the sense of *row_check_type*, for *mat*.
     """
     cdef dd_ErrorType error = dd_NoError
     cdef dd_rowset row_set = NULL
     try:
-        if strong:
-            row_set = dd_SRedundantRows(mat.dd_mat, &error)
-        else:
-            row_set = dd_RedundantRows(mat.dd_mat, &error)
-        if error != dd_NoError:
+        if row_check_type == _ROW_CHECK_TYPE_REDUNDANT:
+            row_set = dd_RedundantRows(dd_mat, &error)
+        elif row_check_type == _ROW_CHECK_TYPE_STRONGLY_REDUNDANT:
+            row_set = dd_SRedundantRows(dd_mat, &error)
+        elif row_check_type == _ROW_CHECK_TYPE_IMPLICIT_LINEARITY:
+            row_set = dd_ImplicitLinearityRows(dd_mat, &error)
+        if row_set == NULL or error != dd_NoError:
             _raise_error(error)
         return _get_set(row_set)
     finally:
         set_free(row_set)
 
+def redundant_rows(mat: Matrix) -> Set[int]:
+    """Returns all non-linearity rows that are
+    redundant
+    for *mat*.
+    """
+    return _certificate_rows(mat.dd_mat, _ROW_CHECK_TYPE_REDUNDANT)
+
+def s_redundant_rows(mat: Matrix) -> Set[int]:
+    """Returns all non-linearity rows that are
+    strongly redundant
+    for *mat*.
+    """
+    return _certificate_rows(mat.dd_mat, _ROW_CHECK_TYPE_STRONGLY_REDUNDANT)
+
+def implicit_linearity_rows(mat: Matrix) -> Set[int]:
+    """Returns all non-linearity rows that are
+    implicitly linear
+    for *mat*.
+    """
+    return _certificate_rows(mat.dd_mat, _ROW_CHECK_TYPE_IMPLICIT_LINEARITY)
 
 def matrix_canonicalize(mat: Matrix) -> tuple[Set[int], Set[int]]:
     """Transform to canonical representation by recognizing all

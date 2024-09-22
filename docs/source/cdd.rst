@@ -88,6 +88,12 @@ Functions
 .. autofunction:: matrix_rank
 
 .. autofunction:: redundant
+.. autofunction:: s_redundant
+.. autofunction:: implicit_linearity
+
+.. autofunction:: redundant_rows
+.. autofunction:: s_redundant_rows
+.. autofunction:: implicit_linearity_rows
 
 .. autofunction:: linprog_solve
 
