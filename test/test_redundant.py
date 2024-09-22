@@ -7,7 +7,11 @@ import cdd
 
 
 def assert_redundant_equal(
-    mat: cdd.Matrix, row: int, exp_is_redundant: bool, exp_certificate: Sequence[float], strong: bool = False,
+    mat: cdd.Matrix,
+    row: int,
+    exp_is_redundant: bool,
+    exp_certificate: Sequence[float],
+    strong: bool = False,
 ) -> None:
     is_redundant, certificate = cdd.redundant(mat, row, strong)
     assert is_redundant == exp_is_redundant
@@ -83,7 +87,9 @@ def test_redundant_generators_3() -> None:
 
 
 def test_redundant_generators_4() -> None:
-    mat = cdd.matrix_from_array([[1, 2], [1, 2], [1, 4]], rep_type=cdd.RepType.GENERATOR)
+    mat = cdd.matrix_from_array(
+        [[1, 2], [1, 2], [1, 4]], rep_type=cdd.RepType.GENERATOR
+    )
     assert_redundant_equal(mat, 0, True, [0, 0])
     assert_redundant_equal(mat, 1, True, [0, 0])
     assert_redundant_equal(mat, 2, False, [1, -0.5])
