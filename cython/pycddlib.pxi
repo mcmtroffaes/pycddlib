@@ -504,6 +504,24 @@ def redundant(
     finally:
         dd_FreeArow(certificate_size, certificate)
 
+def redundant_rows(mat: Matrix, strong: bool = False) -> Set[int]:
+    """Returns all non-linearity rows that are
+    (strongly if *strong* is ``True``) redundant for the representation *mat*.
+    """
+    cdef dd_ErrorType error = dd_NoError
+    cdef dd_rowset row_set = NULL
+    try:
+        if strong:
+            row_set = dd_SRedundantRows(mat.dd_mat, &error)
+        else:
+            row_set = dd_RedundantRows(mat.dd_mat, &error)
+        if error != dd_NoError:
+            _raise_error(error)
+        return _get_set(row_set)
+    finally:
+        set_free(row_set)
+
+
 def matrix_canonicalize(mat: Matrix) -> tuple[Set[int], Set[int]]:
     """Transform to canonical representation by recognizing all
     implicit linearities and all redundancies. These are returned
@@ -533,7 +551,6 @@ def matrix_canonicalize(mat: Matrix) -> tuple[Set[int], Set[int]]:
         set_free(impl_linset)
         set_free(redset)
         libc.stdlib.free(newpos)
-
 
 def matrix_adjacency(mat: Matrix) -> Sequence[Set[int]]:
     """Generate the input adjacency of the polyhedron represented by *mat*.

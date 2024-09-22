@@ -91,3 +91,24 @@ def test_redundant_generators_4() -> None:
     assert_redundant_equal(mat, 0, False, [0, 0], True)
     assert_redundant_equal(mat, 1, False, [0, 0], True)
     assert_redundant_equal(mat, 2, False, [1, -0.5], True)
+
+
+def test_redundant_rows_1() -> None:
+    array = [[1, 2], [1, 4], [1, 3], [0, -1]]
+    mat = cdd.matrix_from_array(array, rep_type=cdd.RepType.INEQUALITY)
+    assert cdd.redundant_rows(mat) == {0, 2}
+    assert cdd.redundant_rows(mat, strong=True) == {0, 2}
+
+
+def test_redundant_rows_2() -> None:
+    array = [[1, 2, 1], [1, 2, 1], [1, 4, 1], [1, 3, 1], [0, 1, -3], [0, 2, -6]]
+    mat = cdd.matrix_from_array(array, rep_type=cdd.RepType.INEQUALITY)
+    assert cdd.redundant_rows(mat) == {1, 3, 5}
+    assert cdd.redundant_rows(mat, strong=True) == set()
+
+
+def test_redundant_rows_3() -> None:
+    array = [[1, 2, 1], [1, 2, 1], [1, 4, 1], [1, 3, 1]]
+    mat = cdd.matrix_from_array(array, rep_type=cdd.RepType.GENERATOR)
+    assert cdd.redundant_rows(mat) == {1, 3}
+    assert cdd.redundant_rows(mat, strong=True) == {3}
