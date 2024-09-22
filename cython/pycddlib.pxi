@@ -456,6 +456,8 @@ cdef _certificate(dd_MatrixPtr dd_mat, int row, int row_check_type):
         raise ValueError("rep_type must be INEQUALITY or GENERATOR")
     if set_member(row + 1, dd_mat.linset):
         raise ValueError("row must not be in lin_set")
+    if not (0 <= row < dd_mat.rowsize):
+        raise IndexError("row out of range")
     cdef dd_ErrorType error = dd_NoError
     cdef dd_colrange certificate_size = dd_mat.colsize + (
         1 if dd_mat.representation == dd_Generator else 0
@@ -471,9 +473,7 @@ cdef _certificate(dd_MatrixPtr dd_mat, int row, int row_check_type):
             is_red = dd_SRedundant(dd_mat, crow + 1, certificate, &error)
         elif row_check_type == _ROW_CHECK_TYPE_IMPLICIT_LINEARITY:
             is_red = dd_ImplicitLinearity(dd_mat, crow + 1, certificate, &error)
-        else:
-            raise ValueError(f"invalid certificate type: {row_check_type}")
-        if error != dd_NoError:
+        if certificate == NULL or error != dd_NoError:
             _raise_error(error)
         return _get_arow(certificate_size, certificate) if not is_red else None
     finally:
@@ -562,9 +562,9 @@ def implicit_linearity(mat: Matrix, row: int) -> Optional[Sequence[NumberType]]:
     that contains all generators and strictly containing *row*, i.e. satisfying
 
     .. math::
-       0&<   b_j z_0 + A_j x \\
-       0&\le b_i z_0 + A_i x \qquad\forall i\notin L,\,i\neq j \\
-       0&=   b_i z_0 + A_i x \qquad\forall i\in L,\,i\neq j
+       0&<   b_j z_0 + A_j z \\
+       0&\le b_i z_0 + A_i z \qquad\forall i\notin L,\,i\neq j \\
+       0&=   b_i z_0 + A_i z \qquad\forall i\in L,\,i\neq j
 
     .. warning::
         Linearity rows are not checked

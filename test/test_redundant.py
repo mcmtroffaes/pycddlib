@@ -19,12 +19,19 @@ def assert_certificate_equal(
 
 
 def test_redundant_1() -> None:
+    mat = cdd.matrix_from_array([[0]])
     with pytest.raises(ValueError, match="rep_type"):
-        cdd.redundant(cdd.matrix_from_array([[0]]), 0)
+        cdd.redundant(mat, 0)
 
 
-def test_redundant_inequalities_1() -> None:
-    mat = cdd.matrix_from_array([[1, 1]], rep_type=cdd.RepType.INEQUALITY, lin_set={0})
+def test_redundant_2() -> None:
+    mat = cdd.matrix_from_array([[0]], rep_type=cdd.RepType.INEQUALITY)
+    with pytest.raises(IndexError):
+        cdd.redundant(mat, 1)
+
+
+def test_redundant_3() -> None:
+    mat = cdd.matrix_from_array([[0]], rep_type=cdd.RepType.INEQUALITY, lin_set={0})
     with pytest.raises(ValueError, match="row must not be in lin_set"):
         cdd.redundant(mat, 0)
 
@@ -99,6 +106,28 @@ def test_redundant_generators_4() -> None:
     assert_certificate_equal(cdd.s_redundant(mat, 0), [0, 0])
     assert_certificate_equal(cdd.s_redundant(mat, 1), [0, 0])
     assert_certificate_equal(cdd.s_redundant(mat, 2), [1, -0.5])
+
+
+def test_implicit_linearity_1() -> None:
+    array = [[0, 1, 0], [0, 0, 1]]  # 0 <= x1, 0 <= x2
+    mat = cdd.matrix_from_array(array, rep_type=cdd.RepType.INEQUALITY)
+    assert_certificate_equal(cdd.implicit_linearity(mat, 0), [1, 0])  # 0 < 1, 0 <= 0
+    assert_certificate_equal(cdd.implicit_linearity(mat, 1), [0, 1])  # 0 <= 0, 0 < 1
+
+
+def test_implicit_linearity_2() -> None:
+    array = [[1, 2, 3], [-1, -2, -3]]
+    mat = cdd.matrix_from_array(array, rep_type=cdd.RepType.INEQUALITY)
+    assert_certificate_equal(cdd.implicit_linearity(mat, 0), None)
+    assert_certificate_equal(cdd.implicit_linearity(mat, 1), None)
+
+
+def test_implicit_linearity_3() -> None:
+    array = [[0, 1, 0], [0, -1, 0], [1, 1, 1]]
+    mat = cdd.matrix_from_array(array, rep_type=cdd.RepType.GENERATOR)
+    assert_certificate_equal(cdd.implicit_linearity(mat, 0), None)
+    assert_certificate_equal(cdd.implicit_linearity(mat, 1), None)
+    assert_certificate_equal(cdd.implicit_linearity(mat, 2), [1, 0, 0])
 
 
 def test_redundant_rows_1() -> None:
