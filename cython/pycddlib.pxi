@@ -487,24 +487,21 @@ def redundant(mat: Matrix, row: int) -> Optional[Sequence[NumberType]]:
     A row is redundant in the H- or V-representation
     if its removal does not affect the polyhedron.
 
-    For the H-representation, the no redundancy certificate :math:`x`
-    is a solution
-    that satisfies all inequalities except *row*
-    i.e. if we denote *row* by :math:`j`,
-    the certificate :math:`x` of non-redundancy satisfies
+    For the H-representation, the
+    no redundancy
+    certificate :math:`x` is
+    a solution that satisfies all constraints but violates *row*, i.e.
 
     .. math::
        0&>   b_j+A_j x \\
        0&\le b_i+A_i x \qquad\forall i\notin L,\,i\neq j \\
        0&=   b_i+A_i x \qquad\forall i\in L,\,i\neq j
 
-    For the V-representation, the no redundancy certificate :math:`(z_0,z)`
-    is a halfspace
-
-    .. math::
-        H_{z_0,z}^{\ge}=\{x\colon z_0 + x^T z\ge 0\}
-
-    that contains all generators except *row*, i.e. satisfying
+    For the V-representation, the
+    no redundancy
+    certificate :math:`(z_0,z)` is
+    a halfspace :math:`H_{z_0,z}^{\ge}`
+    that contains all generators but does not contain *row*, i.e.
 
     .. math::
        0&>   b_j z_0 + A_j z \\
@@ -529,7 +526,26 @@ def s_redundant(mat: Matrix, row: int) -> Optional[Sequence[NumberType]]:
     A row is strongly redundant in the V-representation if it is in
     the relative interior of the polyhedron.
 
-    See :func:`redundant` for an explanation of the certificate.
+    For the H-representation, the
+    no strong redundancy
+    certificate :math:`x` is
+    a feasible solution satisfying the constraint *row* with equality, i.e.
+
+    .. math::
+       0&=   b_j+A_j x \\
+       0&\le b_i+A_i x \qquad\forall i\notin L,\,i\neq j \\
+       0&=   b_i+A_i x \qquad\forall i\in L,\,i\neq j
+
+    For the V-representation, the
+    no strong redundancy
+    certificate :math:`(z_0,z)` is
+    a feasible halfspace :math:`H_{z_0,z}^{\ge}`
+    that contains the generator *row* on its edge, i.e.
+
+    .. math::
+       0&=   b_j z_0 + A_j z \\
+       0&\le b_i z_0 + A_i z \qquad\forall i\notin L,\,i\neq j \\
+       0&=   b_i z_0 + A_i z \qquad\forall i\in L,\,i\neq j
 
     .. warning::
         Linearity rows are not checked
@@ -548,18 +564,21 @@ def implicit_linearity(mat: Matrix, row: int) -> Optional[Sequence[NumberType]]:
     if adding it to the linearity set :attr:`~cdd.Matrix.lin_set`
     does not affect the polyhedron.
 
-    For the H-representation, the no implicit linearity certificate
-    is a solution satisfying inequality *row*
-    with strict inequality, i.e.
+    For the H-representation, the
+    no implicit linearity certificate
+    certificate :math:`x` is
+    a feasible solution satisfying inequality *row* with strict inequality, i.e.
 
     .. math::
        0&<   b_j+A_j x \\
        0&\le b_i+A_i x \qquad\forall i\notin L,\,i\neq j \\
        0&=   b_i+A_i x \qquad\forall i\in L,\,i\neq j
 
-    For the V-representation,
-    the certificate of no implicit linearity :math:`(z_0,z)` is a halfspace
-    that contains all generators and strictly containing *row*, i.e. satisfying
+    For the V-representation, the
+    no implicit linearity
+    certificate :math:`(z_0,z)` is
+    a feasible halfspace :math:`H_{z_0,z}^{\ge}`
+    that strictly contains the generator *row*, i.e.
 
     .. math::
        0&<   b_j z_0 + A_j z \\
