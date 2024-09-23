@@ -488,7 +488,7 @@ def redundant(mat: Matrix, row: int) -> Optional[Sequence[NumberType]]:
     if its removal does not affect the polyhedron.
 
     For the H-representation, the
-    no redundancy
+    "no redundancy"
     certificate :math:`x` is
     a solution that satisfies all constraints but violates *row*, i.e.
 
@@ -498,7 +498,7 @@ def redundant(mat: Matrix, row: int) -> Optional[Sequence[NumberType]]:
        0&=   b_i+A_i x \qquad\forall i\in L,\,i\neq j
 
     For the V-representation, the
-    no redundancy
+    "no redundancy"
     certificate :math:`(z_0,z)` is
     a halfspace :math:`H_{z_0,z}^{\ge}`
     that contains all generators but does not contain *row*, i.e.
@@ -527,7 +527,7 @@ def s_redundant(mat: Matrix, row: int) -> Optional[Sequence[NumberType]]:
     the relative interior of the polyhedron.
 
     For the H-representation, the
-    no strong redundancy
+    "no strong redundancy"
     certificate :math:`x` is
     a feasible solution satisfying the constraint *row* with equality, i.e.
 
@@ -537,7 +537,7 @@ def s_redundant(mat: Matrix, row: int) -> Optional[Sequence[NumberType]]:
        0&=   b_i+A_i x \qquad\forall i\in L,\,i\neq j
 
     For the V-representation, the
-    no strong redundancy
+    "no strong redundancy"
     certificate :math:`(z_0,z)` is
     a feasible halfspace :math:`H_{z_0,z}^{\ge}`
     that contains the generator *row* on its edge, i.e.
@@ -565,7 +565,7 @@ def implicit_linearity(mat: Matrix, row: int) -> Optional[Sequence[NumberType]]:
     does not affect the polyhedron.
 
     For the H-representation, the
-    no implicit linearity certificate
+    "no implicit linearity"
     certificate :math:`x` is
     a feasible solution satisfying inequality *row* with strict inequality, i.e.
 
@@ -575,7 +575,7 @@ def implicit_linearity(mat: Matrix, row: int) -> Optional[Sequence[NumberType]]:
        0&=   b_i+A_i x \qquad\forall i\in L,\,i\neq j
 
     For the V-representation, the
-    no implicit linearity
+    "no implicit linearity"
     certificate :math:`(z_0,z)` is
     a feasible halfspace :math:`H_{z_0,z}^{\ge}`
     that strictly contains the generator *row*, i.e.
