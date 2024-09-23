@@ -644,6 +644,8 @@ def matrix_canonicalize(mat: Matrix) -> tuple[Set[int], Set[int]]:
     """Transform to canonical representation by recognizing all
     implicit linearities and all redundancies. These are returned
     as a pair of sets of row indices.
+
+    .. versionadded:: 1.0.3
     """
     cdef dd_rowset impl_linset = NULL
     cdef dd_rowset redset = NULL
@@ -681,6 +683,8 @@ def matrix_adjacency(mat: Matrix) -> Sequence[Set[int]]:
         The implementation uses linear programming,
         instead of the double description method,
         so this function should work for large scale problems.
+
+    .. versionadded:: 3.0.0
     """
     cdef dd_ErrorType error = dd_NoError
     cdef dd_SetFamilyPtr dd_setfam = dd_Matrix2Adjacency(mat.dd_mat, &error)
@@ -697,6 +701,8 @@ def matrix_weak_adjacency(mat: Matrix) -> Sequence[Set[int]]:
         The implementation uses linear programming,
         instead of the double description method,
         so this function should work for large scale problems.
+
+    .. versionadded:: 3.0.0
     """
     cdef dd_ErrorType error = dd_NoError
     cdef dd_SetFamilyPtr dd_setfam = dd_Matrix2WeakAdjacency(mat.dd_mat, &error)
@@ -708,6 +714,8 @@ def matrix_rank(
 ) -> tuple[Set[int], Set[int], int]:
     """Return a row basis, a column basis, and rank, of *mat*,
     whilst ignoring *ignored_rows* and *ignored_cols*.
+
+    .. versionadded:: 3.0.0
     """
     cdef set_type dd_ignored_rows = NULL
     cdef set_type dd_ignored_cols = NULL
@@ -994,6 +1002,8 @@ def copy_adjacency(poly: Polyhedron) -> Sequence[Set[int]]:
 
     H-representation: For each vertex, list adjacent vertices.
     V-representation: For each face, list adjacent faces.
+
+    .. versionadded:: 2.1.1
     """
     return setfam_from_ptr(dd_CopyAdjacency(poly.dd_poly))
 
@@ -1003,6 +1013,8 @@ def copy_input_adjacency(poly: Polyhedron) -> Sequence[Set[int]]:
 
     H-representation: For each face, list adjacent faces.
     V-representation: For each vertex, list adjacent vertices.
+
+    .. versionadded:: 2.1.1
     """
     return setfam_from_ptr(dd_CopyInputAdjacency(poly.dd_poly))
 
@@ -1012,6 +1024,8 @@ def copy_incidence(poly: Polyhedron) -> Sequence[Set[int]]:
 
     H-representation: For each vertex, list adjacent faces.
     V-representation: For each face, list adjacent vertices.
+
+    .. versionadded:: 2.1.1
     """
     return setfam_from_ptr(dd_CopyIncidence(poly.dd_poly))
 
@@ -1021,6 +1035,8 @@ def copy_input_incidence(poly: Polyhedron) -> Sequence[Set[int]]:
 
     H-representation: For each face, list adjacent vertices.
     V-representation: For each vertex, list adjacent faces.
+
+    .. versionadded:: 2.1.1
     """
     return setfam_from_ptr(dd_CopyInputIncidence(poly.dd_poly))
 
