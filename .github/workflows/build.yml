@@ -75,45 +75,58 @@ jobs:
         make doctest
 
   build-vcpkg:
-    runs-on: 'windows-latest'
+    runs-on: ${{ matrix.os }}
+    strategy:
+      fail-fast: false
+      matrix:
+        os: ['ubuntu-latest', 'windows-latest']
+        python-version: ['3.9', '3.10', '3.11', '3.12']
     steps:
     - uses: actions/cache@v4
-      id: vcpkg-installed-cache
+      id: vcpkg-installed-cache-${{ matrix.os }}
       with:
-        path: installed/x64-windows-static-md-release
-        key: vcpkg-0-${{ env.VCPKG_HASH }}
+        path: installed/
+        key: vcpkg-0-${{ env.VCPKG_HASH }}-${{ matrix.os }}
     - uses: actions/checkout@v4
-      if: steps.vcpkg-installed-cache.outputs.cache-hit != 'true'
+      if: steps.vcpkg-installed-cache-${{ matrix.os }}.outputs.cache-hit != 'true'
       with:
         repository: mcmtroffaes/vcpkg
         ref: ${{ env.VCPKG_HASH }}
-    - name: Install cddlib
-      if: steps.vcpkg-installed-cache.outputs.cache-hit != 'true'
+    - name: Install cddlib (Windows)
+      if: steps.vcpkg-installed-cache-${{ matrix.os }}.outputs.cache-hit != 'true' && matrix.os == 'windows-latest'
       run: |
         ./bootstrap-vcpkg.bat -disableMetrics
         ./vcpkg.exe install cddlib:x64-windows-static-md-release
         ls installed/x64-windows-static-md-release/include/ -r
         ls installed/x64-windows-static-md-release/lib/ -r
+    - name: Install cddlib (Ubuntu/MacOs)
+      if: steps.vcpkg-installed-cache-${{ matrix.os }}.outputs.cache-hit != 'true' && matrix.os != 'windows-latest'
+      run: |
+        ./bootstrap-vcpkg.sh -disableMetrics
+        ./vcpkg install cddlib:x64-linux-static
+        ls installed/x64-linux-static/include/ -r
+        ls installed/x64-linux-static/lib/ -r
     - name: Upload vcpkg
       uses: actions/upload-artifact@v4
       with:
-        name: vcpkg-x64
-        path: installed/x64-windows-static-md-release/
+        name: vcpkg-x64-${{ matrix.os }}
+        path: installed/
         if-no-files-found: error
 
   build-test-windows:
-    runs-on: 'windows-latest'
+    runs-on: ${{ matrix.os }}
     needs: build-vcpkg
     strategy:
       fail-fast: false
       matrix:
+        os: ['windows-latest']
         python-version: ['3.9', '3.10', '3.11', '3.12']
     steps:
     - uses: actions/checkout@v4
     - name: Download vcpkg
       uses: actions/download-artifact@v4
       with:
-        name: vcpkg-x64
+        name: vcpkg-x64-${{ matrix.os }}
     - name: Set up Python ${{ matrix.python-version }}
       uses: actions/setup-python@v5
       with:
