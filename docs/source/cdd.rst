@@ -82,8 +82,8 @@ Basic Operations
 .. autofunction:: matrix_copy
 .. autofunction:: matrix_rank
 
-Adjacency
----------
+Adjacencies
+-----------
 
 .. autofunction:: matrix_adjacency
 .. autofunction:: matrix_weak_adjacency
