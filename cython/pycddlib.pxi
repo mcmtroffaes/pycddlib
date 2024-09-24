@@ -768,13 +768,13 @@ def matrix_adjacency(mat: Matrix) -> Sequence[Set[int]]:
         instead of the double description method,
         so this function should work for large scale problems.
 
-    .. warning::
-        This function assumes that the matrix has no redundancies.
-        Call :func:`~cdd.matrix_canonicalize` first if need be.
-
     .. seealso::
         The :func:`~cdd.copy_input_adjacency` function performs a similar operation,
         using the double description method.
+
+    .. warning::
+        This function assumes that the matrix has no redundancies.
+        Call :func:`~cdd.matrix_canonicalize` first if need be.
 
     .. versionadded:: 3.0.0
     """
@@ -793,13 +793,13 @@ def matrix_weak_adjacency(mat: Matrix) -> Sequence[Set[int]]:
         instead of the double description method,
         so this function should work for large scale problems.
 
-    .. warning::
-        This function assumes that the matrix has no redundancies.
-        Call :func:`~cdd.matrix_canonicalize` first if need be.
-
     .. seealso::
         The :func:`~cdd.copy_input_adjacency` function performs a similar operation,
         using the double description method.
+
+    .. warning::
+        This function assumes that the matrix has no redundancies.
+        Call :func:`~cdd.matrix_canonicalize` first if need be.
 
     .. versionadded:: 3.0.0
     """
@@ -1112,6 +1112,12 @@ def copy_input_adjacency(poly: Polyhedron) -> Sequence[Set[int]]:
 
     H-representation: For each face, list adjacent faces.
     V-representation: For each vertex, list adjacent vertices.
+
+    .. seealso::
+        The :func:`~cdd.matrix_adjacency` and
+        :func:`~cdd.matrix_weak_adjacency`
+        functions perform a similar operation,
+        using linear programming.
 
     .. versionadded:: 2.1.1
     """
