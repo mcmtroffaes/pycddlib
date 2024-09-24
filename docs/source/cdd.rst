@@ -78,14 +78,28 @@ Factories
 Functions
 ---------
 
+General Matrix Operations
+~~~~~~~~~~~~~~~~~~~~~~~~~
+
 .. autofunction:: matrix_append_to
 .. autofunction:: matrix_copy
+.. autofunction:: matrix_rank
+
+Adjacency
+~~~~~~~~~
 
 .. autofunction:: matrix_adjacency
 .. autofunction:: matrix_weak_adjacency
 
+Canonicalization
+~~~~~~~~~~~~~~~~
+
 .. autofunction:: matrix_canonicalize
-.. autofunction:: matrix_rank
+.. autofunction:: matrix_canonicalize_linearity
+.. autofunction:: matrix_redundancy_remove
+
+Redundancy Checks
+~~~~~~~~~~~~~~~~~
 
 .. autofunction:: redundant
 .. autofunction:: s_redundant
@@ -95,7 +109,13 @@ Functions
 .. autofunction:: s_redundant_rows
 .. autofunction:: implicit_linearity_rows
 
+Linear Programming
+~~~~~~~~~~~~~~~~~~
+
 .. autofunction:: linprog_solve
+
+Double Description Method
+~~~~~~~~~~~~~~~~~~~~~~~~~
 
 .. autofunction:: copy_input
 .. autofunction:: copy_output
@@ -105,6 +125,9 @@ Functions
 .. autofunction:: copy_incidence
 .. autofunction:: copy_input_adjacency
 .. autofunction:: copy_input_incidence
+
+Elimination
+~~~~~~~~~~~
 
 .. autofunction:: fourier_elimination
 .. autofunction:: block_elimination

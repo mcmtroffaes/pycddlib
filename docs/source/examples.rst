@@ -22,7 +22,7 @@ True
 >>> cdd.redundant_rows(mat)
 {0}
 >>> cdd.matrix_canonicalize(mat)
-({1, 3}, {0})
+({1, 3}, {0}, [None, 0, 1, None])
 >>> pprint(mat.array)
 [[0.0, 1.0, 2.0, 3.0], [3.0, 0.0, 1.0, 2.0]]
 >>> mat.lin_set

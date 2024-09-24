@@ -693,21 +693,21 @@ cdef int _CANONICALIZE_REDUNDANCY = 0
 cdef int _CANONICALIZE_LINEARITY = 1
 
 # () -> tuple[Set[int], Sequence[Optional[int]]]
-cdef _matrix_canonicalize_something(dd_MatrixPtr dd_mat, int something):
+cdef _matrix_canonicalize_something(dd_MatrixPtr *dd_mat, int something):
     cdef dd_rowset rowset = NULL
     cdef dd_rowindex newpos = NULL
     cdef dd_ErrorType error = dd_NoError
-    cdef dd_rowrange original_rowsize = dd_mat.rowsize
+    cdef dd_rowrange original_rowsize = dd_mat[0].rowsize
     cdef dd_boolean success
-    if dd_mat.representation == dd_Unspecified:
+    if dd_mat[0].representation == dd_Unspecified:
         raise ValueError("rep_type unspecified")
     if something == _CANONICALIZE_LINEARITY:
         success = dd_MatrixCanonicalizeLinearity(
-            &dd_mat, &rowset, &newpos, &error
+            dd_mat, &rowset, &newpos, &error
         )
     elif something == _CANONICALIZE_REDUNDANCY:
         success = dd_MatrixRedundancyRemove(
-            &dd_mat, &rowset, &newpos, &error
+            dd_mat, &rowset, &newpos, &error
         )
     try:
         if (
@@ -741,7 +741,7 @@ def matrix_canonicalize_linearity(
 
     .. versionadded:: 3.0.0
     """
-    _matrix_canonicalize_something(mat.dd_mat, _CANONICALIZE_LINEARITY)
+    return _matrix_canonicalize_something(&mat.dd_mat, _CANONICALIZE_LINEARITY)
 
 def matrix_redundancy_remove(
     mat: Matrix
@@ -754,7 +754,7 @@ def matrix_redundancy_remove(
 
     .. versionadded:: 3.0.0
     """
-    _matrix_canonicalize_something(mat.dd_mat, _CANONICALIZE_REDUNDANCY)
+    return _matrix_canonicalize_something(&mat.dd_mat, _CANONICALIZE_REDUNDANCY)
 
 def matrix_adjacency(mat: Matrix) -> Sequence[Set[int]]:
     """Generate the input adjacency of the polyhedron represented by *mat*.

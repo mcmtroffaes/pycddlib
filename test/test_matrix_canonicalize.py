@@ -30,3 +30,17 @@ def test_matrix_canonicalize_3() -> None:
     assert cdd.matrix_canonicalize(mat) == (set(), set(), [0, 1])
     assert_matrix_almost_equal(mat.array, [[1, 1], [1, -1]])
     assert mat.lin_set == {0, 1}
+
+
+def test_matrix_canonicalize_4() -> None:
+    array = [[2, 1, 2, 3], [0, 1, 2, 3], [3, 0, 1, 2], [0, -2, -4, -6]]
+    mat = cdd.matrix_from_array(array, rep_type=cdd.RepType.INEQUALITY)
+    assert cdd.matrix_canonicalize_linearity(mat) == ({1, 3}, [1, 0, 2, None])
+    assert_matrix_almost_equal(mat.array, [[0, 1, 2, 3], [2, 1, 2, 3], [3, 0, 1, 2]])
+
+
+def test_matrix_canonicalize_5() -> None:
+    array = [[2, 1, 2, 3], [0, 1, 2, 3], [3, 0, 1, 2], [0, -2, -4, -6]]
+    mat = cdd.matrix_from_array(array, rep_type=cdd.RepType.INEQUALITY)
+    assert cdd.matrix_redundancy_remove(mat) == ({0}, [None, 0, 1, 2])
+    assert_matrix_almost_equal(mat.array, [[0, 1, 2, 3], [3, 0, 1, 2], [0, -2, -4, -6]])
