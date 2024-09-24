@@ -2,8 +2,6 @@ import cdd
 import pytest
 
 
-# this should not segfault
-@pytest.mark.skip  # temporarily disabled to check other tests
 def test_issue35_1() -> None:
     mat = cdd.matrix_from_array([[0, 0, 0]], rep_type=cdd.RepType.INEQUALITY)
     assert cdd.matrix_canonicalize(mat) == ({0}, None)
