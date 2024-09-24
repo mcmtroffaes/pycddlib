@@ -94,6 +94,7 @@ jobs:
     - name: Install cddlib (Windows)
       if: steps.vcpkg-installed-cache.outputs.cache-hit != 'true' && matrix.os == 'windows-latest'
       run: |
+        sudo apt-get install -y autoconf-archive
         ./bootstrap-vcpkg.bat -disableMetrics
         ./vcpkg.exe install cddlib:x64-windows-static-md-release
         ls installed/x64-windows-static-md-release/include/ -r
