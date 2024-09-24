@@ -132,17 +132,28 @@ jobs:
       with:
         python-version: ${{ matrix.python-version }}
         architecture: x64
-    - name: Check Python environment
+    - name: Check Python environment (Windows)
+      if: matrix.os == 'windows-latest'
       run: |
-        ls include/ -r
-        ls lib/ -r
+        ls x64-windows-static-md-release/include/ -r
+        ls x64-windows-static-md-release/lib/ -r
+        python --version
+        python -c "import struct; print(struct.calcsize('P') * 8)"
+    - name: Check Python environment (Ubuntu)
+      if: matrix.os == 'ubuntu-latest'
+      run: |
+        ls x64-linux-release/include/ -r
+        ls x64-linux-release/lib/ -r
         python --version
         python -c "import struct; print(struct.calcsize('P') * 8)"
     - name: Install Python dependencies
       run: python -m pip install Sphinx pytest numpy twine wheel build mypy
-    - name: Create wheel
+    - name: Create wheel (Windows)
       run: |
-        python -m build -w -C="--global-option=build_ext" -C="--global-option=-Iinclude/" -C="--global-option=-Llib/"
+        python -m build -w -C="--global-option=build_ext" -C="--global-option=-Ix64-windows-static-md-release/include/" -C="--global-option=-Lx64-windows-static-md-release/lib/"
+    - name: Create wheel (Ubuntu)
+      run: |
+        python -m build -w -C="--global-option=build_ext" -C="--global-option=-Ix64-linux-release/include/" -C="--global-option=-Lx64-linux-release/lib/"
     - name: Check wheel (Windows)
       if: matrix.os == 'windows-latest'
       run: |
