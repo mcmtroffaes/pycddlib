@@ -85,7 +85,7 @@ jobs:
       id: vcpkg-installed-cache
       with:
         path: installed/
-        key: vcpkg-0-${{ env.VCPKG_HASH }}-${{ matrix.os }}
+        key: vcpkg-1-${{ env.VCPKG_HASH }}-${{ matrix.os }}
     - uses: actions/checkout@v4
       if: steps.vcpkg-installed-cache.outputs.cache-hit != 'true'
       with:
@@ -103,7 +103,7 @@ jobs:
       run: |
         sudo apt-get install -y autoconf-archive
         ./bootstrap-vcpkg.sh -disableMetrics
-        ./vcpkg install cddlib:x64-linux-release
+        ./vcpkg install cddlib:x64-linux
         ls installed/x64-linux/include/ -r
         ls installed/x64-linux/lib/ -r
     - name: Upload vcpkg
