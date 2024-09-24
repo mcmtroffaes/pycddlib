@@ -102,9 +102,9 @@ jobs:
       if: steps.vcpkg-installed-cache.outputs.cache-hit != 'true' && matrix.os != 'windows-latest'
       run: |
         ./bootstrap-vcpkg.sh -disableMetrics
-        ./vcpkg install cddlib:x64-linux-static
-        ls installed/x64-linux-static/include/ -r
-        ls installed/x64-linux-static/lib/ -r
+        ./vcpkg install cddlib:x64-linux
+        ls installed/x64-linux/include/ -r
+        ls installed/x64-linux/lib/ -r
     - name: Upload vcpkg
       uses: actions/upload-artifact@v4
       with:
