@@ -96,16 +96,16 @@ jobs:
       run: |
         ./bootstrap-vcpkg.bat -disableMetrics
         ./vcpkg.exe install cddlib:x64-windows-static-md-release
-        ls installed/x64-windows-static-md-release/include/ -r
-        ls installed/x64-windows-static-md-release/lib/ -r
+        ls -R installed/x64-windows-static-md-release/include/
+        ls -R installed/x64-windows-static-md-release/lib/
     - name: Install cddlib (Ubuntu/MacOs)
       if: steps.vcpkg-installed-cache.outputs.cache-hit != 'true' && matrix.os != 'windows-latest'
       run: |
         sudo apt-get install -y autoconf-archive
         ./bootstrap-vcpkg.sh -disableMetrics
         ./vcpkg install cddlib:x64-linux
-        ls installed/x64-linux/include/ -r
-        ls installed/x64-linux/lib/ -r
+        ls -R installed/x64-linux/include/
+        ls -R installed/x64-linux/lib/
     - name: Upload vcpkg
       uses: actions/upload-artifact@v4
       with:
@@ -135,15 +135,15 @@ jobs:
     - name: Check Python environment (Windows)
       if: matrix.os == 'windows-latest'
       run: |
-        ls x64-windows-static-md-release/include/ -r
-        ls x64-windows-static-md-release/lib/ -r
+        ls -R x64-windows-static-md-release/include/
+        ls -R x64-windows-static-md-release/lib/
         python --version
         python -c "import struct; print(struct.calcsize('P') * 8)"
     - name: Check Python environment (Ubuntu)
       if: matrix.os == 'ubuntu-latest'
       run: |
-        ls x64-linux/include/ -r
-        ls x64-linux/lib/ -r
+        ls -R x64-linux/include/
+        ls -R x64-linux/lib/
         python --version
         python -c "import struct; print(struct.calcsize('P') * 8)"
     - name: Install Python dependencies
@@ -161,7 +161,7 @@ jobs:
       run: |
         twine check dist/*
         wheel unpack ((Get-ChildItem -Path dist/ -Filter *.whl)[0].FullName) --dest wheel
-        ls -r wheel/
+        ls -R wheel/
         If (((Get-ChildItem -Path wheel/ -Recurse -Include ("*.pyx", "*.pxi", "*.c"))).Length -Ne 0) {
           throw "Wheel contains .pyx, .pxi, or .c files."
         }
@@ -204,7 +204,7 @@ jobs:
         path: dist/
         merge-multiple: true
     - name: List files
-      run: ls -r dist/
+      run: ls -R dist/
     - name: Publish to Test PyPI
       uses: pypa/gh-action-pypi-publish@release/v1
       with:
