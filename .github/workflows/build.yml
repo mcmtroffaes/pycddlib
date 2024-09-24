@@ -62,10 +62,10 @@ jobs:
       run: python -m pip install setuptools Cython Sphinx pytest wheel numpy mypy
     - name: Install tarball (Ubuntu)
       if: matrix.os == 'ubuntu-latest'
-      run: python -m pip install $(ls dist/*.tar.gz| head -1)
+      run: python -m pip install $(ls dist/*.tar.gz | head -1)
     - name: Install tarball (MacOS)
       if: matrix.os == 'macos-latest'
-      run: env "CFLAGS=-I$(brew --prefix)/include -L$(brew --prefix)/lib" python -m pip install $(ls dist/*.tar.gz| head -1)
+      run: env "CFLAGS=-I$(brew --prefix)/include -L$(brew --prefix)/lib" python -m pip install $(ls dist/*.tar.gz | head -1)
     - uses: actions/checkout@v4
     - name: Run test suite
       run: |
@@ -75,62 +75,89 @@ jobs:
         make doctest
 
   build-vcpkg:
-    runs-on: 'windows-latest'
+    runs-on: ${{ matrix.os }}
+    strategy:
+      fail-fast: false
+      matrix:
+        os: ['ubuntu-latest', 'windows-latest']
     steps:
     - uses: actions/cache@v4
       id: vcpkg-installed-cache
       with:
-        path: installed/x64-windows-static-md-release
-        key: vcpkg-0-${{ env.VCPKG_HASH }}
+        path: installed/
+        key: vcpkg-0-${{ env.VCPKG_HASH }}-${{ matrix.os }}
     - uses: actions/checkout@v4
       if: steps.vcpkg-installed-cache.outputs.cache-hit != 'true'
       with:
         repository: mcmtroffaes/vcpkg
         ref: ${{ env.VCPKG_HASH }}
-    - name: Install cddlib
-      if: steps.vcpkg-installed-cache.outputs.cache-hit != 'true'
+    - name: Install cddlib (Windows)
+      if: steps.vcpkg-installed-cache.outputs.cache-hit != 'true' && matrix.os == 'windows-latest'
       run: |
         ./bootstrap-vcpkg.bat -disableMetrics
         ./vcpkg.exe install cddlib:x64-windows-static-md-release
         ls installed/x64-windows-static-md-release/include/ -r
         ls installed/x64-windows-static-md-release/lib/ -r
+    - name: Install cddlib (Ubuntu/MacOs)
+      if: steps.vcpkg-installed-cache.outputs.cache-hit != 'true' && matrix.os != 'windows-latest'
+      run: |
+        sudo apt-get install -y autoconf-archive
+        ./bootstrap-vcpkg.sh -disableMetrics
+        ./vcpkg install cddlib:x64-linux-release
+        ls installed/x64-linux/include/ -r
+        ls installed/x64-linux/lib/ -r
     - name: Upload vcpkg
       uses: actions/upload-artifact@v4
       with:
-        name: vcpkg-x64
-        path: installed/x64-windows-static-md-release/
+        name: vcpkg-x64-${{ matrix.os }}
+        path: installed/
         if-no-files-found: error
 
-  build-test-windows:
-    runs-on: 'windows-latest'
+  build-test-vcpkg:
+    runs-on: ${{ matrix.os }}
     needs: build-vcpkg
     strategy:
       fail-fast: false
       matrix:
+        os: ['ubuntu-latest', 'windows-latest']
         python-version: ['3.9', '3.10', '3.11', '3.12']
     steps:
     - uses: actions/checkout@v4
     - name: Download vcpkg
       uses: actions/download-artifact@v4
       with:
-        name: vcpkg-x64
+        name: vcpkg-x64-${{ matrix.os }}
     - name: Set up Python ${{ matrix.python-version }}
       uses: actions/setup-python@v5
       with:
         python-version: ${{ matrix.python-version }}
         architecture: x64
-    - name: Check Python environment
+    - name: Check Python environment (Windows)
+      if: matrix.os == 'windows-latest'
       run: |
-        ls include/ -r
-        ls lib/ -r
+        ls x64-windows-static-md-release/include/ -r
+        ls x64-windows-static-md-release/lib/ -r
+        python --version
+        python -c "import struct; print(struct.calcsize('P') * 8)"
+    - name: Check Python environment (Ubuntu)
+      if: matrix.os == 'ubuntu-latest'
+      run: |
+        ls x64-linux/include/ -r
+        ls x64-linux/lib/ -r
         python --version
         python -c "import struct; print(struct.calcsize('P') * 8)"
     - name: Install Python dependencies
       run: python -m pip install Sphinx pytest numpy twine wheel build mypy
-    - name: Create wheel
+    - name: Create wheel (Windows)
+      if: matrix.os == 'windows-latest'
       run: |
-        python -m build -w -C="--global-option=build_ext" -C="--global-option=-Iinclude/" -C="--global-option=-Llib/"
-    - name: Check wheel
+        python -m build -w -C="--global-option=build_ext" -C="--global-option=-Ix64-windows-static-md-release/include/" -C="--global-option=-Lx64-windows-static-md-release/lib/"
+    - name: Create wheel (Ubuntu)
+      if: matrix.os == 'ubuntu-latest'
+      run: |
+        python -m build -w -C="--global-option=build_ext" -C="--global-option=-Ix64-linux/include/" -C="--global-option=-Lx64-linux/lib/"
+    - name: Check wheel (Windows)
+      if: matrix.os == 'windows-latest'
       run: |
         twine check dist/*
         wheel unpack ((Get-ChildItem -Path dist/ -Filter *.whl)[0].FullName) --dest wheel
@@ -138,14 +165,19 @@ jobs:
         If (((Get-ChildItem -Path wheel/ -Recurse -Include ("*.pyx", "*.pxi", "*.c"))).Length -Ne 0) {
           throw "Wheel contains .pyx, .pxi, or .c files."
         }
-    - name: Upload wheel
+    - name: Upload wheel (Windows)
+      if: matrix.os == 'windows-latest'
       uses: actions/upload-artifact@v4
       with:
         name: windows-wheels-${{ matrix.python-version }}
         path: dist/*
         if-no-files-found: error
-    - name: Install wheel
+    - name: Install wheel (Windows)
+      if: matrix.os == 'windows-latest'
       run: pip install ((Get-ChildItem -Path dist/ -Filter *.whl)[0].FullName)
+    - name: Install wheel (Ubuntu)
+      if: matrix.os == 'ubuntu-latest'
+      run: pip install $(ls dist/*.whl | head -1)
     - name: Run test suite
       run: |
         mypy
@@ -158,7 +190,7 @@ jobs:
     runs-on: 'ubuntu-latest'
     permissions:
       id-token: write
-    needs: [ build-sdist, test-ubuntu-macos, build-test-windows ]
+    needs: [ build-sdist, test-ubuntu-macos, build-test-vcpkg ]
     steps:
     - name: Download sdist
       uses: actions/download-artifact@v4

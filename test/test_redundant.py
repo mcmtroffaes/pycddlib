@@ -102,9 +102,9 @@ def test_redundant_generators_4() -> None:
     assert_certificate_equal(cdd.redundant(mat, 0), None)
     assert_certificate_equal(cdd.redundant(mat, 1), None)
     assert_certificate_equal(cdd.redundant(mat, 2), [1, -0.5])
-    # TODO bug in cddlib... https://github.com/cddlib/cddlib/pull/73
-    assert_certificate_equal(cdd.s_redundant(mat, 0), [0, 0])
-    assert_certificate_equal(cdd.s_redundant(mat, 1), [0, 0])
+    # TODO bug in cddlib... needs https://github.com/cddlib/cddlib/pull/73
+    # assert_certificate_equal(cdd.s_redundant(mat, 0), [-1, 0.5])
+    # assert_certificate_equal(cdd.s_redundant(mat, 1), [-1, 0.5])
     assert_certificate_equal(cdd.s_redundant(mat, 2), [1, -0.5])
 
 
