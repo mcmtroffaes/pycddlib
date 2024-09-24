@@ -82,24 +82,24 @@ jobs:
         os: ['ubuntu-latest', 'windows-latest']
     steps:
     - uses: actions/cache@v4
-      id: vcpkg-installed-cache-${{ matrix.os }}
+      id: vcpkg-installed-cache
       with:
         path: installed/
         key: vcpkg-0-${{ env.VCPKG_HASH }}-${{ matrix.os }}
     - uses: actions/checkout@v4
-      if: steps.vcpkg-installed-cache-${{ matrix.os }}.outputs.cache-hit != 'true'
+      if: steps.vcpkg-installed-cache.outputs.cache-hit != 'true'
       with:
         repository: mcmtroffaes/vcpkg
         ref: ${{ env.VCPKG_HASH }}
     - name: Install cddlib (Windows)
-      if: steps.vcpkg-installed-cache-${{ matrix.os }}.outputs.cache-hit != 'true' && matrix.os == 'windows-latest'
+      if: steps.vcpkg-installed-cache.outputs.cache-hit != 'true' && matrix.os == 'windows-latest'
       run: |
         ./bootstrap-vcpkg.bat -disableMetrics
         ./vcpkg.exe install cddlib:x64-windows-static-md-release
         ls installed/x64-windows-static-md-release/include/ -r
         ls installed/x64-windows-static-md-release/lib/ -r
     - name: Install cddlib (Ubuntu/MacOs)
-      if: steps.vcpkg-installed-cache-${{ matrix.os }}.outputs.cache-hit != 'true' && matrix.os != 'windows-latest'
+      if: steps.vcpkg-installed-cache.outputs.cache-hit != 'true' && matrix.os != 'windows-latest'
       run: |
         ./bootstrap-vcpkg.sh -disableMetrics
         ./vcpkg install cddlib:x64-linux-static
