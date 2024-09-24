@@ -62,10 +62,10 @@ jobs:
       run: python -m pip install setuptools Cython Sphinx pytest wheel numpy mypy
     - name: Install tarball (Ubuntu)
       if: matrix.os == 'ubuntu-latest'
-      run: python -m pip install $(ls dist/*.tar.gz| head -1)
+      run: python -m pip install $(ls dist/*.tar.gz | head -1)
     - name: Install tarball (MacOS)
       if: matrix.os == 'macos-latest'
-      run: env "CFLAGS=-I$(brew --prefix)/include -L$(brew --prefix)/lib" python -m pip install $(ls dist/*.tar.gz| head -1)
+      run: env "CFLAGS=-I$(brew --prefix)/include -L$(brew --prefix)/lib" python -m pip install $(ls dist/*.tar.gz | head -1)
     - uses: actions/checkout@v4
     - name: Run test suite
       run: |
@@ -113,13 +113,13 @@ jobs:
         path: installed/
         if-no-files-found: error
 
-  build-test-windows:
+  build-test-vcpkg:
     runs-on: ${{ matrix.os }}
     needs: build-vcpkg
     strategy:
       fail-fast: false
       matrix:
-        os: ['windows-latest']
+        os: ['ubuntu-latest', 'windows-latest']
         python-version: ['3.9', '3.10', '3.11', '3.12']
     steps:
     - uses: actions/checkout@v4
@@ -143,7 +143,8 @@ jobs:
     - name: Create wheel
       run: |
         python -m build -w -C="--global-option=build_ext" -C="--global-option=-Iinclude/" -C="--global-option=-Llib/"
-    - name: Check wheel
+    - name: Check wheel (Windows)
+      if: matrix.os == 'windows-latest'
       run: |
         twine check dist/*
         wheel unpack ((Get-ChildItem -Path dist/ -Filter *.whl)[0].FullName) --dest wheel
@@ -151,14 +152,19 @@ jobs:
         If (((Get-ChildItem -Path wheel/ -Recurse -Include ("*.pyx", "*.pxi", "*.c"))).Length -Ne 0) {
           throw "Wheel contains .pyx, .pxi, or .c files."
         }
-    - name: Upload wheel
+    - name: Upload wheel (Windows)
+      if: matrix.os == 'windows-latest'
       uses: actions/upload-artifact@v4
       with:
         name: windows-wheels-${{ matrix.python-version }}
         path: dist/*
         if-no-files-found: error
-    - name: Install wheel
+    - name: Install wheel (Windows)
+      if: matrix.os == 'windows-latest'
       run: pip install ((Get-ChildItem -Path dist/ -Filter *.whl)[0].FullName)
+    - name: Install wheel (Ubuntu)
+      if: matrix.os == 'ubuntu-latest'
+      run: pip install $(ls dist/*.whl | head -1)
     - name: Run test suite
       run: |
         mypy
@@ -171,7 +177,7 @@ jobs:
     runs-on: 'ubuntu-latest'
     permissions:
       id-token: write
-    needs: [ build-sdist, test-ubuntu-macos, build-test-windows ]
+    needs: [ build-sdist, test-ubuntu-macos, build-test-vcpkg ]
     steps:
     - name: Download sdist
       uses: actions/download-artifact@v4
