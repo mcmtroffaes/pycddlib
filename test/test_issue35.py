@@ -4,7 +4,7 @@ import pytest
 
 def test_issue35_1() -> None:
     mat = cdd.matrix_from_array([[0, 0, 0]], rep_type=cdd.RepType.INEQUALITY)
-    assert cdd.matrix_canonicalize(mat) == ({0}, None)
+    assert cdd.matrix_canonicalize(mat) == ({0}, set(), [None])
     assert mat.array == []
 
 
