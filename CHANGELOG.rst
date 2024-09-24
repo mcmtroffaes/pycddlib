@@ -64,7 +64,8 @@ Fully detailed changes:
 
     - ``Matrix.copy`` is now ``matrix_copy``.
 
-    - ``Matrix.canonicalize`` is now ``matrix_canonicalize``.
+    - ``Matrix.canonicalize`` is now ``matrix_canonicalize``,
+      and now also returns the sequence of new row indices.
 
     - ``LinProg(...)`` is now ``linprog_from_matrix(...)``
       or ``linprog_from_array(...)``.
@@ -102,7 +103,9 @@ Fully detailed changes:
 
     - Matrix rank.
 
-    - Redundancy checks and certificates.
+    - New functions for redundancy checks and certificates.
+
+    - New functions to canonicalize only linearities, or only inequalities.
 
 * You can now specify the row order type
   when constructing a ``Polyhedron`` from a matrix.

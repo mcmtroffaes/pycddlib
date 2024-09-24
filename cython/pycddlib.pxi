@@ -640,17 +640,27 @@ def implicit_linearity_rows(mat: Matrix) -> Set[int]:
     """
     return _certificate_rows(mat.dd_mat, _ROW_CHECK_TYPE_IMPLICIT_LINEARITY)
 
-def matrix_canonicalize(mat: Matrix) -> tuple[Set[int], Set[int]]:
+def matrix_canonicalize(
+    mat: Matrix
+) -> tuple[Set[int], Set[int], Sequence[Optional[int]]]:
     """Transform to canonical representation by recognizing all
     implicit linearities and all redundancies. These are returned
-    as a pair of sets of row indices.
+    as a pair of sets of row indices, along with a sequence of new row positions
+    (``None`` for removed rows).
+
+    This function has the same effect as calling
+    :func:`matrix_canonicalize_linearity` followed by :func:`matrix_remove_redundancy`.
 
     .. versionadded:: 1.0.3
+
+    .. versionchanged:: 3.0.0
+        Also return new row positions.
     """
     cdef dd_rowset impl_linset = NULL
     cdef dd_rowset redset = NULL
     cdef dd_rowindex newpos = NULL
     cdef dd_ErrorType error = dd_NoError
+    cdef dd_rowrange original_rowsize = mat.dd_mat.rowsize
     cdef dd_boolean success
     if mat.dd_mat.representation == dd_Unspecified:
         raise ValueError("rep_type unspecified")
@@ -666,11 +676,85 @@ def matrix_canonicalize(mat: Matrix) -> tuple[Set[int], Set[int]]:
             or newpos == NULL
         ):
             _raise_error(error)
-        return (_get_set(impl_linset), _get_set(redset))
+        return (
+            _get_set(impl_linset),
+            _get_set(redset),
+            [
+                pos - 1 if (pos := newpos[i + 1]) > 0 else None
+                for i in range(original_rowsize)
+            ],
+        )
     finally:
         set_free(impl_linset)
         set_free(redset)
         libc.stdlib.free(newpos)
+
+cdef int _CANONICALIZE_REDUNDANCY = 0
+cdef int _CANONICALIZE_LINEARITY = 1
+
+# () -> tuple[Set[int], Sequence[Optional[int]]]
+cdef _matrix_canonicalize_something(dd_MatrixPtr dd_mat, int something):
+    cdef dd_rowset rowset = NULL
+    cdef dd_rowindex newpos = NULL
+    cdef dd_ErrorType error = dd_NoError
+    cdef dd_rowrange original_rowsize = dd_mat.rowsize
+    cdef dd_boolean success
+    if dd_mat.representation == dd_Unspecified:
+        raise ValueError("rep_type unspecified")
+    if something == _CANONICALIZE_LINEARITY:
+        success = dd_MatrixCanonicalizeLinearity(
+            &dd_mat, &rowset, &newpos, &error
+        )
+    elif something == _CANONICALIZE_REDUNDANCY:
+        success = dd_MatrixRedundancyRemove(
+            &dd_mat, &rowset, &newpos, &error
+        )
+    try:
+        if (
+            not success
+            or error != dd_NoError
+            or rowset == NULL
+            or newpos == NULL
+        ):
+            _raise_error(error)
+        return (
+            _get_set(rowset),
+            [
+                pos - 1 if (pos := newpos[i + 1]) > 0 else None
+                for i in range(original_rowsize)
+            ],
+        )
+    finally:
+        set_free(rowset)
+        libc.stdlib.free(newpos)
+
+def matrix_canonicalize_linearity(
+    mat: Matrix
+) -> tuple[Set[int], Sequence[Optional[int]]]:
+    """Add all implicit linearities to the :attr:`~cdd.Matrix.lin_set`,
+    and then remove all redundant linearities
+    (e.g. everything in :attr:`~cdd.Matrix.lin_set`),
+    by finding a basis for the linearity rows.
+
+    Returns implicit linearities as a sets of row indices,
+    along with a sequence of new row positions (``None`` for removed rows).
+
+    .. versionadded:: 3.0.0
+    """
+    _matrix_canonicalize_something(mat.dd_mat, _CANONICALIZE_LINEARITY)
+
+def matrix_redundancy_remove(
+    mat: Matrix
+) -> tuple[Set[int], Sequence[Optional[int]]]:
+    """Remove all redundant non-linearity rows
+    (e.g. everything outside of :attr:`~cdd.Matrix.lin_set`).
+
+    Returns redundant rows as a set of row indices,
+    along with a sequence of new row positions (``None`` for removed rows).
+
+    .. versionadded:: 3.0.0
+    """
+    _matrix_canonicalize_something(mat.dd_mat, _CANONICALIZE_REDUNDANCY)
 
 def matrix_adjacency(mat: Matrix) -> Sequence[Set[int]]:
     """Generate the input adjacency of the polyhedron represented by *mat*.
