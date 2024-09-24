@@ -649,7 +649,8 @@ def matrix_canonicalize(
     (``None`` for removed rows).
 
     This function has the same effect as calling
-    :func:`matrix_canonicalize_linearity` followed by :func:`matrix_remove_redundancy`.
+    :func:`~cdd.matrix_canonicalize_linearity` followed by
+    :func:`~cdd.matrix_remove_redundancy`.
 
     .. versionadded:: 1.0.3
 
@@ -763,10 +764,17 @@ def matrix_adjacency(mat: Matrix) -> Sequence[Set[int]]:
     V-representation: For each vertex, list adjacent vertices.
 
     .. note::
-
         The implementation uses linear programming,
         instead of the double description method,
         so this function should work for large scale problems.
+
+    .. warning::
+        This function assumes that the matrix has no redundancies.
+        Call :func:`~cdd.matrix_canonicalize` first if need be.
+
+    .. seealso::
+        The :func:`~cdd.copy_input_adjacency` function performs a similar operation,
+        using the double description method.
 
     .. versionadded:: 3.0.0
     """
@@ -781,10 +789,17 @@ def matrix_weak_adjacency(mat: Matrix) -> Sequence[Set[int]]:
     V-representation: For each vertex, list adjacent vertices.
 
     .. note::
-
         The implementation uses linear programming,
         instead of the double description method,
         so this function should work for large scale problems.
+
+    .. warning::
+        This function assumes that the matrix has no redundancies.
+        Call :func:`~cdd.matrix_canonicalize` first if need be.
+
+    .. seealso::
+        The :func:`~cdd.copy_input_adjacency` function performs a similar operation,
+        using the double description method.
 
     .. versionadded:: 3.0.0
     """
@@ -1064,7 +1079,7 @@ def copy_output(poly: Polyhedron) -> Matrix:
 
         The output is not guaranteed to be minimal,
         that is, it can still contain redundancy.
-        Use :func:`cdd.matrix_canonicalize` on the output to remove redundancies.
+        Use :func:`~cdd.matrix_canonicalize` on the output to remove redundancies.
 
     .. versionadded:: 3.0.0
     """
@@ -1133,13 +1148,13 @@ def fourier_elimination(mat: Matrix) -> Matrix:
         This implementation can only handle inequality constraints.
         If your system has equality constraints,
         either convert them into pairs of inequalities first,
-        or use :func:`cdd.block_elimination` instead.
+        or use :func:`~cdd.block_elimination` instead.
 
     .. note::
 
         The output is not guaranteed to be minimal,
         that is, it can still contain redundancy.
-        Use :func:`cdd.matrix_canonicalize` on the output to remove redundancies.
+        Use :func:`~cdd.matrix_canonicalize` on the output to remove redundancies.
 
     .. versionadded:: 3.0.0
     """
@@ -1159,7 +1174,7 @@ def block_elimination(mat: Matrix, col_set: Container[int]) -> Matrix:
 
         The output is not guaranteed to be minimal,
         that is, it can still contain redundancy.
-        Use :func:`cdd.matrix_canonicalize` on the output to remove redundancies.
+        Use :func:`~cdd.matrix_canonicalize` on the output to remove redundancies.
 
     .. versionadded:: 3.0.0
     """
