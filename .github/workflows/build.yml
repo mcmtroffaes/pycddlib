@@ -8,7 +8,7 @@ on:
     branches: [ develop ]
 
 env:
-  VCPKG_HASH: 'b4624c3a701b11248d88aab08744a37ee7aea1cc'
+  VCPKG_HASH: '7e5438a9d66be05d3c98f0d876cd52dcd2dd5067'
 
 jobs:
   build-sdist:
@@ -85,7 +85,7 @@ jobs:
     - uses: actions/checkout@v4
       if: steps.vcpkg-installed-cache.outputs.cache-hit != 'true'
       with:
-        repository: microsoft/vcpkg
+        repository: mcmtroffaes/vcpkg
         ref: ${{ env.VCPKG_HASH }}
     - name: Install cddlib
       if: steps.vcpkg-installed-cache.outputs.cache-hit != 'true'
