@@ -1,4 +1,4 @@
-Version 3.0.0 (in development)
+Version 3.0.0 (4 October 2024)
 ------------------------------
 
 This version comes with a lot of improvements, notably:
