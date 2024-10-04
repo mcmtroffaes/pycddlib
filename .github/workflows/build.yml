@@ -8,7 +8,7 @@ on:
     branches: [ develop ]
 
 env:
-  VCPKG_HASH: '5645ad4f3d73b652515ac8fdb50de70fdd331a34'
+  VCPKG_HASH: '267f06c07b13506ee120c89986198c2b7910d9f4'
 
 jobs:
   build-sdist:
@@ -85,7 +85,7 @@ jobs:
       id: vcpkg-installed-cache
       with:
         path: installed/
-        key: vcpkg-1-${{ env.VCPKG_HASH }}-${{ matrix.os }}
+        key: vcpkg-0-${{ env.VCPKG_HASH }}-${{ matrix.os }}
     - uses: actions/checkout@v4
       if: steps.vcpkg-installed-cache.outputs.cache-hit != 'true'
       with:
