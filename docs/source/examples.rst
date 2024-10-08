@@ -1,6 +1,11 @@
 Examples
 ========
 
+The following examples presume:
+
+>>> import cdd
+>>> from pprint import pprint
+
 .. testsetup::
 
     import cdd
