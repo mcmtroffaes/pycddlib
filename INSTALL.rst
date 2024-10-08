@@ -4,7 +4,7 @@ From Binary Wheel
 The simplest way to install pycddlib is to
 `install it with pip <https://packaging.python.org/en/latest/tutorials/installing-packages/>`_::
 
-    pip install pycddlib
+    python -m pip install pycddlib
 
 On Windows, for currently supported versions of Python,
 this will install from a binary wheel.
@@ -15,6 +15,17 @@ or directly from the source repository.
 From Source
 ~~~~~~~~~~~
 
+Installing from source always involves the following two steps:
+
+1. Install cddlib and GMP. This will vary per operating system.
+
+2. Install pycddlib, passing the location of the cddlib and GMP
+   headers and libraries. This works with ``python -m pip`` from the
+   source tarball on all systems except on Windows where we need to
+   use ``python -m build`` on the source repository.
+
+The next sections detail these steps for a variety of situations.
+   
 Installing cddlib and GMP
 *************************
 
@@ -52,16 +63,19 @@ Invoking Pip
 You may have to specify the include and library folders.
 If you use homebrew on Mac, for instance, you may have to write::
 
-  env "CFLAGS=-I$(brew --prefix)/include -L$(brew --prefix)/lib" pip install pycddlib
+  env "CFLAGS=-I$(brew --prefix)/include -L$(brew --prefix)/lib" python -m pip install pycddlib
 
 This should not be needed on Linux, but if you do,
 you can also use the above command,
 substituting the appropriate folders for ``-I`` and ``-L``.
 
-Unfortunately, there appears to be no reliable way to pass the include and lib folders
-to pip on Windows.
-In this case, you need to build from the repository,
-as documented below.
+.. warning::
+
+    Unfortunately, there appears to be no reliable way to pass the include and lib folders
+    to pip on Windows.
+    In this case, you need invoke ``python -m build``
+    from the source repository,
+    as documented next.
 
 Invoking Build
 **************
@@ -94,7 +108,7 @@ then check the lib folder that you passed (it should contain the cddlib and gmp 
 
 Once this completes successfully, you can then install the wheel with::
 
-    pip install dist/pycddlib-<...>.whl
+    python -m pip install dist/pycddlib-<...>.whl
 
 Invoking Setup
 **************
