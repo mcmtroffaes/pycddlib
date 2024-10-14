@@ -650,7 +650,7 @@ def matrix_canonicalize(
 
     This function has the same effect as calling
     :func:`~cdd.matrix_canonicalize_linearity` followed by
-    :func:`~cdd.matrix_remove_redundancy`.
+    :func:`~cdd.matrix_redundancy_remove`.
 
     .. versionadded:: 1.0.3
 
