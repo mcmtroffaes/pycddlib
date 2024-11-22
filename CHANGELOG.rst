@@ -3,6 +3,8 @@ Version 3.0.1 (22 November 2024)
 
 * Add Python 3.13 support.
 
+* Bump vcpkg hash for Windows wheel.
+
 Version 3.0.0 (4 October 2024)
 ------------------------------
 
