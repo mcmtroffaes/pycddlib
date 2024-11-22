@@ -1,5 +1,7 @@
-Version 3.0.1 (in development)
-------------------------------
+Version 3.0.1 (22 November 2024)
+--------------------------------
+
+* Add Python 3.13 support.
 
 Version 3.0.0 (4 October 2024)
 ------------------------------
