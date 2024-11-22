@@ -8,7 +8,7 @@ on:
     branches: [ develop ]
 
 env:
-  VCPKG_HASH: 'f7befcb5fcceb5a22db4fff512d7faf42e9b4003'
+  VCPKG_HASH: '8bec3bc4105dc7839930a919baeb922ba76d695c'
 
 jobs:
   build-sdist:
@@ -41,7 +41,7 @@ jobs:
       fail-fast: false
       matrix:
         os: ['ubuntu-latest', 'macos-latest']
-        python-version: ['3.9', '3.10', '3.11', '3.12']
+        python-version: ['3.9', '3.10', '3.11', '3.12', '3.13']
     steps:
     - name: Download sdist
       uses: actions/download-artifact@v4
@@ -120,7 +120,7 @@ jobs:
       fail-fast: false
       matrix:
         os: ['ubuntu-latest', 'windows-latest']
-        python-version: ['3.9', '3.10', '3.11', '3.12']
+        python-version: ['3.9', '3.10', '3.11', '3.12', '3.13']
     steps:
     - uses: actions/checkout@v4
     - name: Download vcpkg
