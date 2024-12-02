@@ -140,6 +140,14 @@ It can be installed simply with::
 You still need a compiler so that Python can compile the extension module,
 but otherwise it has no dependencies.
 
+.. warning::
+
+    The pycddlib-standalone package is only meant for environments
+    such as Google Colab, that have a compiler,
+    but that cannot handle binary dependencies otherwise.
+    In particular,
+    **packages should not depend on pycddlib-standalone**.
+
 Build Scripts
 ~~~~~~~~~~~~~
 
