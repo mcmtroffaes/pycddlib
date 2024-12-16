@@ -14,12 +14,12 @@ instead of :class:`float`, and all arithmetic is exact.
 
 .. warning::
 
-   Passing a :class:`float` will result in a :exc:`TypeError`:
+   Passing a :class:`float` will result in a :exc:`AttributeError`:
 
    >>> cdd.gmp.matrix_from_array([[1.12]])
    Traceback (most recent call last):
        ...
-   TypeError: must be Fraction or int, not float
+   AttributeError: 'float' object has no attribute 'numerator'
 
    If the float represents a fraction, you must pass it as a fraction explicitly:
 

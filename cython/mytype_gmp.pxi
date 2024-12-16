@@ -67,18 +67,12 @@ cdef _get_mytype(mytype target):
         # trick: bytes(buf_ptr) removes everything after the null
         return Fraction(bytes(buf_ptr).decode('ascii'))
 
-# set target to Python Fraction or Python int
+# set target to Python Fraction (or any type with numerator and denominator attributes)
 cdef _set_mytype(mytype target, value):
-    # https://peps.python.org/pep-0484/#the-numeric-tower
-    # numbers.Real and numbers.Rational are broken with mypy
-    # so check (Fraction, int) instead of numbers.Rational
-    if isinstance(value, (Fraction, int)):
-        try:
-            mpq_set_si(target, value.numerator, value.denominator)
-        except OverflowError:
-            # in case of overflow, set it using mpq_set_str
-            buf = str(value).encode('ascii')
-            if mpq_set_str(target, buf, 10) == -1:
-                raise ValueError('could not convert %s to mpq_t' % value)
-    else:
-        raise TypeError(f"must be Fraction or int, not {type(value).__name__}")
+    try:
+        mpq_set_si(target, value.numerator, value.denominator)
+    except OverflowError:
+        # in case of overflow, set it using mpq_set_str
+        buf = str(value).encode('ascii')
+        if mpq_set_str(target, buf, 10) == -1:
+            raise ValueError('could not convert %s to mpq_t' % value)

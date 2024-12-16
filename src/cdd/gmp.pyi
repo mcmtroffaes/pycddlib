@@ -1,11 +1,16 @@
 from collections.abc import Container, Sequence, Set
 from fractions import Fraction
-from typing import Optional, Union
+from typing import Optional, Protocol
 
 from cdd import LPObjType, LPSolverType, LPStatusType, RepType, RowOrderType
 
 NumberType = Fraction
-SupportsNumberType = Union[Fraction, int]
+
+class SupportsNumberType(Protocol):
+    @property
+    def numerator(self) -> int: ...
+    @property
+    def denominator(self) -> int: ...
 
 class LinProg:
     @property

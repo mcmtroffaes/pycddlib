@@ -1,6 +1,7 @@
 import numpy as np
 import numpy.typing as npt
 
+import cdd
 import cdd.gmp
 
 
@@ -13,6 +14,6 @@ def test_numpy() -> None:
     )
     mat = cdd.gmp.matrix_from_array(arr)  # type: ignore
     mat.rep_type = cdd.RepType.GENERATOR
-    cdd_poly = cdd.polyhedron_from_matrix(mat)
-    ineq = np.array(cdd.copy_inequalities(cdd_poly).array)
+    cdd_poly = cdd.gmp.polyhedron_from_matrix(mat)
+    ineq = np.array(cdd.gmp.copy_inequalities(cdd_poly).array)
     assert ((ref_ineq - ineq) == 0).all()
