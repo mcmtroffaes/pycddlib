@@ -1,6 +1,10 @@
 Version 3.0.2 (in development)
 ------------------------------
 
+* Support not just Fraction and int types as inputs for gmp values,
+  but every type with denominator and numerator attributes (such as numpy's
+  int32 and int64, and gmpy2's mpq).
+
 Version 3.0.1 (22 November 2024)
 --------------------------------
 

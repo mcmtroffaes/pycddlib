@@ -1,8 +1,13 @@
 from collections.abc import Iterable
-from fractions import Fraction
-from typing import Union
+from typing import Any, Protocol
 
-Rational = Union[int, Fraction]
+
+class Rational(Protocol):
+    @property
+    def numerator(self) -> int: ...
+    @property
+    def denominator(self) -> int: ...
+    def __eq__(self, other: Any) -> bool: ...
 
 
 def assert_exactly_equal(x: Rational, y: Rational) -> None:

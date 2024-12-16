@@ -53,3 +53,7 @@ cdd = ["py.typed"]
 [tool.mypy]
 files = ["src/**/*.pyi", "test/**/*.py", "docs/**/*.py"]
 disallow_untyped_defs = true
+
+[[tool.mypy.overrides]]
+module = "gmpy2"
+ignore_missing_imports = true
