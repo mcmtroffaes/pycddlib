@@ -28,6 +28,7 @@ keywords = ["convex, polyhedron, linear programming, double description method"]
 test = [
   "pytest",
   "numpy",
+  "gmpy2",
   "mypy",
   "black",
   "isort",
