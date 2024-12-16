@@ -73,6 +73,6 @@ cdef _set_mytype(mytype target, value):
         mpq_set_si(target, value.numerator, value.denominator)
     except OverflowError:
         # in case of overflow, set it using mpq_set_str
-        buf = str(value).encode('ascii')
+        buf = str(f"{value.numerator}/{value.denominator}").encode('ascii')
         if mpq_set_str(target, buf, 10) == -1:
             raise ValueError('could not convert %s to mpq_t' % value)
