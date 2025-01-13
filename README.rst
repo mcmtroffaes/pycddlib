@@ -18,6 +18,6 @@ and removing redundancies from systems of linear inequalities.
 
 * Download: https://pypi.org/project/pycddlib/#files
 
-* Documentation: https://pycddlib.readthedocs.io/en/latest/
+* Documentation: https://pycddlib.readthedocs.io/
 
 * Development: https://github.com/mcmtroffaes/pycddlib/
