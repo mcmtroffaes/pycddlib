@@ -1,9 +1,10 @@
 from collections.abc import Sequence
 from fractions import Fraction
+from typing import Union
 
 import cdd.gmp
 
-arr: Sequence[Sequence[Fraction | int]] = [
+arr: Sequence[Sequence[Union[Fraction, int]]] = [
     [-Fraction(1, 20), 0, 0, 1, 0],
     [Fraction(3, 2), 0, 0, -1, 0],
     [0, 0, -Fraction(1, 3), -Fraction(32, 30), -Fraction(2, 3)],
