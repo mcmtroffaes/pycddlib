@@ -5,6 +5,8 @@ Version 3.0.2 (in development)
   but every type with denominator and numerator attributes (such as numpy's
   int32 and int64, and gmpy2's mpq).
 
+* Bump vcpkg hash for Windows wheel.
+
 Version 3.0.1 (22 November 2024)
 --------------------------------
 
