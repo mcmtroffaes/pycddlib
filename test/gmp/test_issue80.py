@@ -1,8 +1,9 @@
+from collections.abc import Sequence
 from fractions import Fraction
 
 import cdd.gmp
 
-arr = [
+arr: Sequence[Sequence[Fraction | int]] = [
     [-Fraction(1, 20), 0, 0, 1, 0],
     [Fraction(3, 2), 0, 0, -1, 0],
     [0, 0, -Fraction(1, 3), -Fraction(32, 30), -Fraction(2, 3)],
