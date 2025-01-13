@@ -16,6 +16,11 @@ arr = [
 
 def test_empty_v_rep() -> None:
     mat = cdd.gmp.matrix_from_array(arr, rep_type=cdd.RepType.INEQUALITY)
+    # check original system has no solution
+    poly_orig = cdd.gmp.polyhedron_from_matrix(mat)
+    v_rep_orig = cdd.gmp.copy_output(poly_orig)
+    assert not v_rep_orig.array
+    # check canonical form has no solution either
     lin_set, red_set, indices = cdd.gmp.matrix_canonicalize(mat)
     assert lin_set == {0, 1, 2, 3, 4, 5, 6, 7}
     assert not red_set
