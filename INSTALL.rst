@@ -45,6 +45,14 @@ and on Mac::
 
     brew install cddlib gmp
 
+You may want to check that your system has installed the cddlib headers
+in the correct place.
+They should reside in a folder ending with ``../cddlib/``.
+For instance, on Ubuntu 20.04, the ``libcdd-dev`` package wrongly installs
+the headers in ``/usr/include/cdd/``. You can fix this with::
+
+    sudo ln -s /usr/include/cdd /usr/include/cddlib
+
 If your distribution does not have pre-built packages,
 you may be able to use `vcpkg <https://github.com/microsoft/vcpkg>`_.
 For instance, on Windows::
@@ -56,13 +64,6 @@ whilst on Linux::
     ./vcpkg install cddlib:x64-linux
 
 This will install both cddlib and gmp (as the latter is a dependency).
-
-You may want to check that your system has installed the cddlib headers
-in the correct place. They should reside in the folder ``/usr/include/cddlib/``.
-For instance, on Ubuntu 20.04, the ``libcdd-dev`` package wrongly installs
-the headers in ``/usr/include/cdd/``. You can fix this with::
-
-    sudo ln -s /usr/include/cdd /usr/include/cddlib
 
 Invoking Pip
 ************
