@@ -57,6 +57,13 @@ whilst on Linux::
 
 This will install both cddlib and gmp (as the latter is a dependency).
 
+You may want to check that your system has installed the cddlib headers
+in the correct place. They should reside in the folder ``/usr/include/cddlib/``.
+For instance, on Ubuntu 20.04, the ``libcdd-dev`` package wrongly installs
+the headers in ``/usr/include/cdd/``. You can fix this with::
+
+    sudo ln -s /usr/include/cdd /usr/include/cddlib
+
 Invoking Pip
 ************
 
