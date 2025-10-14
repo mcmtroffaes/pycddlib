@@ -1,4 +1,5 @@
 import importlib
+import cdd  # sphinx has weird bug importing cdd so we let python import it here
 
 extensions = [
     "sphinx.ext.autodoc",
