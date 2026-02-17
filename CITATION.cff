@@ -1,0 +1,18 @@
+cff-version: 1.2.0
+title: pycddlib
+message: "If you use pycddlib in your work, please cite it using this file."
+type: software
+authors:
+  - family-names: Troffaes
+    given-names: Matthias C. M.
+    orcid: https://orcid.org/0000-0002-1294-600X
+version: 3.0.2
+date-released: 2025-01-13
+repository-code: https://github.com/mcmtroffaes/pycddlib
+url: https://pypi.org/project/pycddlib/
+keywords:
+  - polyhedra
+  - linear programming
+  - cdd
+  - double description method
+  - Python
