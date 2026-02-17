@@ -1,18 +1,38 @@
 cff-version: 1.2.0
 title: pycddlib
-message: "If you use pycddlib in your work, please cite it using this file."
+message: >-
+  If you use this software, please cite it using the
+  metadata from this file.
 type: software
+license: GPL-2.0-or-later
+commit: 2227de7b848014e634a81b8815327bc4de9a079a
+version: 3.0.2
+date-released: 2025-01-13
 authors:
   - family-names: Troffaes
     given-names: Matthias C. M.
     orcid: https://orcid.org/0000-0002-1294-600X
-version: 3.0.2
-date-released: 2025-01-13
 repository-code: https://github.com/mcmtroffaes/pycddlib
 url: https://pypi.org/project/pycddlib/
+abstract: >-
+  The pycddlib package provides Python bindings for cddlib,
+  which is a C implementation of the double description
+  method for generating all extreme points of a general
+  convex polyhedron given by a system of linear
+  inequalities. The library also supports the reverse
+  operation (i.e. convex hull computation). This means that
+  one can move back and forth between an inequality
+  representation and an extreme point representation of a
+  polyhedron.
+
+  The library can also solve a variety of other problems
+  related to linear algebra. This includes linear
+  programming, Fourier elimination, computing ranks,
+  computing adjacencies and incidences, and removing
+  redundancies from systems of linear inequalities.
 keywords:
-  - polyhedra
-  - linear programming
-  - cdd
   - double description method
+  - linear programming
+  - polyhedron
+  - cdd
   - Python
