@@ -7,7 +7,7 @@ def test_block_elimination_1() -> None:
     # 0 <= 1 + a + b + c + d,  0 <= 1 + 2a - b - c - d
     array = [[1, 1, 1, 1, 1], [1, 2, -1, -1, -1]]
     mat1 = cdd.matrix_from_array(array, rep_type=cdd.RepType.INEQUALITY)
-    mat2 = cdd.block_elimination(mat1, {2, 3, 4})
+    mat2 = cdd.block_elimination(mat1, {1, 2, 3})
     # 0 <= 2 + 3a
     assert_matrix_almost_equal(mat2.array, [[2, 3]])
     assert mat2.lin_set == set()
@@ -23,7 +23,7 @@ def test_block_elimination_2() -> None:
     ]
     mat1 = cdd.matrix_from_array(array, rep_type=cdd.RepType.INEQUALITY)
     # eliminate last variable, same as fourier
-    mat2 = cdd.block_elimination(mat1, {3})
+    mat2 = cdd.block_elimination(mat1, {2})
     assert_matrix_almost_equal(
         mat2.array,
         [
@@ -39,7 +39,7 @@ def test_block_elimination_3() -> None:
     # 0 = -2 + x + y, 0 <= y
     array = [[-2, 1, 1], [0, 0, 1]]
     mat1 = cdd.matrix_from_array(array, rep_type=cdd.RepType.INEQUALITY, lin_set=[0])
-    mat2 = cdd.block_elimination(mat1, {2})
+    mat2 = cdd.block_elimination(mat1, {1})
     # 0 <= 2 - x
     assert_matrix_almost_equal(mat2.array, [[2, -1]])
     assert mat2.lin_set == set()

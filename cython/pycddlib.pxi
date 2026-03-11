@@ -89,14 +89,15 @@ cdef _get_set(set_type set_):
         elem for elem in range(set_[0]) if set_member(elem + 1, set_)
     }
 
-cdef _set_set(set_type set_, elems):
+cdef _set_set(set_type set_, elems, bool is_var_ind=False):
     # set elements of set_type by elements from a Python Container
     cdef unsigned long elem
+    offset = 2 if is_var_ind else 1
     for elem in range(set_[0]):
         if elem in elems:
-            set_addelem(set_, elem + 1)
+            set_addelem(set_, elem + offset)
         else:
-            set_delelem(set_, elem + 1)
+            set_delelem(set_, elem + offset)
 
 cdef setfam_from_ptr(dd_SetFamilyPtr dd_setfam):
     # create Python Sequence[Set] from dd_SetFamilyPtr, and
@@ -1191,7 +1192,7 @@ def block_elimination(mat: Matrix, col_set: Container[int]) -> Matrix:
     cdef dd_ErrorType error = dd_NoError
     set_initialize(&dd_colset, mat.dd_mat.colsize)
     try:
-        _set_set(dd_colset, col_set)
+        _set_set(dd_colset, col_set, True)
         dd_mat = dd_BlockElimination(mat.dd_mat, dd_colset, &error)
         return matrix_from_ptr_with_error(dd_mat, error)
     finally:
