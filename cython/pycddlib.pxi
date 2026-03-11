@@ -1176,6 +1176,12 @@ def block_elimination(mat: Matrix, col_set: Container[int]) -> Matrix:
     It does this by using the generators of the dual linear system,
     where the generators are calculated using the double description algorithm.
 
+    .. warning::
+        
+        You must specify the indices of the columns associated with the variable(s) you want to remove.
+        Column 0 refers to the coefficient vector `b` from the matrix [b A].
+        Thus, column 1 is associated with the 1st variable, etc.
+
     .. note::
 
         The output is not guaranteed to be minimal,
@@ -1186,6 +1192,8 @@ def block_elimination(mat: Matrix, col_set: Container[int]) -> Matrix:
     """
     if mat.dd_mat.representation != dd_Inequality:
         raise ValueError("rep_type must be INEQUALITY")
+    if 0 in col_set:
+        raise ValueError("Column indices must be > 0.")
     cdef set_type dd_colset = NULL
     cdef dd_MatrixPtr dd_mat = NULL
     cdef dd_ErrorType error = dd_NoError
