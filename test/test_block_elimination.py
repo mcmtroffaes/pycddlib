@@ -1,3 +1,4 @@
+from pytest import raises
 from test import assert_matrix_almost_equal
 
 import cdd
@@ -43,3 +44,11 @@ def test_block_elimination_3() -> None:
     # 0 <= 2 - x
     assert_matrix_almost_equal(mat2.array, [[2, -1]])
     assert mat2.lin_set == set()
+
+
+def test_block_elimination_4() -> None:
+    # 0 = -2 + x + y, 0 <= y
+    array = [[-2, 1, 1], [0, 0, 1]]
+    mat = cdd.matrix_from_array(array, rep_type=cdd.RepType.INEQUALITY, lin_set=[0])
+    with raises(ValueError):
+        cdd.block_elimination(mat, {0})
