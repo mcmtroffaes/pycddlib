@@ -1172,8 +1172,8 @@ def fourier_elimination(mat: Matrix) -> Matrix:
     return matrix_from_ptr_with_error(dd_mat, error)
 
 
-def block_elimination(mat: Matrix, col_set: Container[int]) -> Matrix:
-    """Eliminate the variables *col_set* from the system of linear inequalities *mat*.
+def block_elimination(mat: Matrix, var_set: Container[int]) -> Matrix:
+    """Eliminate the variables *var_set* from the system of linear inequalities *mat*.
     It does this by using the generators of the dual linear system,
     where the generators are calculated using the double description algorithm.
 
@@ -1192,7 +1192,7 @@ def block_elimination(mat: Matrix, col_set: Container[int]) -> Matrix:
     cdef dd_ErrorType error = dd_NoError
     set_initialize(&dd_colset, mat.dd_mat.colsize)
     try:
-        _set_set(dd_colset, col_set, True)
+        _set_set(dd_colset, var_set, True)
         dd_mat = dd_BlockElimination(mat.dd_mat, dd_colset, &error)
         return matrix_from_ptr_with_error(dd_mat, error)
     finally:
