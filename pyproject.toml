@@ -4,9 +4,9 @@ build-backend = "setuptools.build_meta"
 
 [project]
 name = "pycddlib"
-version = "3.0.3a1"
+version = "3.0.3a2"
 license = "GPL-2.0-or-later"
-requires-python = ">=3.9"
+requires-python = ">=3.10"
 authors = [
   {name = "Matthias C. M. Troffaes", email = "matthias.troffaes@gmail.com"},
 ]

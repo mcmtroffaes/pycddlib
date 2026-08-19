@@ -1,6 +1,12 @@
 Version 3.0.3 (in development)
 ------------------------------
 
+* Drop Python 3.9 support.
+
+* Add Python 3.14 support.
+
+* Bump vcpkg hash for Windows wheel.
+
 Version 3.0.2 (13 January 2025)
 -------------------------------
 
