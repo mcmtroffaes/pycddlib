@@ -8,7 +8,7 @@ on:
     branches: [ develop ]
 
 env:
-  VCPKG_HASH: 'd2ab3ed75fdf7027d6c59b493669326017540425'
+  VCPKG_HASH: '06d00ffa491e4668627728f14b891d22c6fea146'
 
 jobs:
   build-sdist:
